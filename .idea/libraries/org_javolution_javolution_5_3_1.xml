@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="org.javolution:javolution:5.3.1" type="repository">
+    <properties maven-id="org.javolution:javolution:5.3.1" />
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/javolution-5.3.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
