@@ -123,7 +123,7 @@ public class PrivateKeyRing {
 
             cPrime = (cPrime.multiply(cJ.modPow(lam2, BigInteger.valueOf(publicKey.ns1)))).mod(BigInteger.valueOf(publicKey.ns1));
         }
-        //TODO: add this in after implementing damgard jurik reduce
+
         cPrime = BigInteger.valueOf(damgardJurikReduce(cPrime.intValue(), publicKey.s, publicKey.n));
 
         BigInteger m = cPrime.multiply(BigInteger.valueOf(invFourDeltaSquared)).mod(BigInteger.valueOf(publicKey.ns));

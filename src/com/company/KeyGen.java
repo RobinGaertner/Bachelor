@@ -3,16 +3,15 @@ package com.company;
 import java.math.BigInteger;
 import java.util.LinkedList;
 import java.util.List;
-
-import jdk.jshell.execution.Util;
 import org.apache.commons.math3.util.CombinatoricsUtils;
 
 public class KeyGen {
 
     PrimeGen primeGen;
     Utils utils;
+    ShamirSecretSharing shamirSecretSharing;
 
-    void keyGen(int nBits, int s, int threshold, int nShares) {
+    Containter keyGen(int nBits, int s, int threshold, int nShares) throws Exception {
         /*Generates a PublicKey and a PrivateKeyRing using the threshold variant of Damgard-Jurik.
     The PublicKey is a single key which can be used to encrypt numbers
     while the PrivateKeyRing contains a number of PrivateKeyShares which
@@ -62,25 +61,25 @@ public class KeyGen {
 
         int d = utils.crm(list1, list2);
 
-        //TODO:  Use Shamir secret sharing to share_secret d
-
+        List<int[]> shares = shamirSecretSharing.shareSecret(d, nsm.intValue(), threshold, nShares);
 
         //Create PublicKey and PrivateKeyShares
         int delta = (int) CombinatoricsUtils.factorial(nShares);
         PublicKey publicKey = new PublicKey();
         publicKey.init(n.intValue(), s, m, threshold, delta);
 
-        List<PrivateKeyShare> privateKeyShares;
-        //TODO: add correctly when share secret is implemented
-        //TODO DO THIS RIGHT
-        //privateKeyShares.init(publicKey, );
+        List<PrivateKeyShare> privateKeyShares = new LinkedList<PrivateKeyShare>();
+
+        for (int i = 0; i < shares.size(); i++) {
+            PrivateKeyShare tmp = new PrivateKeyShare();
+            tmp.init(publicKey, shares.get(i)[0], shares.get(i)[1]);
+            privateKeyShares.add(tmp);
+        }
 
         PrivateKeyRing privateKeyRing = new PrivateKeyRing();
-        //TODO DO THIS AS WELL
-        //privateKeyRing.init(privateKeyShares);
+        privateKeyRing.init(privateKeyShares);
 
-        //TODO: ADD THIS AS WELL
-        //return publicKey, privateKeyRing;
+        return new Containter(publicKey, privateKeyRing);
     }
 
 }
