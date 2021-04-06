@@ -62,6 +62,7 @@ public class ShamirSecretSharing {
 
     public int reconstruct(List<Share> shares, int modulus){
         long secret = 0;
+        BigInteger secret2 = BigInteger.valueOf(0);
         for (int i = 0; i < shares.size(); i++) {
             /*
             long product = 1;
@@ -81,19 +82,22 @@ public class ShamirSecretSharing {
 
 
             BigInteger product2 = BigInteger.valueOf(1);
+            BigInteger mod = BigInteger.valueOf(modulus);
 
             for (int j = 0; j < shares.size(); j++) {
                 if(i!=j){
-                    int xj = shares.get(j).part1;
-                    int xi = shares.get(i).part1;
+                    int xj = shares.get(j).X;
+                    int xi = shares.get(i).X;
                     BigInteger inv = BigInteger.valueOf(utils.invMod(xj-xi, modulus));
-                    product2 = product2.multiply(inv.multiply(BigInteger.valueOf(xj).mod(BigInteger.valueOf(modulus)))).mod(BigInteger.valueOf(modulus));
+                    product2 = product2.multiply(inv.multiply(BigInteger.valueOf(xj))).mod(mod);
                 }
             }
 
-            secret = Math.addExact(secret, Math.multiplyExact(shares.get(i).part2.longValue(), product2.longValue()) % modulus) % modulus;
+            //secret = Math.addExact(secret, Math.multiplyExact(shares.get(i).fX.longValue(), product2.longValue()) % modulus) % modulus;
+            secret2 = (secret2.add((shares.get(i).fX.multiply(product2)).mod(mod))).mod(mod);
 
         }
-        return (int) secret;
+
+        return secret2.intValue();
     }
 }

@@ -50,7 +50,7 @@ public class KeyGen {
         BigInteger ns = n.pow(s);
         BigInteger nsm = ns.pow(m);
 
-        //find d such thst d=0 mod m and d=1 mod n^s
+        //find d such that d=0 mod m and d=1 mod n^s
         List<Integer> list1 = new LinkedList<>();
         list1.add(0);
         list1.add(1);
@@ -72,7 +72,7 @@ public class KeyGen {
 
         for (int i = 0; i < shares.size(); i++) {
             PrivateKeyShare tmp = new PrivateKeyShare();
-            tmp.init(publicKey, shares.get(i).part1, shares.get(i).part2);
+            tmp.init(publicKey, shares.get(i).X, shares.get(i).fX);
             privateKeyShares.add(tmp);
         }
 

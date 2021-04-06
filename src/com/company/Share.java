@@ -4,12 +4,20 @@ import java.math.BigInteger;
 
 public class Share {
 
-    int part1 = 0;
-    BigInteger part2;
+    int X = 0;
+    BigInteger fX;
 
 
     public Share(Integer pt1, BigInteger pt2) {
-        part1 = pt1;
-        part2 = pt2;
+        X = pt1;
+        fX = pt2;
+    }
+
+    @Override
+    public String toString() {
+        return "Share{" +
+                "part1=" + X +
+                ", part2=" + fX +
+                '}';
     }
 }

@@ -25,8 +25,8 @@ class PolynomialTest {
 
         poly.init(coeffs, modulus);
 
-        assertEquals(poly.call(0), coeffs.get(0));
-        assertEquals(poly.call(1), coeffs.stream().mapToInt(Integer::intValue).sum() % modulus );
+        assertEquals(poly.call(0).intValue(), coeffs.get(0));
+        assertEquals(poly.call(1).intValue(), coeffs.stream().mapToInt(Integer::intValue).sum() % modulus );
 
         int tmp = 0;
 
@@ -34,12 +34,12 @@ class PolynomialTest {
             tmp += coeffs.get(i) * ( Math.pow(5, i) );
         }
         tmp = tmp % modulus;
-        assertEquals(poly.call(5), tmp);
+        assertEquals(poly.call(5).intValue(), tmp);
     }
 
     @org.junit.jupiter.api.Test
     void call2() {
-        for (int j = 1; j < 25; j++) {
+        for (int j = 1; j < 160; j++) {
             int threshold = j;
             int modulus = 23;
 

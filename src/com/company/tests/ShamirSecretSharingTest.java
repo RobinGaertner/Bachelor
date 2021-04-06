@@ -3,6 +3,7 @@ package com.company.tests;
 import com.company.PrimeGen;
 import com.company.ShamirSecretSharing;
 import com.company.Share;
+import com.company.Utils;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
@@ -16,6 +17,7 @@ class ShamirSecretSharingTest {
     Random rnd = new Random();
     PrimeGen primeGen = new PrimeGen();
     ShamirSecretSharing shamir = new ShamirSecretSharing();
+    Utils utils = new Utils();
     @Test
     void shareSecret() {
 
@@ -33,6 +35,8 @@ class ShamirSecretSharingTest {
             System.out.println("Threshold: " + threshold);
 
             List<Share> shares = shamir.shareSecret(secret, modulus, threshold, nShares);
+
+            System.out.println("Shares" + shares);
             int secretPrime = shamir.reconstruct(shares, modulus);
 
             assertEquals(secret, secretPrime);
@@ -48,10 +52,10 @@ class ShamirSecretSharingTest {
 
         int nBits = 32;
         for (int i = 0; i < 10; i++) {
-            int modulus = 31;
-            int secret = 29;
-            int nShares = 4;
-            int threshold = 3;
+            int modulus = 59;
+            int secret = 47;
+            int nShares = 17;
+            int threshold = 11;
 
 
             System.out.println("Modulus: " + modulus);
@@ -66,4 +70,13 @@ class ShamirSecretSharingTest {
             assertEquals(secret, secretPrime);
         }
     }
+
+    @Test
+    void invModTest() {
+           int myInt = utils.invMod(12356, 4567);
+           int wanted = 1674;
+
+            assertEquals(wanted, myInt);
+        }
+
 }
