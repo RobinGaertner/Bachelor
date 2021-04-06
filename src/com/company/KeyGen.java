@@ -61,7 +61,7 @@ public class KeyGen {
 
         int d = utils.crm(list1, list2);
 
-        List<int[]> shares = shamirSecretSharing.shareSecret(d, nsm.intValue(), threshold, nShares);
+        List<Share> shares = shamirSecretSharing.shareSecret(d, nsm.intValue(), threshold, nShares);
 
         //Create PublicKey and PrivateKeyShares
         int delta = (int) CombinatoricsUtils.factorial(nShares);
@@ -72,7 +72,7 @@ public class KeyGen {
 
         for (int i = 0; i < shares.size(); i++) {
             PrivateKeyShare tmp = new PrivateKeyShare();
-            tmp.init(publicKey, shares.get(i)[0], shares.get(i)[1]);
+            tmp.init(publicKey, shares.get(i).part1, shares.get(i).part2);
             privateKeyShares.add(tmp);
         }
 

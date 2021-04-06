@@ -12,19 +12,19 @@ public class PrimeGen {
 
     Random rnd = new Random();
 
-    BigInteger genPrime(int primeBits){
-        while(true) {
-            BigInteger probRandom = BigInteger.probablePrime(primeBits, rnd);
-            //BigInteger candidate = new BigInteger(primeBits, rnd);
-            if(Primes.isPrime(probRandom.intValue())){
-                return probRandom;
+    public int genPrime(int primeBits){
+            int base = rnd.nextInt(primeBits);
+            if(base<Math.pow(primeBits, 2)/2){
+                base += 2^(primeBits-1);
             }
-        }
+
+            int p = Primes.nextPrime(base);
+            return p;
     }
 
     BigInteger genSafePrime(int primeBits){
         while(true){
-            BigInteger q = genPrime(primeBits-1);
+            BigInteger q = BigInteger.valueOf(genPrime(primeBits-1));
             BigInteger p = q.multiply(BigInteger.valueOf(2));
             BigInteger res = p.add(BigInteger.valueOf(1));
         }

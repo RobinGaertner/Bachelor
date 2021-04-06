@@ -9,10 +9,10 @@ public class PrivateKeyShare {
 
     PublicKey publicKey;
     int i;
-    int si;
-    int twoDeltaSI;
+    BigInteger si;
+    BigInteger twoDeltaSI;
 
-    void init(PublicKey pk, int i, int si){
+    void init(PublicKey pk, int i, BigInteger si){
         /*
         :param public_key: The PublicKey corresponding to this PrivateKeyShare.
         :param i: The x value of this share generated using a polynomial via Shamir secret sharing.
@@ -22,14 +22,14 @@ public class PrivateKeyShare {
         this.i = i;
         this.si = si;
 
-        this.twoDeltaSI = 2* this.publicKey.delta * this.si;
+        this.twoDeltaSI = si.multiply(BigInteger.valueOf(publicKey.delta)).multiply(BigInteger.valueOf(2));
     }
 
 
     int decrypt(EncryptedNumber c){
     //:return: An integer containing this PrivateKeyShare's portion of the decryption of `c`.
         BigInteger bigVal = BigInteger.valueOf(c.value);
-        BigInteger bigRes = bigVal.modPow(BigInteger.valueOf(twoDeltaSI), BigInteger.valueOf(this.publicKey.ns1));
+        BigInteger bigRes = bigVal.modPow(twoDeltaSI, BigInteger.valueOf(this.publicKey.ns1));
 
         return bigRes.intValue();
     }
