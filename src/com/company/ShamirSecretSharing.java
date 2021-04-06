@@ -1,5 +1,6 @@
 package com.company;
 
+import java.math.BigInteger;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -62,6 +63,7 @@ public class ShamirSecretSharing {
     public int reconstruct(List<Share> shares, int modulus){
         long secret = 0;
         for (int i = 0; i < shares.size(); i++) {
+            /*
             long product = 1;
 
             for (int j = 0; j < shares.size(); j++) {
@@ -71,7 +73,26 @@ public class ShamirSecretSharing {
                     product = (product * (xj * utils.invMod(xj-xi, modulus))%modulus) % modulus;
                 }
             }
-            secret = (Math.addExact(secret, Math.multiplyExact(shares.get(i).part2.longValue(), product) % modulus)) % modulus;
+
+            secret = Math.addExact(secret, Math.multiplyExact(shares.get(i).part2.longValue(), product2) % modulus) % modulus;
+
+             */
+
+
+
+            BigInteger product2 = BigInteger.valueOf(1);
+
+            for (int j = 0; j < shares.size(); j++) {
+                if(i!=j){
+                    int xj = shares.get(j).part1;
+                    int xi = shares.get(i).part1;
+                    BigInteger inv = BigInteger.valueOf(utils.invMod(xj-xi, modulus));
+                    product2 = product2.multiply(inv.multiply(BigInteger.valueOf(xj).mod(BigInteger.valueOf(modulus)))).mod(BigInteger.valueOf(modulus));
+                }
+            }
+
+            secret = Math.addExact(secret, Math.multiplyExact(shares.get(i).part2.longValue(), product2.longValue()) % modulus) % modulus;
+
         }
         return (int) secret;
     }

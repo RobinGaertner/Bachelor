@@ -42,4 +42,28 @@ class ShamirSecretSharingTest {
     @Test
     void reconstruct() {
     }
+
+    @Test
+    void shareSecret2() {
+
+        int nBits = 32;
+        for (int i = 0; i < 10; i++) {
+            int modulus = 31;
+            int secret = 29;
+            int nShares = 4;
+            int threshold = 3;
+
+
+            System.out.println("Modulus: " + modulus);
+            System.out.println("Secret: " + secret);
+            System.out.println("nShares: " + nShares);
+            System.out.println("Threshold: " + threshold);
+
+            List<Share> shares = shamir.shareSecret(secret, modulus, threshold, nShares);
+
+            int secretPrime = shamir.reconstruct(shares, modulus);
+
+            assertEquals(secret, secretPrime);
+        }
+    }
 }
