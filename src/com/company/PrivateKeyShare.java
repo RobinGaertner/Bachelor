@@ -22,7 +22,7 @@ public class PrivateKeyShare {
         this.i = i;
         this.si = si;
 
-        this.twoDeltaSI = si.multiply(BigInteger.valueOf(publicKey.delta)).multiply(BigInteger.valueOf(2));
+        this.twoDeltaSI = si.multiply(publicKey.delta).multiply(BigInteger.valueOf(2));
     }
 
 

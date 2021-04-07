@@ -103,7 +103,7 @@ public class KeyGen {
         List<Share> shares = shamirSecretSharing.shareSecret(D, nsm, threshold, nShares);
 
         //Create PublicKey and PrivateKeyShares
-        long delta =  CombinatoricsUtils.factorial(nShares);
+        BigInteger delta =  factorial(nShares);
         PublicKey publicKey = new PublicKey();
         publicKey.init(n, s, m, threshold, delta);
 
@@ -120,5 +120,13 @@ public class KeyGen {
 
         return new Containter(publicKey, privateKeyRing);
     }
+    public static BigInteger factorial(int number) {
+        BigInteger factorial = BigInteger.ONE;
 
+        for (int i = number; i > 0; i--) {
+            factorial = factorial.multiply(BigInteger.valueOf(i));
+        }
+
+        return factorial;
+    }
 }

@@ -50,23 +50,23 @@ public class PrivateKeyRing {
         }
 
         S = new HashSet<>(iList);
-        BigInteger tmp = (BigInteger.valueOf(publicKey.delta).pow(2)).multiply(BigInteger.valueOf(4));
+        BigInteger tmp = (publicKey.delta.pow(2)).multiply(BigInteger.valueOf(4));
         invFourDeltaSquared = utils.invModBig(tmp, publicKey.ns);
 
     }
 
     //TODO: here is so much casted stuff
 
-    int lambda(int i) {
+    BigInteger lambda(int i) {
 
         Set<Integer> sPrime = new HashSet<>(S);
         sPrime.remove(i);
 
         //int l = (int) (publicKey.delta % publicKey.nsm);
-        int l = (int) (publicKey.delta % publicKey.nsm.intValue());
+        BigInteger l =  publicKey.delta.mod(publicKey.nsm);
 
         for (int temp : sPrime) {
-            l = l * temp * utils.invMod(temp - i, publicKey.nsm.intValue()) % publicKey.nsm.intValue();
+            l = (l.multiply( BigInteger.valueOf(temp).multiply(utils.invModBig(BigInteger.valueOf(temp - i), publicKey.nsm)))).mod( publicKey.nsm);
         }
         return l;
     }
@@ -124,7 +124,7 @@ public class PrivateKeyRing {
         for (int j = 0; j < iList.size(); j++) {
             //preparation
             BigInteger cJ = BigInteger.valueOf(cList.get(j));
-            BigInteger lam2 = BigInteger.valueOf(2 * lambda(iList.get(j)));
+            BigInteger lam2 = lambda(iList.get(j)).multiply(BigInteger.valueOf(2));
 
             cPrime = (cPrime.multiply(cJ.modPow(lam2, publicKey.ns1))).mod(publicKey.ns1);
         }

@@ -22,7 +22,7 @@ class ShamirSecretSharingTest {
     void shareSecret() {
 
         int nBits = 32;
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 100; i++) {
             int modulus = primeGen.genPrime(nBits);
             int secret = rnd.nextInt(modulus);
             int nShares = rnd.nextInt(20)+1;

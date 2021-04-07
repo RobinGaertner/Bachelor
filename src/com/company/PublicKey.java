@@ -14,13 +14,13 @@ public class PublicKey {
     int s;
     int m;
     int threshold;
-    long delta;
+    BigInteger delta;
     public BigInteger ns;
     BigInteger ns1;
     BigInteger nsm;
     Random rand = new Random();
 
-    void init(BigInteger n,int  s,int  m,int  t, long  d) {
+    void init(BigInteger n, int  s, int  m, int  t, BigInteger d) {
 
         this.n =n;
         this.s =s;

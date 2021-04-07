@@ -52,10 +52,11 @@ public class ShamirSecretSharing {
 
         Polynomial polynomial = new Polynomial();
         polynomial.init(coeffs, modulus);
+        System.out.println("Coeffs of the polynomial" + coeffs);
 
 
         List<Integer> X = new LinkedList<>();
-        for (int i=1; i<=10; i++) {
+        for (int i=1; i<=nShares; i++) {
             X.add(i);
         }
 
