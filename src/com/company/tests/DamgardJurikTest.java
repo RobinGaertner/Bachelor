@@ -27,19 +27,20 @@ public class DamgardJurikTest {
             int threshold = rnd.nextInt(10)+1;
             int nShares = 2* threshold + rnd.nextInt(10);
 
-            System.out.println("Modulus: " + nBits);
+            System.out.println("nBits " + nBits);
             System.out.println("s: " + s);
             System.out.println("nShares: " + nShares);
             System.out.println("Threshold: " + threshold);
 
             Containter containter = KeyGen.keyGen(nBits, s, threshold, nShares);
 
-            System.out.println("Container finished ");
+            System.out.println("Container finished " + containter);
 
-            int m = rnd.nextInt(containter.getPublicKey().ns);
+
+            int m = rnd.nextInt(100000);
             EncryptedNumber c = containter.getPublicKey().encrypt(m);
 
-            System.out.println("Encrpt finished ");
+            System.out.println("Encrpt finished " + c);
 
             int mPrime = containter.getPrivateKeyRing().decrypt(c);
 

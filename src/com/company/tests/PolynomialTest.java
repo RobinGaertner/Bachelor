@@ -14,27 +14,26 @@ class PolynomialTest {
     void call() {
         Polynomial poly = new Polynomial();
 
-        List<Integer> coeffs = new LinkedList<>();
-        coeffs.add(1);
-        coeffs.add(2);
-        coeffs.add(3);
-        coeffs.add(4);
-        coeffs.add(5);
+        List<BigInteger> coeffs = new LinkedList<>();
+        coeffs.add(BigInteger.valueOf(1));
+        coeffs.add(BigInteger.valueOf(2));
+        coeffs.add(BigInteger.valueOf(3));
+        coeffs.add(BigInteger.valueOf(4));
+        coeffs.add(BigInteger.valueOf(5));
 
         int modulus = 23;
 
-        poly.init(coeffs, modulus);
+        poly.init(coeffs, BigInteger.valueOf(modulus));
 
-        assertEquals(poly.call(0).intValue(), coeffs.get(0));
-        assertEquals(poly.call(1).intValue(), coeffs.stream().mapToInt(Integer::intValue).sum() % modulus );
+        assertEquals(poly.call(0), coeffs.get(0));
 
-        int tmp = 0;
+        BigInteger tmp = BigInteger.valueOf(0);
 
         for (int i = 0; i < coeffs.size(); i++) {
-            tmp += coeffs.get(i) * ( Math.pow(5, i) );
+            tmp = tmp.add(coeffs.get(i).multiply ( BigInteger.valueOf((long) Math.pow(5, i))) );
         }
-        tmp = tmp % modulus;
-        assertEquals(poly.call(5).intValue(), tmp);
+        tmp = tmp.mod(BigInteger.valueOf(modulus));
+        assertEquals(poly.call(5), tmp);
     }
 
     @org.junit.jupiter.api.Test
@@ -45,22 +44,22 @@ class PolynomialTest {
 
             Polynomial poly = new Polynomial();
 
-            List<Integer> coeffs = new LinkedList<>();
+            List<BigInteger> coeffs = new LinkedList<>();
             for (int i=1; i<=threshold; i++) {
-                coeffs.add(i);
+                coeffs.add(BigInteger.valueOf(i));
             }
 
 
-            poly.init(coeffs, modulus);
+            poly.init(coeffs, BigInteger.valueOf(modulus));
 
             assertEquals(poly.call(0).longValue(), coeffs.get(0).longValue());
-            assertEquals(poly.call(1).longValue(), coeffs.stream().mapToInt(Integer::intValue).sum() % modulus );
+            assertEquals(poly.call(1).longValue(), coeffs.stream().mapToInt(BigInteger::intValue).sum() % modulus );
 
             BigInteger tmp = BigInteger.valueOf(0);
 
             for (int i = 0; i < coeffs.size(); i++) {
                 BigInteger tmp2 = BigInteger.valueOf(threshold).pow(i);
-                tmp = tmp.add(BigInteger.valueOf(coeffs.get(i)).multiply(tmp2));
+                tmp = tmp.add(coeffs.get(i).multiply(tmp2));
             }
             tmp = tmp.mod(BigInteger.valueOf(modulus));
             System.out.println(j);
@@ -74,29 +73,26 @@ class PolynomialTest {
     void call3() {
         Polynomial poly = new Polynomial();
 
-        List<Integer> coeffs = new LinkedList<>();
-        coeffs.add(1);
-        coeffs.add(2);
-        coeffs.add(3);
-        coeffs.add(4);
-        coeffs.add(5);
+        List<BigInteger> coeffs = new LinkedList<>();
+        coeffs.add(BigInteger.valueOf(1));
+        coeffs.add(BigInteger.valueOf(2));
+        coeffs.add(BigInteger.valueOf(3));
+        coeffs.add(BigInteger.valueOf(4));
+        coeffs.add(BigInteger.valueOf(5));
+
+
 
         int modulus = 23;
 
-        poly.init(coeffs, modulus);
+        poly.init(coeffs, BigInteger.valueOf(modulus));
 
-        int tmp = 0;
+        BigInteger tmp = BigInteger.ZERO;
 
         for (int i = 0; i < coeffs.size(); i++) {
-            tmp += coeffs.get(i) * ( Math.pow(5, i) );
+            tmp = tmp.add(coeffs.get(i).multiply ( BigInteger.valueOf((long) Math.pow(5, i))) );
         }
-        tmp = tmp % modulus;
-        assertEquals(poly.call(5), BigInteger.valueOf(tmp));
-    }
-
-    @org.junit.jupiter.api.Test
-    void CRMtest () {
-
+        tmp = tmp.mod(BigInteger.valueOf(modulus));
+        assertEquals(poly.call(5),tmp);
     }
 
 }

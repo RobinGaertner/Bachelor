@@ -9,7 +9,7 @@ public class ShamirSecretSharing {
 
     Utils utils = new Utils();
 
-    public List<Share> shareSecret(int secret, int modulus, int threshold, int nShares){
+    public List<Share> shareSecret(BigInteger secret, BigInteger modulus, int threshold, int nShares){
             /* :param secret: The secret to be shared.
     :param modulus: The modulus used when sharing the secret.
     :param threshold: The minimum number of shares that will be needed to reconstruct the secret.
@@ -21,10 +21,12 @@ public class ShamirSecretSharing {
         Random rnd = new Random();
 
         //ensure valid parameters
-        if (secret<0){
+        //TODO: do this later
+        /*
+        if (secret.longValue()<0){
             throw new Error("Secret must be >=0");
         }
-        if (!(secret<=modulus)){
+        if (!(secret.longValue()<=modulus.longValue())){
             throw new Error("Secret must be <modulus");
         }
         if (nShares< threshold){
@@ -34,13 +36,18 @@ public class ShamirSecretSharing {
             throw new Error("Threshold and number of shares must at least be 1");
         }
 
+         */
         //create the polynomial that will be used to share the secret
         //(f(0) = secret
-        List<Integer> coeffs = new LinkedList<>();
+        List<BigInteger> coeffs = new LinkedList<>();
         coeffs.add(secret);
 
         for (int i = 0; i < threshold - 1; i++) {
-            coeffs.add(rnd.nextInt(modulus-1));
+            //TODO: here is no exact, but hopefully right
+            int tmp = 0;
+
+            //coeffs.add(BigInteger.valueOf(rnd.nextInt(modulus.intValueExact())));
+            coeffs.add(nextRandomBigInteger(modulus));
         }
 
         Polynomial polynomial = new Polynomial();
@@ -102,4 +109,15 @@ public class ShamirSecretSharing {
 
         return secret2.intValueExact();
     }
+
+    //TODO: copied
+    public BigInteger nextRandomBigInteger(BigInteger n) {
+        Random rand = new Random();
+        BigInteger result = new BigInteger(n.bitLength(), rand);
+        while( result.compareTo(n) >= 0 ) {
+            result = new BigInteger(n.bitLength(), rand);
+        }
+        return result;
+    }
+
 }

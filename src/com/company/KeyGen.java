@@ -92,20 +92,20 @@ public class KeyGen {
 
         System.out.println("crm return "+D);
 
-        int d = D.intValueExact();
+        //int d = D.intValueExact();
 
-        System.out.println("crm return "+d);
+        //System.out.println("crm return "+d);
 
 
  //*/
 
 
-        List<Share> shares = shamirSecretSharing.shareSecret(d, nsm.intValueExact(), threshold, nShares);
+        List<Share> shares = shamirSecretSharing.shareSecret(D, nsm, threshold, nShares);
 
         //Create PublicKey and PrivateKeyShares
-        int delta = (int) CombinatoricsUtils.factorial(nShares);
+        long delta =  CombinatoricsUtils.factorial(nShares);
         PublicKey publicKey = new PublicKey();
-        publicKey.init(n.intValue(), s, m, threshold, delta);
+        publicKey.init(n, s, m, threshold, delta);
 
         List<PrivateKeyShare> privateKeyShares = new LinkedList<PrivateKeyShare>();
 

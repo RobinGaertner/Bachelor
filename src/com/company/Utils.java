@@ -48,6 +48,36 @@ public class Utils {
     }
 
 
+    private static class Triple {
+        public final BigInteger d;
+        public final BigInteger s;
+        public final BigInteger t;
+        private Triple(final BigInteger d, final BigInteger s, final BigInteger t) {
+            this.d = d;
+            this.s = s;
+            this.t = t;
+        }
+        @Override
+        public String toString() {
+            return "Triple{" +
+                    "d=" + d +
+                    ", s=" + s +
+                    ", t=" + t +
+                    '}';
+        }
+    }
+
+    public static Triple apply(final BigInteger a, final BigInteger b) {
+        if (b.equals(BigInteger.ZERO)) {
+            return new Triple(a, BigInteger.ONE, BigInteger.ZERO);
+        } else {
+            final Triple extension = apply(b, a.mod(b));
+            return new Triple(extension.d, extension.t, extension.s.subtract(a.divide(b).multiply(extension.t)));
+        }
+    }
+
+
+
     public int invMod(int a, int mod) {
         //Finds the inverse of a modulo m ( b s.t. a*b = 1 (mod m))
 
@@ -63,6 +93,23 @@ public class Utils {
 
         long inverse = xgcd(a, mod)[1];
         return (int) (inverse % mod);
+    }
+
+    public BigInteger invModBig(BigInteger a, BigInteger mod){
+
+        if(a.compareTo(BigInteger.ZERO)==-1){
+            //if  a<0
+            a = a.add(mod);
+        }
+        // a and m must be coprime to find an inverse
+        if (a.gcd(mod)!=BigInteger.ONE) {
+            //should hopefully not happen
+            logger.warning("inv mod got bad numbers");
+        }
+        BigInteger inverse = apply(a, mod).t;
+
+        return inverse.mod(mod);
+
     }
 
     int prod(List<Integer> list){
@@ -92,31 +139,7 @@ public class Utils {
         return qr[1].signum() == 0 ? qr[0] : qr[0].subtract(BigInteger.ONE);
     }
 
-    BigInteger crmBig (List<Integer> aList, List<BigInteger> nList){
-        //Applies the Chinese Remainder Theorem to find the unique x
-        // such that x = a_i (mod n_i) for all i.
 
-        BigInteger N = prodBig(nList);
-
-        List<BigInteger> yList = new LinkedList<>();
-        for (int i = 0; i < nList.size(); i++) {
-            yList.add(floorDiv(N, nList.get(i)));
-        }
-
-        List<Integer> zList = new LinkedList<>();
-        for (int i = 0; i < nList.size(); i++) {
-            zList.add(invMod(yList.get(i).intValueExact(),nList.get(i).intValueExact() ));
-        }
-
-        //int x = 0;
-        BigInteger x = BigInteger.valueOf(0);
-
-        for (int i = 0; i < aList.size(); i++) {
-            //x += aList.get(i) * yList.get(i) * zList.get(i);
-            x = x.add(BigInteger.valueOf(aList.get(i)).multiply(yList.get(i).multiply(BigInteger.valueOf(zList.get(i)))));
-        }
-        return x;
-    }
 
     int crm (List<Integer> aList, List<Integer> nList){
         //Applies the Chinese Remainder Theorem to find the unique x

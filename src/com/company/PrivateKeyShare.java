@@ -29,7 +29,7 @@ public class PrivateKeyShare {
     int decrypt(EncryptedNumber c){
     //:return: An integer containing this PrivateKeyShare's portion of the decryption of `c`.
         BigInteger bigVal = BigInteger.valueOf(c.value);
-        BigInteger bigRes = bigVal.modPow(twoDeltaSI, BigInteger.valueOf(this.publicKey.ns1));
+        BigInteger bigRes = bigVal.modPow(twoDeltaSI, this.publicKey.ns1);
 
         return bigRes.intValue();
     }

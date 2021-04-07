@@ -34,7 +34,7 @@ class ShamirSecretSharingTest {
             System.out.println("nShares: " + nShares);
             System.out.println("Threshold: " + threshold);
 
-            List<Share> shares = shamir.shareSecret(secret, modulus, threshold, nShares);
+            List<Share> shares = shamir.shareSecret(BigInteger.valueOf(secret), BigInteger.valueOf(modulus), threshold, nShares);
 
             System.out.println("Shares" + shares);
             int secretPrime = shamir.reconstruct(shares, modulus);
@@ -63,11 +63,12 @@ class ShamirSecretSharingTest {
             System.out.println("nShares: " + nShares);
             System.out.println("Threshold: " + threshold);
 
-            List<Share> shares = shamir.shareSecret(secret, modulus, threshold, nShares);
+            List<Share> shares = shamir.shareSecret(BigInteger.valueOf(secret), BigInteger.valueOf(modulus), threshold, nShares);
 
             int secretPrime = shamir.reconstruct(shares, modulus);
 
             assertEquals(secret, secretPrime);
+            System.out.println("WORKED ONCE");
         }
     }
 

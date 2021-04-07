@@ -26,4 +26,13 @@ public class Containter {
     public void setPublicKey(PublicKey publicKey) {
         this.publicKey = publicKey;
     }
+
+
+    @Override
+    public String toString() {
+        return "Containter{" +
+                "publicKey=" + publicKey +
+                ", privateKeyRing=" + privateKeyRing +
+                '}';
+    }
 }

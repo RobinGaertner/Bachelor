@@ -10,12 +10,12 @@ import org.apache.commons.math3.util.CombinatoricsUtils;
 
 public class PrivateKeyRing {
 
-    Utils utils;
+    Utils utils = new Utils();
     PublicKey publicKey;
     List<PrivateKeyShare> privateKeyShareList;
     List<Integer> iList = new LinkedList<>();
     Set<Integer> S;
-    int invFourDeltaSquared;
+    BigInteger invFourDeltaSquared;
 
     void init(List<PrivateKeyShare> keyShareList) throws Exception {
         //Initializes the PrivateKeyRing,
@@ -25,7 +25,7 @@ public class PrivateKeyRing {
         if (keyShareList.size() == 0) {
             throw new Exception("Must have at least one PrivateKeyShare");
         }
-        List<byte[]> test = new LinkedList<byte[]>();
+        List<String> test = new LinkedList<String>();
         for (int i = 0; i < keyShareList.size(); i++) {
             if (!test.contains(keyShareList.get(i).publicKey.pkHash())) {
                 test.add(keyShareList.get(i).publicKey.pkHash());
@@ -50,50 +50,55 @@ public class PrivateKeyRing {
         }
 
         S = new HashSet<>(iList);
-
-        int tmp = (int) (4 * Math.pow(publicKey.delta, 2));
-        invFourDeltaSquared = utils.invMod(tmp, publicKey.ns);
+        BigInteger tmp = (BigInteger.valueOf(publicKey.delta).pow(2)).multiply(BigInteger.valueOf(4));
+        invFourDeltaSquared = utils.invModBig(tmp, publicKey.ns);
 
     }
+
+    //TODO: here is so much casted stuff
 
     int lambda(int i) {
 
         Set<Integer> sPrime = new HashSet<>(S);
         sPrime.remove(i);
 
-        int l = publicKey.delta % publicKey.nsm;
+        //int l = (int) (publicKey.delta % publicKey.nsm);
+        int l = (int) (publicKey.delta % publicKey.nsm.intValue());
 
         for (int temp : sPrime) {
-            l = l * temp * utils.invMod(temp - i, publicKey.nsm) % publicKey.nsm;
+            l = l * temp * utils.invMod(temp - i, publicKey.nsm.intValue()) % publicKey.nsm.intValue();
         }
         return l;
     }
 
-    int Lfunc(int b, int n) {
-        return Math.floorDiv(b - 1, n);
+    BigInteger Lfunc(BigInteger b, int n) {
+        return utils.floorDiv((b.subtract(BigInteger.ONE)), BigInteger.valueOf(n));
     }
 
-    int nPow(int p, int n) {
-        return (int) Math.pow(p, n);
+    BigInteger nPow(int p, int n) {
+        return BigInteger.valueOf(n).pow(p);
     }
 
-    int fact(int k) {
-        return (int) CombinatoricsUtils.factorial(k);
+    long fact(int k) {
+        return CombinatoricsUtils.factorial(k);
     }
 
 
-    int damgardJurikReduce(int a, int s, int n) {
+    BigInteger damgardJurikReduce(BigInteger a, int s, int n) {
         //Computes i given a = (1 + n)^i (mod n^(s+1)).
 
-        int i = 0;
+        BigInteger i = BigInteger.ZERO;
         for (int j = 1; j < s + 1; j++) {
-            int t1 = Lfunc(a % nPow(j + 1, n), n);
-            int t2 = i;
+            BigInteger t1 = Lfunc(a.mod(nPow(j+1, n)), n);
+            BigInteger t2 = i;
 
             for (int k = 2; k < j + 1; k++) {
-                i = i - 1;
-                t2 = t2 * i % nPow(j, n);
-                t1 = t1 - (t2 * nPow(k - 1, n) * utils.invMod(fact(k), nPow(j, n)) % nPow(j, n));
+                i = i.subtract(BigInteger.ONE);
+                t2 = (t2.multiply(i)).mod(nPow(j, n));
+                //t1 = t1 - (t2 * nPow(k - 1, n) * utils.invModBig(BigInteger.valueOf(fact(k)),  nPow(j, n)) % nPow(j, n));
+                BigInteger tmp = t2.multiply(nPow(k-1, n));
+                BigInteger tmp2 = utils.invModBig(BigInteger.valueOf(fact(k)), nPow(j, n));
+                t1 = t1.subtract(tmp.multiply(tmp2).mod(nPow(j,n)));
 
             }
             i = t1;
@@ -121,13 +126,21 @@ public class PrivateKeyRing {
             BigInteger cJ = BigInteger.valueOf(cList.get(j));
             BigInteger lam2 = BigInteger.valueOf(2 * lambda(iList.get(j)));
 
-            cPrime = (cPrime.multiply(cJ.modPow(lam2, BigInteger.valueOf(publicKey.ns1)))).mod(BigInteger.valueOf(publicKey.ns1));
+            cPrime = (cPrime.multiply(cJ.modPow(lam2, publicKey.ns1))).mod(publicKey.ns1);
         }
 
-        cPrime = BigInteger.valueOf(damgardJurikReduce(cPrime.intValue(), publicKey.s, publicKey.n));
+        cPrime = damgardJurikReduce(cPrime, publicKey.s, publicKey.n.intValue());
 
-        BigInteger m = cPrime.multiply(BigInteger.valueOf(invFourDeltaSquared)).mod(BigInteger.valueOf(publicKey.ns));
+        BigInteger m = cPrime.multiply(invFourDeltaSquared).mod(publicKey.ns);
 
         return m.intValue();
+    }
+
+    @Override
+    public String toString() {
+        return "PrivateKeyRing{" +
+                "publicKey=" + publicKey +
+                ", privateKeyShareList=" + privateKeyShareList +
+                '}';
     }
 }

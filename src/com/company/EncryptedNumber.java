@@ -22,7 +22,7 @@ public class EncryptedNumber {
     */
         EncryptedNumber res = new EncryptedNumber();
 
-        int val = this.value* other.value % publicKey.ns1;
+        int val = this.value* other.value % publicKey.ns1.intValueExact();
 
         res.init(val, publicKey);
 
@@ -43,7 +43,7 @@ public class EncryptedNumber {
          */
 
         EncryptedNumber otherInverse = new EncryptedNumber();
-        int val = utils.invMod(other.value, other.publicKey.ns1);
+        int val = utils.invMod(other.value, other.publicKey.ns1.intValueExact());
         otherInverse.init(val, other.publicKey);
 
         return add(otherInverse);
@@ -53,7 +53,7 @@ public class EncryptedNumber {
         //like sub, but order reversed
 
         EncryptedNumber selfInverse = new EncryptedNumber();
-        int val = utils.invMod(value, publicKey.ns1);
+        int val = utils.invMod(value, publicKey.ns1.intValueExact());
         selfInverse.init(val, publicKey);
 
         return selfInverse.add(other);
@@ -73,7 +73,7 @@ public class EncryptedNumber {
 
         BigInteger bigVal = BigInteger.valueOf(value);
         BigInteger bigA = BigInteger.valueOf(a);
-        BigInteger bigNs1 = BigInteger.valueOf(publicKey.ns1);
+        BigInteger bigNs1 = BigInteger.valueOf(publicKey.ns1.intValueExact());
 
         BigInteger newVal = bigVal.modPow(bigA, bigNs1);
 
@@ -91,7 +91,7 @@ public class EncryptedNumber {
 
     EncryptedNumber trueDiv(int d){
         EncryptedNumber res = new EncryptedNumber();
-        int val = value * utils.invMod(d, publicKey.ns1);
+        int val = value * utils.invMod(d, publicKey.ns1.intValueExact());
 
         res.init(val, publicKey);
         return res;
@@ -105,6 +105,13 @@ public class EncryptedNumber {
         randomness in the encryption process.
      */
         return ((this.value == other.value) & (this.publicKey.equals(other.publicKey)));
+    }
+
+    @Override
+    public String toString() {
+        return "EncryptedNumber{" +
+                "value=" + value +
+                '}';
     }
 }
 

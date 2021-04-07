@@ -10,17 +10,17 @@ import java.util.Random;
 
 public class PublicKey {
 
-    int n;
+    BigInteger n;
     int s;
     int m;
     int threshold;
-    int delta;
-    public int ns;
-    int ns1;
-    int nsm;
+    long delta;
+    public BigInteger ns;
+    BigInteger ns1;
+    BigInteger nsm;
     Random rand = new Random();
 
-    void init(int n,int  s,int  m,int  t,int  d) {
+    void init(BigInteger n,int  s,int  m,int  t, long  d) {
 
         this.n =n;
         this.s =s;
@@ -28,23 +28,24 @@ public class PublicKey {
         threshold = t;
         delta = d;
 
-        ns = n^s;
-        ns1 = ns*n;
-        nsm = ns*m;
+        //ns = n^s;
+        ns = n.pow(s);
+        ns1 = ns.multiply(n);
+        nsm = ns.multiply(BigInteger.valueOf(m));
     }
 
 
     public EncryptedNumber encrypt (int plain){
 
-        BigInteger r = BigInteger.valueOf(rand.nextInt(n -1) +1);
-        BigInteger bigMod = BigInteger.valueOf(ns1);
-        BigInteger bigNPlus1 = BigInteger.valueOf(n +1);
+        BigInteger r = BigInteger.valueOf(rand.nextInt(n.subtract(BigInteger.ONE).intValue()) +1);
+        BigInteger bigMod = ns1;
+        BigInteger bigNPlus1 = n.add(BigInteger.ONE);
         BigInteger bigPlain = BigInteger.valueOf(plain);
 
         BigInteger c1 = bigNPlus1.modPow(bigPlain, bigMod);
-        BigInteger c2 = r.modPow(BigInteger.valueOf(ns), BigInteger.valueOf(ns1));
+        BigInteger c2 = r.modPow(ns, ns1);
 
-        BigInteger c = (c1.multiply(c2)).mod(BigInteger.valueOf(ns1));
+        BigInteger c = (c1.multiply(c2)).mod(ns1);
 
         EncryptedNumber res = new EncryptedNumber();
 
@@ -71,13 +72,23 @@ public class PublicKey {
 
     }
 
-    byte[] pkHash() throws NoSuchAlgorithmException {
+    String pkHash() throws NoSuchAlgorithmException {
 
         String original = "" + n+ s + m + threshold + delta;
 
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
         byte[] hashbytes = digest.digest(original.getBytes(StandardCharsets.UTF_8));
-        return hashbytes;
+        return original;
     }
 
+    @Override
+    public String toString() {
+        return "PublicKey{" +
+                "n=" + n +
+                ", s=" + s +
+                ", m=" + m +
+                ", threshold=" + threshold +
+                ", delta=" + delta +
+                '}';
+    }
 }
