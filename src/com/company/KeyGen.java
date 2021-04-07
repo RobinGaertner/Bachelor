@@ -1,17 +1,19 @@
 package com.company;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import org.apache.commons.math3.util.CombinatoricsUtils;
 
 public class KeyGen {
 
-    PrimeGen primeGen;
-    Utils utils;
-    ShamirSecretSharing shamirSecretSharing;
+    static PrimeGen primeGen = new PrimeGen();
+    static Utils utils = new Utils();
+    static ShamirSecretSharing shamirSecretSharing = new ShamirSecretSharing();
+    static CRTBig crt = new CRTBig();
 
-    Containter keyGen(int nBits, int s, int threshold, int nShares) throws Exception {
+    public static Containter keyGen(int nBits, int s, int threshold, int nShares) throws Exception {
         /*Generates a PublicKey and a PrivateKeyRing using the threshold variant of Damgard-Jurik.
     The PublicKey is a single key which can be used to encrypt numbers
     while the PrivateKeyRing contains a number of PrivateKeyShares which
@@ -38,9 +40,11 @@ public class KeyGen {
         BigInteger[] primes = primeGen.getSafePrimePair(nBits);
         BigInteger p = primes[0];
         BigInteger q = primes[1];
-        int pPrime = (int) Math.floorDiv(p.longValue()-1, 2);
 
-        int qprime = (int) Math.floorDiv(q.longValue()-1, 2);
+        BigInteger pPrimeBig = utils.floorDiv((p.subtract(BigInteger.valueOf(1))), BigInteger.valueOf(2));
+        BigInteger qPrimeBig = utils.floorDiv((q.subtract(BigInteger.valueOf(1))), BigInteger.valueOf(2));
+        int pPrime = Math.toIntExact(Math.floorDiv(p.longValue() - 1, 2));
+        int qprime = Math.toIntExact(Math.floorDiv(q.longValue() - 1, 2));
         BigInteger n = p.multiply(q);
         int m = pPrime * qprime;
 
@@ -48,8 +52,8 @@ public class KeyGen {
         //precompute for convenience
 
         BigInteger ns = n.pow(s);
-        BigInteger nsm = ns.pow(m);
-
+        BigInteger nsm = ns.multiply(BigInteger.valueOf(m));
+ /*
         //find d such that d=0 mod m and d=1 mod n^s
         List<Integer> list1 = new LinkedList<>();
         list1.add(0);
@@ -57,11 +61,46 @@ public class KeyGen {
 
         List<Integer> list2 = new LinkedList<>();
         list2.add(m);
-        list2.add(ns.intValue());
+        list2.add(ns.intValueExact());
 
+        System.out.println("list1"+list1);
+        System.out.println("list2" +list2);
         int d = utils.crm(list1, list2);
 
-        List<Share> shares = shamirSecretSharing.shareSecret(d, nsm.intValue(), threshold, nShares);
+        System.out.println("crm return "+d);
+
+ */
+
+
+///*
+        ArrayList<BigInteger> list1 = new ArrayList<BigInteger>();
+        list1.add(BigInteger.valueOf(0));
+        list1.add(BigInteger.valueOf(1));
+
+        ArrayList<BigInteger> list2 = new ArrayList<BigInteger>();
+        list2.add(BigInteger.valueOf(m));
+        list2.add(ns);
+
+
+        //BigInteger D = utils.crmBig(list1, list2);
+
+
+        System.out.println("list1"+list1);
+        System.out.println("list2" +list2);
+
+        BigInteger D = crt.chinese_remainder_theorem(list1, (ArrayList<BigInteger>) list2, 2);
+
+        System.out.println("crm return "+D);
+
+        int d = D.intValueExact();
+
+        System.out.println("crm return "+d);
+
+
+ //*/
+
+
+        List<Share> shares = shamirSecretSharing.shareSecret(d, nsm.intValueExact(), threshold, nShares);
 
         //Create PublicKey and PrivateKeyShares
         int delta = (int) CombinatoricsUtils.factorial(nShares);

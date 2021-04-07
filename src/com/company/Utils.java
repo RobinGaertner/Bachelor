@@ -1,6 +1,8 @@
 package com.company;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.RoundingMode;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
@@ -72,7 +74,49 @@ public class Utils {
         return res;
     }
 
+    BigInteger prodBig(List<BigInteger> list){
+        //Returns the product of the numbers in the list.
+        BigInteger res =BigInteger.valueOf(1);
+        for (BigInteger i : list) {
+            res = res.multiply(i);
+        }
+        return res;
+    }
 
+    //TODO: Make this nice
+    public BigInteger floorDiv(final BigInteger x, final BigInteger y) {
+        if (x.signum() * y.signum() >= 0) {
+            return x.divide(y);
+        }
+        final BigInteger[] qr = x.divideAndRemainder(y);
+        return qr[1].signum() == 0 ? qr[0] : qr[0].subtract(BigInteger.ONE);
+    }
+
+    BigInteger crmBig (List<Integer> aList, List<BigInteger> nList){
+        //Applies the Chinese Remainder Theorem to find the unique x
+        // such that x = a_i (mod n_i) for all i.
+
+        BigInteger N = prodBig(nList);
+
+        List<BigInteger> yList = new LinkedList<>();
+        for (int i = 0; i < nList.size(); i++) {
+            yList.add(floorDiv(N, nList.get(i)));
+        }
+
+        List<Integer> zList = new LinkedList<>();
+        for (int i = 0; i < nList.size(); i++) {
+            zList.add(invMod(yList.get(i).intValueExact(),nList.get(i).intValueExact() ));
+        }
+
+        //int x = 0;
+        BigInteger x = BigInteger.valueOf(0);
+
+        for (int i = 0; i < aList.size(); i++) {
+            //x += aList.get(i) * yList.get(i) * zList.get(i);
+            x = x.add(BigInteger.valueOf(aList.get(i)).multiply(yList.get(i).multiply(BigInteger.valueOf(zList.get(i)))));
+        }
+        return x;
+    }
 
     int crm (List<Integer> aList, List<Integer> nList){
         //Applies the Chinese Remainder Theorem to find the unique x

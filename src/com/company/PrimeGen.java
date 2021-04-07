@@ -23,11 +23,12 @@ public class PrimeGen {
     }
 
     BigInteger genSafePrime(int primeBits){
-        while(true){
             BigInteger q = BigInteger.valueOf(genPrime(primeBits-1));
             BigInteger p = q.multiply(BigInteger.valueOf(2));
             BigInteger res = p.add(BigInteger.valueOf(1));
-        }
+
+            return res;
+
     }
 
     BigInteger[] getSafePrimePair(int primebits){

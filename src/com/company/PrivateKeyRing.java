@@ -102,7 +102,7 @@ public class PrivateKeyRing {
     }
 
 
-    int decrypt(EncryptedNumber c) {
+    public int decrypt(EncryptedNumber c) {
       /*:param c: An EncryptedNumber.
       :return: An integer containing the decryption of `c`.
      """

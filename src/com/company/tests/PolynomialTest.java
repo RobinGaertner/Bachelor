@@ -39,7 +39,7 @@ class PolynomialTest {
 
     @org.junit.jupiter.api.Test
     void call2() {
-        for (int j = 1; j < 160; j++) {
+        for (int j = 1; j < 250; j++) {
             int threshold = j;
             int modulus = 23;
 
@@ -93,4 +93,10 @@ class PolynomialTest {
         tmp = tmp % modulus;
         assertEquals(poly.call(5), BigInteger.valueOf(tmp));
     }
+
+    @org.junit.jupiter.api.Test
+    void CRMtest () {
+
+    }
+
 }

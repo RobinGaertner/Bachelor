@@ -15,7 +15,7 @@ public class PublicKey {
     int m;
     int threshold;
     int delta;
-    int ns;
+    public int ns;
     int ns1;
     int nsm;
     Random rand = new Random();
@@ -34,7 +34,7 @@ public class PublicKey {
     }
 
 
-    EncryptedNumber encrypt (int plain){
+    public EncryptedNumber encrypt (int plain){
 
         BigInteger r = BigInteger.valueOf(rand.nextInt(n -1) +1);
         BigInteger bigMod = BigInteger.valueOf(ns1);
