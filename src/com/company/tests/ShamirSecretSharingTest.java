@@ -23,8 +23,9 @@ class ShamirSecretSharingTest {
 
         int nBits = 32;
         for (int i = 0; i < 100; i++) {
-            int modulus = primeGen.genPrime(nBits);
-            int secret = rnd.nextInt(modulus);
+            BigInteger modulus = primeGen.genPrime(nBits);
+            BigInteger secret = primeGen.genPrime(nBits-5);
+            secret = secret.mod(modulus);
             int nShares = rnd.nextInt(20)+1;
             int threshold = rnd.nextInt(nShares) +1;
 
@@ -34,10 +35,10 @@ class ShamirSecretSharingTest {
             System.out.println("nShares: " + nShares);
             System.out.println("Threshold: " + threshold);
 
-            List<Share> shares = shamir.shareSecret(BigInteger.valueOf(secret), BigInteger.valueOf(modulus), threshold, nShares);
+            List<Share> shares = shamir.shareSecret(secret, modulus, threshold, nShares);
 
             System.out.println("Shares" + shares);
-            int secretPrime = shamir.reconstruct(shares, modulus);
+            BigInteger secretPrime = shamir.reconstruct(shares, modulus);
 
             assertEquals(secret, secretPrime);
         }
@@ -52,7 +53,7 @@ class ShamirSecretSharingTest {
 
         int nBits = 32;
         for (int i = 0; i < 10; i++) {
-            int modulus = 59;
+            BigInteger modulus = BigInteger.valueOf(59);
             int secret = 47;
             int nShares = 17;
             int threshold = 11;
@@ -63,11 +64,11 @@ class ShamirSecretSharingTest {
             System.out.println("nShares: " + nShares);
             System.out.println("Threshold: " + threshold);
 
-            List<Share> shares = shamir.shareSecret(BigInteger.valueOf(secret), BigInteger.valueOf(modulus), threshold, nShares);
+            List<Share> shares = shamir.shareSecret(BigInteger.valueOf(secret), modulus, threshold, nShares);
 
-            int secretPrime = shamir.reconstruct(shares, modulus);
+            BigInteger secretPrime = shamir.reconstruct(shares, modulus);
 
-            assertEquals(secret, secretPrime);
+            assertEquals(BigInteger.valueOf(secret), secretPrime);
             System.out.println("WORKED ONCE");
         }
     }

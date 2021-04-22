@@ -1,9 +1,6 @@
 package com.company;
 
 import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 public class PrivateKeyShare {
 
@@ -28,7 +25,7 @@ public class PrivateKeyShare {
 
     int decrypt(EncryptedNumber c){
     //:return: An integer containing this PrivateKeyShare's portion of the decryption of `c`.
-        BigInteger bigVal = BigInteger.valueOf(c.value);
+        BigInteger bigVal = c.value;
         BigInteger bigRes = bigVal.modPow(twoDeltaSI, this.publicKey.ns1);
 
         return bigRes.intValue();
@@ -40,13 +37,13 @@ public class PrivateKeyShare {
                 && this.si == other.si;
     }
 
-    byte[] publicKeyShareHash() throws NoSuchAlgorithmException {
 
-        String original = "" + publicKey.pkHash() + i+si;
-
-        MessageDigest digest = MessageDigest.getInstance("SHA-256");
-        byte[] hashbytes = digest.digest(original.getBytes(StandardCharsets.UTF_8));
-        return hashbytes;
+    @Override
+    public String toString() {
+        return "PrivateKeyShare{" +
+                "publicKey=" + publicKey +
+                ", i=" + i +
+                ", si=" + si +
+                '}';
     }
-
 }

@@ -1,29 +1,33 @@
 package com.company;
 
-import java.lang.reflect.Array;
 import java.math.BigInteger;
 import java.util.Random;
 
-import org.apache.commons.math3.geometry.partitioning.utilities.OrderedTuple;
 import org.apache.commons.math3.primes.Primes;
 
 
 public class PrimeGen {
 
+    //TODO: change back to random
     Random rnd = new Random();
 
-    public int genPrime(int primeBits){
-            int base = rnd.nextInt(primeBits);
+    public BigInteger genPrime(int primeBits){
+            /*int base = rnd.nextInt(primeBits);
             if(base<Math.pow(primeBits, 2)/2){
                 base += 2^(primeBits-1);
             }
 
             int p = Primes.nextPrime(base);
             return p;
+
+             */
+        return BigInteger.probablePrime(160, rnd);
     }
 
+
+
     BigInteger genSafePrime(int primeBits){
-            BigInteger q = BigInteger.valueOf(genPrime(primeBits-1));
+            BigInteger q = genPrime(primeBits-1);
             BigInteger p = q.multiply(BigInteger.valueOf(2));
             BigInteger res = p.add(BigInteger.valueOf(1));
 

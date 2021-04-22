@@ -40,19 +40,28 @@ public class KeyGen {
         BigInteger[] primes = primeGen.getSafePrimePair(nBits);
         BigInteger p = primes[0];
         BigInteger q = primes[1];
+        BigInteger pPrime = utils.floorDiv(p.subtract(BigInteger.ONE), BigInteger.valueOf(2));
 
-        BigInteger pPrimeBig = utils.floorDiv((p.subtract(BigInteger.valueOf(1))), BigInteger.valueOf(2));
-        BigInteger qPrimeBig = utils.floorDiv((q.subtract(BigInteger.valueOf(1))), BigInteger.valueOf(2));
-        int pPrime = Math.toIntExact(Math.floorDiv(p.longValue() - 1, 2));
-        int qprime = Math.toIntExact(Math.floorDiv(q.longValue() - 1, 2));
+        BigInteger qPrime = utils.floorDiv(q.subtract(BigInteger.ONE), BigInteger.valueOf(2));
         BigInteger n = p.multiply(q);
-        int m = pPrime * qprime;
+        BigInteger m = pPrime.multiply(qPrime);
+
+        System.out.println("p: " + p );
+        System.out.println("q: " + q );
+        System.out.println("p1: " + pPrime );
+        System.out.println("q1: " + qPrime );
+
+
+
+        System.out.println("p*q" + n );
+        System.out.println("euler of N"  + m );
+
 
 
         //precompute for convenience
 
         BigInteger ns = n.pow(s);
-        BigInteger nsm = ns.multiply(BigInteger.valueOf(m));
+        BigInteger nsm = ns.multiply(m);
  /*
         //find d such that d=0 mod m and d=1 mod n^s
         List<Integer> list1 = new LinkedList<>();
@@ -78,7 +87,7 @@ public class KeyGen {
         list1.add(BigInteger.valueOf(1));
 
         ArrayList<BigInteger> list2 = new ArrayList<BigInteger>();
-        list2.add(BigInteger.valueOf(m));
+        list2.add(m);
         list2.add(ns);
 
 
@@ -88,7 +97,7 @@ public class KeyGen {
         System.out.println("list1"+list1);
         System.out.println("list2" +list2);
 
-        BigInteger D = crt.chinese_remainder_theorem(list1, (ArrayList<BigInteger>) list2, 2);
+        BigInteger D = crt.chinese_remainder_theorem(list1, list2, 2);
 
         System.out.println("crm return "+D);
 
@@ -102,10 +111,13 @@ public class KeyGen {
 
         List<Share> shares = shamirSecretSharing.shareSecret(D, nsm, threshold, nShares);
 
+        System.out.println("shamirSecret sharing finished ");
         //Create PublicKey and PrivateKeyShares
         BigInteger delta =  factorial(nShares);
+        System.out.println("factorial finished : " + delta);
         PublicKey publicKey = new PublicKey();
         publicKey.init(n, s, m, threshold, delta);
+        System.out.println("PublicKey init finished ");
 
         List<PrivateKeyShare> privateKeyShares = new LinkedList<PrivateKeyShare>();
 
@@ -115,11 +127,15 @@ public class KeyGen {
             privateKeyShares.add(tmp);
         }
 
+        System.out.println("before PrivateKeyRing init ");
         PrivateKeyRing privateKeyRing = new PrivateKeyRing();
         privateKeyRing.init(privateKeyShares);
 
+        System.out.println("after privatekeyring init ");
         return new Containter(publicKey, privateKeyRing);
     }
+
+
     public static BigInteger factorial(int number) {
         BigInteger factorial = BigInteger.ONE;
 

@@ -102,12 +102,16 @@ public class Utils {
             a = a.add(mod);
         }
         // a and m must be coprime to find an inverse
-        if (a.gcd(mod)!=BigInteger.ONE) {
+        if (!a.gcd(mod).equals(BigInteger.ONE)) {
             //should hopefully not happen
             logger.warning("inv mod got bad numbers");
+            logger.warning("gcd is " + a.gcd(mod));
+            logger.warning("numbers are: " + a + " "+ mod);
         }
+        System.out.println("invMod got numbers: " + a + " " + mod);
         BigInteger inverse = apply(a, mod).t;
 
+        System.out.println("returns: " + inverse.mod(mod));
         return inverse.mod(mod);
 
     }
@@ -140,7 +144,7 @@ public class Utils {
     }
 
 
-
+/*
     int crm (List<Integer> aList, List<Integer> nList){
         //Applies the Chinese Remainder Theorem to find the unique x
         // such that x = a_i (mod n_i) for all i.
@@ -165,4 +169,6 @@ public class Utils {
         return x;
     }
 
+
+ */
 }

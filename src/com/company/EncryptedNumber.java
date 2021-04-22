@@ -4,11 +4,11 @@ import java.math.BigInteger;
 
 public class EncryptedNumber {
 
-    public int value;
+    public BigInteger value;
     public PublicKey publicKey;
     private Utils utils;
 
-    void init(int val, PublicKey pk){
+    void init(BigInteger val, PublicKey pk){
         value = val;
         publicKey = pk;
     }
@@ -22,7 +22,7 @@ public class EncryptedNumber {
     */
         EncryptedNumber res = new EncryptedNumber();
 
-        int val = this.value* other.value % publicKey.ns1.intValueExact();
+        BigInteger val = (value.multiply(other.value)).mod(publicKey.ns1);
 
         res.init(val, publicKey);
 
@@ -36,6 +36,7 @@ public class EncryptedNumber {
     }
 
 
+    //TODO: DO ALL THIS SHIT
     EncryptedNumber sub(EncryptedNumber other) {
         /*Applies the appropriate operations such that the result
         is an EncryptedNumber that decrypts to the difference of the
@@ -43,8 +44,8 @@ public class EncryptedNumber {
          */
 
         EncryptedNumber otherInverse = new EncryptedNumber();
-        int val = utils.invMod(other.value, other.publicKey.ns1.intValueExact());
-        otherInverse.init(val, other.publicKey);
+        //int val = utils.invMod(other.value, other.publicKey.ns1.intValueExact());
+        //otherInverse.init(val, other.publicKey);
 
         return add(otherInverse);
     }
@@ -53,8 +54,8 @@ public class EncryptedNumber {
         //like sub, but order reversed
 
         EncryptedNumber selfInverse = new EncryptedNumber();
-        int val = utils.invMod(value, publicKey.ns1.intValueExact());
-        selfInverse.init(val, publicKey);
+        //int val = utils.invMod(value, publicKey.ns1.intValueExact());
+        //selfInverse.init(val, publicKey);
 
         return selfInverse.add(other);
     }
@@ -71,14 +72,14 @@ public class EncryptedNumber {
         EncryptedNumber res = new EncryptedNumber();
 
 
-        BigInteger bigVal = BigInteger.valueOf(value);
+        BigInteger bigVal = value;
         BigInteger bigA = BigInteger.valueOf(a);
         BigInteger bigNs1 = BigInteger.valueOf(publicKey.ns1.intValueExact());
 
         BigInteger newVal = bigVal.modPow(bigA, bigNs1);
 
         int val = newVal.intValue();
-        res.init(val, publicKey);
+        //res.init(val, publicKey);
 
         return res;
     }
@@ -91,9 +92,9 @@ public class EncryptedNumber {
 
     EncryptedNumber trueDiv(int d){
         EncryptedNumber res = new EncryptedNumber();
-        int val = value * utils.invMod(d, publicKey.ns1.intValueExact());
+        //int val = value * utils.invMod(d, publicKey.ns1.intValueExact());
 
-        res.init(val, publicKey);
+        //res.init(val, publicKey);
         return res;
     }
 

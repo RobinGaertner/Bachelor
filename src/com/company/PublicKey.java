@@ -12,7 +12,7 @@ public class PublicKey {
 
     BigInteger n;
     int s;
-    int m;
+    BigInteger m;
     int threshold;
     BigInteger delta;
     public BigInteger ns;
@@ -20,7 +20,7 @@ public class PublicKey {
     BigInteger nsm;
     Random rand = new Random();
 
-    void init(BigInteger n, int  s, int  m, int  t, BigInteger d) {
+    void init(BigInteger n, int  s, BigInteger  m, int  t, BigInteger d) {
 
         this.n =n;
         this.s =s;
@@ -31,25 +31,31 @@ public class PublicKey {
         //ns = n^s;
         ns = n.pow(s);
         ns1 = ns.multiply(n);
-        nsm = ns.multiply(BigInteger.valueOf(m));
+        nsm = ns.multiply(m);
     }
 
+    public BigInteger nextRandomBigInteger(BigInteger n) {
+        Random rand = new Random();
+        BigInteger result = new BigInteger(n.bitLength(), rand);
+        while( result.compareTo(n) >= 0 ) {
+            result = new BigInteger(n.bitLength(), rand);
+        }
+        return result;
+    }
 
     public EncryptedNumber encrypt (int plain){
 
-        BigInteger r = BigInteger.valueOf(rand.nextInt(n.subtract(BigInteger.ONE).intValue()) +1);
-        BigInteger bigMod = ns1;
-        BigInteger bigNPlus1 = n.add(BigInteger.ONE);
-        BigInteger bigPlain = BigInteger.valueOf(plain);
+        //BigInteger r = BigInteger.valueOf(rand.nextInt(n.subtract(BigInteger.ONE).intValue()) +1);
+        BigInteger r = nextRandomBigInteger(n.subtract(BigInteger.ONE)).add(BigInteger.ONE);
 
-        BigInteger c1 = bigNPlus1.modPow(bigPlain, bigMod);
+        BigInteger c1 = n.add(BigInteger.ONE).modPow(m, ns1);
         BigInteger c2 = r.modPow(ns, ns1);
-
         BigInteger c = (c1.multiply(c2)).mod(ns1);
+
 
         EncryptedNumber res = new EncryptedNumber();
 
-        res.init(c.intValue(), this);
+        res.init(c, this);
         return res;
     }
 

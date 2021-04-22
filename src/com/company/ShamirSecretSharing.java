@@ -22,11 +22,11 @@ public class ShamirSecretSharing {
 
         //ensure valid parameters
         //TODO: do this later
-        /*
-        if (secret.longValue()<0){
+
+        if (secret.compareTo(BigInteger.ZERO)!=1){
             throw new Error("Secret must be >=0");
         }
-        if (!(secret.longValue()<=modulus.longValue())){
+        if (secret.compareTo(modulus)==1){
             throw new Error("Secret must be <modulus");
         }
         if (nShares< threshold){
@@ -36,17 +36,13 @@ public class ShamirSecretSharing {
             throw new Error("Threshold and number of shares must at least be 1");
         }
 
-         */
+
         //create the polynomial that will be used to share the secret
         //(f(0) = secret
         List<BigInteger> coeffs = new LinkedList<>();
         coeffs.add(secret);
 
         for (int i = 0; i < threshold - 1; i++) {
-            //TODO: here is no exact, but hopefully right
-            int tmp = 0;
-
-            //coeffs.add(BigInteger.valueOf(rnd.nextInt(modulus.intValueExact())));
             coeffs.add(nextRandomBigInteger(modulus));
         }
 
@@ -68,35 +64,20 @@ public class ShamirSecretSharing {
         return shares;
     }
 
-    public int reconstruct(List<Share> shares, int modulus){
+    public BigInteger reconstruct(List<Share> shares, BigInteger modulus){
         //long secret = 0;
         BigInteger secret2 = BigInteger.valueOf(0);
         for (int i = 0; i < shares.size(); i++) {
-            /*
-            long product = 1;
-
-            for (int j = 0; j < shares.size(); j++) {
-                if(i!=j){
-                    int xj = shares.get(j).part1;
-                    int xi = shares.get(i).part1;
-                    product = (product * (xj * utils.invMod(xj-xi, modulus))%modulus) % modulus;
-                }
-            }
-
-            secret = Math.addExact(secret, Math.multiplyExact(shares.get(i).part2.longValue(), product2) % modulus) % modulus;
-
-             */
-
-
 
             BigInteger product2 = BigInteger.valueOf(1);
-            BigInteger mod = BigInteger.valueOf(modulus);
+            BigInteger mod = modulus;
 
             for (int j = 0; j < shares.size(); j++) {
                 if(i!=j){
                     int xj = shares.get(j).X;
                     int xi = shares.get(i).X;
-                    BigInteger inv = BigInteger.valueOf(utils.invMod(xj-xi, modulus));
+
+                    BigInteger inv = BigInteger.valueOf(xj-xi).modInverse(modulus);
                     product2 = product2.multiply(inv.multiply(BigInteger.valueOf(xj)));
                     product2 = product2.mod(mod);
                 }
@@ -108,7 +89,7 @@ public class ShamirSecretSharing {
 
         }
 
-        return secret2.intValueExact();
+        return secret2;
     }
 
     //TODO: copied
