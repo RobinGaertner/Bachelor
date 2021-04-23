@@ -23,12 +23,12 @@ public class PrivateKeyShare {
     }
 
 
-    int decrypt(EncryptedNumber c){
+    BigInteger decrypt(EncryptedNumber c){
     //:return: An integer containing this PrivateKeyShare's portion of the decryption of `c`.
         BigInteger bigVal = c.value;
-        BigInteger bigRes = bigVal.modPow(twoDeltaSI, this.publicKey.ns1);
+        BigInteger bigRes = c.value.modPow(twoDeltaSI, this.publicKey.ns1);
 
-        return bigRes.intValue();
+        return bigRes;
     }
 
     boolean equal(PrivateKeyShare other){

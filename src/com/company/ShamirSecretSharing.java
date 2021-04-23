@@ -94,7 +94,8 @@ public class ShamirSecretSharing {
 
     //TODO: copied
     public BigInteger nextRandomBigInteger(BigInteger n) {
-        Random rand = new Random();
+        //TODO: change seed
+        Random rand = new Random(1);
         BigInteger result = new BigInteger(n.bitLength(), rand);
         while( result.compareTo(n) >= 0 ) {
             result = new BigInteger(n.bitLength(), rand);

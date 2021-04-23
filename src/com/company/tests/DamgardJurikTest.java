@@ -12,7 +12,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class DamgardJurikTest {
 
-    Random rnd = new Random();
+    //TODO: change seed
+    Random rnd = new Random(1);
     KeyGen keyGen = new KeyGen();
     PrimeGen primeGen = new PrimeGen();
 
@@ -37,12 +38,12 @@ public class DamgardJurikTest {
             System.out.println("Container finished " + containter);
 
 
-            int m = rnd.nextInt(100000);
+            BigInteger m = BigInteger.valueOf(rnd.nextInt(100000));
             EncryptedNumber c = containter.getPublicKey().encrypt(m);
 
             System.out.println("Encrpt finished " + c);
 
-            int mPrime = containter.getPrivateKeyRing().decrypt(c);
+            BigInteger mPrime = containter.getPrivateKeyRing().decrypt(c);
 
             System.out.println("decrypt finished");
 
@@ -71,12 +72,12 @@ public class DamgardJurikTest {
             System.out.println("Container finished " + containter);
 
 
-            int m = 47;
+            BigInteger m = BigInteger.valueOf(47);
             EncryptedNumber c = containter.getPublicKey().encrypt(m);
 
             System.out.println("Encrpt finished " + c);
 
-            int mPrime = containter.getPrivateKeyRing().decrypt(c);
+            BigInteger mPrime = containter.getPrivateKeyRing().decrypt(c);
 
             System.out.println("decrypt finished");
 
@@ -91,6 +92,28 @@ public class DamgardJurikTest {
 
             BigInteger tmp = primeGen.genPrime(100);
             System.out.println(tmp);
+
+        }
+    }
+
+    @org.junit.jupiter.api.Test
+    void primeTest2() throws Exception {
+        for (int i = 0; i < 10; i++) {
+            System.out.println("Test: " + i);
+
+            BigInteger tmp = primeGen.genSafePrime(100);
+            System.out.println(tmp);
+
+        }
+    }
+
+    @org.junit.jupiter.api.Test
+    void primeTest3() throws Exception {
+        for (int i = 0; i < 10; i++) {
+            System.out.println("Test: " + i);
+
+            BigInteger[] tmp = primeGen.getSafePrimePair(100);
+            System.out.println(tmp[0] + " " + tmp[1]);
 
         }
     }

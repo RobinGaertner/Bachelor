@@ -14,7 +14,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ShamirSecretSharingTest {
 
-    Random rnd = new Random();
+    //TODO: change seed
+    Random rnd = new Random(1);
     PrimeGen primeGen = new PrimeGen();
     ShamirSecretSharing shamir = new ShamirSecretSharing();
     Utils utils = new Utils();
@@ -44,9 +45,6 @@ class ShamirSecretSharingTest {
         }
     }
 
-    @Test
-    void reconstruct() {
-    }
 
     @Test
     void shareSecret2() {

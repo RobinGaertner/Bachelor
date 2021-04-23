@@ -9,7 +9,7 @@ import org.apache.commons.math3.primes.Primes;
 public class PrimeGen {
 
     //TODO: change back to random
-    Random rnd = new Random();
+    Random rnd = new Random(1);
 
     public BigInteger genPrime(int primeBits){
             /*int base = rnd.nextInt(primeBits);
@@ -26,16 +26,19 @@ public class PrimeGen {
 
 
 
-    BigInteger genSafePrime(int primeBits){
-            BigInteger q = genPrime(primeBits-1);
+    public BigInteger genSafePrime(int primeBits){
+        while (true) {
+            BigInteger q = genPrime(primeBits - 1);
             BigInteger p = q.multiply(BigInteger.valueOf(2));
             BigInteger res = p.add(BigInteger.valueOf(1));
-
-            return res;
+            if(res.isProbablePrime(1)) {
+                return res;
+            }
+        }
 
     }
 
-    BigInteger[] getSafePrimePair(int primebits){
+    public BigInteger[] getSafePrimePair(int primebits){
         BigInteger p = genSafePrime(primebits);
         BigInteger q = genSafePrime(primebits);
 

@@ -6,7 +6,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.math3.util.CombinatoricsUtils;
 
 public class PrivateKeyRing {
 
@@ -64,32 +63,41 @@ public class PrivateKeyRing {
 
     BigInteger lambda(int i) {
 
+        System.out.println("in Lambda");
         Set<Integer> sPrime = new HashSet<>(S);
         sPrime.remove(i);
 
-        //int l = (int) (publicKey.delta % publicKey.nsm);
         BigInteger l =  publicKey.delta.mod(publicKey.nsm);
 
         for (int temp : sPrime) {
-            l = (l.multiply( BigInteger.valueOf(temp).multiply(utils.invModBig(BigInteger.valueOf(temp - i), publicKey.nsm)))).mod( publicKey.nsm);
+            BigInteger between = BigInteger.valueOf(temp).modInverse(publicKey.nsm);
+            l = (l.multiply( BigInteger.valueOf(temp).multiply(between))).mod( publicKey.nsm);
         }
         return l;
     }
 
-    BigInteger Lfunc(BigInteger b, int n) {
-        return utils.floorDiv((b.subtract(BigInteger.ONE)), BigInteger.valueOf(n));
+    BigInteger Lfunc(BigInteger b, BigInteger n) {
+        return utils.floorDiv((b.subtract(BigInteger.ONE)), n);
     }
 
-    BigInteger nPow(int p, int n) {
-        return BigInteger.valueOf(n).pow(p);
-    }
-
-    long fact(int k) {
-        return CombinatoricsUtils.factorial(k);
+    BigInteger nPow(int p, BigInteger n) {
+        return n.pow(p);
     }
 
 
-    BigInteger damgardJurikReduce(BigInteger a, int s, int n) {
+    public static BigInteger factorial(int number) {
+        BigInteger factorial = BigInteger.ONE;
+
+        for (int i = number; i > 0; i--) {
+            factorial = factorial.multiply(BigInteger.valueOf(i));
+        }
+
+        return factorial;
+    }
+
+
+    BigInteger damgardJurikReduce(BigInteger a, int s, BigInteger n) {
+        System.out.println("in damgard jurik reduce");
         //Computes i given a = (1 + n)^i (mod n^(s+1)).
 
         BigInteger i = BigInteger.ZERO;
@@ -102,8 +110,9 @@ public class PrivateKeyRing {
                 t2 = (t2.multiply(i)).mod(nPow(j, n));
                 //t1 = t1 - (t2 * nPow(k - 1, n) * utils.invModBig(BigInteger.valueOf(fact(k)),  nPow(j, n)) % nPow(j, n));
                 BigInteger tmp = t2.multiply(nPow(k-1, n));
-                BigInteger tmp2 = utils.invModBig(BigInteger.valueOf(fact(k)), nPow(j, n));
-                t1 = t1.subtract(tmp.multiply(tmp2).mod(nPow(j,n)));
+                BigInteger tmp3 = factorial(k).modInverse(nPow(j, n));
+                //t1 = t1.subtract(tmp.multiply(tmp2).mod(nPow(j,n)));
+                t1 = t1.subtract(tmp.multiply(tmp3)).mod(nPow(j,n));
 
             }
             i = t1;
@@ -112,13 +121,13 @@ public class PrivateKeyRing {
     }
 
 
-    public int decrypt(EncryptedNumber c) {
+    public BigInteger decrypt(EncryptedNumber c) {
       /*:param c: An EncryptedNumber.
       :return: An integer containing the decryption of `c`.
      """
        # Use PrivateKeyShares to decrypt
          */
-        List<Integer> cList = new LinkedList();
+        List<BigInteger> cList = new LinkedList();
         for (int i = 0; i < privateKeyShareList.size(); i++) {
             cList.add(privateKeyShareList.get(i).decrypt(c));
         }
@@ -128,17 +137,17 @@ public class PrivateKeyRing {
 
         for (int j = 0; j < iList.size(); j++) {
             //preparation
-            BigInteger cJ = BigInteger.valueOf(cList.get(j));
+            BigInteger cJ = cList.get(j);
             BigInteger lam2 = lambda(iList.get(j)).multiply(BigInteger.valueOf(2));
 
             cPrime = (cPrime.multiply(cJ.modPow(lam2, publicKey.ns1))).mod(publicKey.ns1);
         }
 
-        cPrime = damgardJurikReduce(cPrime, publicKey.s, publicKey.n.intValue());
+        cPrime = damgardJurikReduce(cPrime, publicKey.s, publicKey.n);
 
         BigInteger m = cPrime.multiply(invFourDeltaSquared).mod(publicKey.ns);
 
-        return m.intValue();
+        return m.mod(publicKey.ns);
     }
 
     @Override

@@ -4,7 +4,6 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import org.apache.commons.math3.util.CombinatoricsUtils;
 
 public class KeyGen {
 
@@ -91,8 +90,6 @@ public class KeyGen {
         list2.add(ns);
 
 
-        //BigInteger D = utils.crmBig(list1, list2);
-
 
         System.out.println("list1"+list1);
         System.out.println("list2" +list2);
@@ -100,13 +97,6 @@ public class KeyGen {
         BigInteger D = crt.chinese_remainder_theorem(list1, list2, 2);
 
         System.out.println("crm return "+D);
-
-        //int d = D.intValueExact();
-
-        //System.out.println("crm return "+d);
-
-
- //*/
 
 
         List<Share> shares = shamirSecretSharing.shareSecret(D, nsm, threshold, nShares);
