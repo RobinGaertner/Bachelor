@@ -20,8 +20,8 @@ public class KeyGen {
 
          */
         if (nBits<16) {
-
-            throw new Error("Minimum number of Bits is 16");
+            //TODO: comment only for testing
+            //throw new Error("Minimum number of Bits is 16");
         }
         if (s<1) {
 

@@ -1,9 +1,11 @@
 package com.company.tests;
 
 import com.company.*;
+import org.w3c.dom.ranges.Range;
 
 import java.math.BigInteger;
 import java.security.Key;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -57,7 +59,7 @@ public class DamgardJurikTest {
         for (int i = 0; i < 100; i++) {
             System.out.println("Test: " + i);
 
-            int nBits = 16;
+            int nBits = 4;
             int s = 1;
             int threshold = 1;
             int nShares = 4;
@@ -82,6 +84,16 @@ public class DamgardJurikTest {
             System.out.println("decrypt finished");
 
             assertEquals(m, mPrime);
+        }
+    }
+
+    @org.junit.jupiter.api.Test
+    void jurikTest3() throws Exception {
+        for (int i = 0; i < 10; i++) {
+            PrivateKeyRing privateKeyRing = new PrivateKeyRing();
+            System.out.println(privateKeyRing.damgardJurikReduce(BigInteger.valueOf(56789)
+                    , 9, BigInteger.valueOf(12345)));
+
         }
     }
 
@@ -117,4 +129,22 @@ public class DamgardJurikTest {
 
         }
     }
+
+    @org.junit.jupiter.api.Test
+    void lambdaTest() throws Exception {
+        for (int i = 0; i < 7; i++) {
+            PrivateKeyRing privateKeyRing = new PrivateKeyRing();
+            privateKeyRing.S = new HashSet<>();
+            privateKeyRing.S.add(0);
+            privateKeyRing.S.add(1);
+            privateKeyRing.S.add(2);
+            privateKeyRing.S.add(3);
+            privateKeyRing.S.add(4);
+            privateKeyRing.S.add(5);
+            privateKeyRing.S.add(6);
+
+            System.out.println(privateKeyRing.lambda(i));
+        }
+    }
+
 }
