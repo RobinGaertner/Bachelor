@@ -6,20 +6,22 @@ public class EncryptedNumber {
 
     public BigInteger value;
     public PublicKey publicKey;
-    private Utils utils;
 
     void init(BigInteger val, PublicKey pk){
         value = val;
         publicKey = pk;
     }
 
-    EncryptedNumber add(EncryptedNumber other) {
+    public EncryptedNumber add(EncryptedNumber other) throws Exception {
     /*
     Applies the appropriate operations such that the result
     is an EncryptedNumber that decrypts to the sum of the
     the decryption of this number and the decryption of `other`.
 
     */
+        if(!this.publicKey.equals(other.publicKey)){
+            throw new Exception("Can only add for numbers encrypted with the same PublicKey");
+        }
         EncryptedNumber res = new EncryptedNumber();
 
         BigInteger val = (value.multiply(other.value)).mod(publicKey.ns1);
@@ -30,37 +32,33 @@ public class EncryptedNumber {
     }
 
 
-    EncryptedNumber rAdd(EncryptedNumber other){
+    public EncryptedNumber rAdd(EncryptedNumber other) throws Exception {
         //same as add, but order reversed (still same)
         return add(other);
     }
 
 
-    //TODO: DO ALL THIS SHIT
-    EncryptedNumber sub(EncryptedNumber other) {
+    public EncryptedNumber sub(EncryptedNumber other) throws Exception {
         /*Applies the appropriate operations such that the result
         is an EncryptedNumber that decrypts to the difference of the
         the decryption of this number and the decryption of `other`.
          */
 
         EncryptedNumber otherInverse = new EncryptedNumber();
-        //int val = utils.invMod(other.value, other.publicKey.ns1.intValueExact());
-        //otherInverse.init(val, other.publicKey);
-
+        otherInverse.init(other.value.modInverse(other.publicKey.ns1), other.publicKey);
         return add(otherInverse);
     }
 
-    EncryptedNumber rSub(EncryptedNumber other) {
+    public EncryptedNumber rSub(EncryptedNumber other) throws Exception {
         //like sub, but order reversed
 
         EncryptedNumber selfInverse = new EncryptedNumber();
-        //int val = utils.invMod(value, publicKey.ns1.intValueExact());
-        //selfInverse.init(val, publicKey);
+        selfInverse.init(value.modInverse(publicKey.ns1), publicKey);
 
         return selfInverse.add(other);
     }
 
-    EncryptedNumber mul(int a){
+    public EncryptedNumber mul(BigInteger a){
         //Multiplies an EncryptedNumber by a scalar.
 
 
@@ -70,35 +68,27 @@ public class EncryptedNumber {
         */
 
         EncryptedNumber res = new EncryptedNumber();
-
-
-        BigInteger bigVal = value;
-        BigInteger bigA = BigInteger.valueOf(a);
-        BigInteger bigNs1 = BigInteger.valueOf(publicKey.ns1.intValueExact());
-
-        BigInteger newVal = bigVal.modPow(bigA, bigNs1);
-
-        int val = newVal.intValue();
-        //res.init(val, publicKey);
+        BigInteger newVal = value.modPow(a, publicKey.ns1);
+        res.init(value.modPow(a, publicKey.ns1), publicKey);
 
         return res;
     }
 
-    EncryptedNumber rMul(int a){
+    public EncryptedNumber rMul(BigInteger a){
         //like mul, but order reversed, so the same
         return mul(a);
     }
 
 
-    EncryptedNumber trueDiv(int d){
+    public EncryptedNumber trueDiv(BigInteger d){
+        System.out.println("Input in Div: " + d);
         EncryptedNumber res = new EncryptedNumber();
-        //int val = value * utils.invMod(d, publicKey.ns1.intValueExact());
-
-        //res.init(val, publicKey);
+        System.out.println("d Inverse: " + d.modInverse(publicKey.ns1));
+        res.init(value.multiply(d.modInverse(publicKey.ns1)), publicKey);
         return res;
     }
 
-    boolean equal(EncryptedNumber other){
+    public boolean equal(EncryptedNumber other){
     /*
         Two EncryptedNumbers are equal when their values and PublicKeys are the same.
         Note: Two EncryptedNumbers containing encryptions of the same plaintext which

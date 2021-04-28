@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class ShamirSecretSharingTest {
 
     //TODO: change seed
-    Random rnd = new Random(1);
+    Random rnd = new Random();
     PrimeGen primeGen = new PrimeGen();
     ShamirSecretSharing shamir = new ShamirSecretSharing();
     Utils utils = new Utils();

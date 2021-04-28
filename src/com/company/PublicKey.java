@@ -52,10 +52,9 @@ public class PublicKey {
 
     public EncryptedNumber encrypt (BigInteger plain){
 
-        //BigInteger r = BigInteger.valueOf(rand.nextInt(n.subtract(BigInteger.ONE).intValue()) +1);
         BigInteger r = nextRandomBigInteger(n.subtract(BigInteger.ONE)).add(BigInteger.ONE);
 
-        BigInteger c1 = n.add(BigInteger.ONE).modPow(m, ns1);
+        BigInteger c1 = n.add(BigInteger.ONE).modPow(plain, ns1);
         BigInteger c2 = r.modPow(ns, ns1);
         BigInteger c = (c1.multiply(c2)).mod(ns1);
 
@@ -103,6 +102,10 @@ public class PublicKey {
                 ", m=" + m +
                 ", threshold=" + threshold +
                 ", delta=" + delta +
+                ", ns1=" + ns1 +
+                ", nsm=" + nsm +
+                ", ns=" + ns +
+                ", invFourDeltaSquared=" + invFourDeltaSquared +
                 '}';
     }
 }

@@ -45,6 +45,7 @@ public class KeyGen {
         BigInteger n = p.multiply(q);
         BigInteger m = pPrime.multiply(qPrime);
 
+        /*
         System.out.println("p: " + p );
         System.out.println("q: " + q );
         System.out.println("p1: " + pPrime );
@@ -56,31 +57,13 @@ public class KeyGen {
         System.out.println("euler of N"  + m );
 
 
+         */
+
 
         //precompute for convenience
 
         BigInteger ns = n.pow(s);
         BigInteger nsm = ns.multiply(m);
- /*
-        //find d such that d=0 mod m and d=1 mod n^s
-        List<Integer> list1 = new LinkedList<>();
-        list1.add(0);
-        list1.add(1);
-
-        List<Integer> list2 = new LinkedList<>();
-        list2.add(m);
-        list2.add(ns.intValueExact());
-
-        System.out.println("list1"+list1);
-        System.out.println("list2" +list2);
-        int d = utils.crm(list1, list2);
-
-        System.out.println("crm return "+d);
-
- */
-
-
-///*
         ArrayList<BigInteger> list1 = new ArrayList<BigInteger>();
         list1.add(BigInteger.valueOf(0));
         list1.add(BigInteger.valueOf(1));
@@ -135,4 +118,6 @@ public class KeyGen {
 
         return factorial;
     }
+
+
 }

@@ -57,38 +57,29 @@ public class PrivateKeyRing {
         invFourDeltaSquared = tmp.modInverse(publicKey.ns);
         System.out.println("directly after invmod ");
 
+        System.out.println("iList: " + iList);
     }
 
     //TODO: here is so much casted stuff
 
     public BigInteger lambda(int i) {
 
-        System.out.println("in Lambda input: " + i);
-
-        System.out.println("Elements in S: " + S);
-
         List<Integer> sPrime = new LinkedList<>(S);
-        //TODO ???
         sPrime.remove(i-1);
-        System.out.println("SPrime: " + sPrime);
 
         BigInteger l =  publicKey.delta.mod(publicKey.nsm);
-        System.out.println("initial l: " + l);
 
         for (int j = 0; j < sPrime.size(); j++) {
             BigInteger iPrime = BigInteger.valueOf(sPrime.get(j));
-            System.out.println("iPrime: " + iPrime);
             BigInteger tmp = iPrime.subtract(BigInteger.valueOf(i)).modInverse(publicKey.nsm);
-            System.out.println("tmp is: " + tmp);
             l = l.multiply(iPrime).multiply(tmp).mod(publicKey.nsm);
-            System.out.println("l after 1 loop: " + l);
         }
-        System.out.println("lambda reslut: " + l);
         return l;
     }
 
     BigInteger Lfunc(BigInteger b, BigInteger n) {
-        if((b.subtract(BigInteger.ONE).mod(n)).compareTo(BigInteger.ZERO)==0){
+        //System.out.println("L Inputs: " + b + " " + n);
+        if(!(b.subtract(BigInteger.ONE).mod(n)).equals(BigInteger.ZERO)){
             throw new Error("L reported error");
         }
         return utils.floorDiv((b.subtract(BigInteger.ONE)), n);
@@ -111,8 +102,6 @@ public class PrivateKeyRing {
 
 
     public BigInteger damgardJurikReduce(BigInteger a, int s, BigInteger n) {
-        System.out.println("in damgard jurik reduce");
-        System.out.println("Inputs in reduce: " + a + " " + s + " " + n);
         //Computes i given a = (1 + n)^i (mod n^(s+1)).
 
         BigInteger i = BigInteger.ZERO;
@@ -131,7 +120,6 @@ public class PrivateKeyRing {
             }
             i = t1;
         }
-        System.out.println("Output of reduce: " + i);
         return i;
     }
 
@@ -147,8 +135,9 @@ public class PrivateKeyRing {
             cList.add(privateKeyShareList.get(i).decrypt(c));
         }
 
+        //System.out.println("cList: " +cList);
         //decrypt the whole thing
-        BigInteger cPrime = BigInteger.valueOf(1);
+        BigInteger cPrime = BigInteger.ONE;
 
         for (int j = 0; j < iList.size(); j++) {
             //preparation
@@ -156,14 +145,14 @@ public class PrivateKeyRing {
             BigInteger lam2 = lambda(iList.get(j)).multiply(BigInteger.valueOf(2));
 
             cPrime = (cPrime.multiply(cJ.modPow(lam2, publicKey.ns1))).mod(publicKey.ns1);
+            //System.out.println("cPrime after changing is: " + cPrime);
         }
 
-        //TODO: change back
         cPrime = damgardJurikReduce(cPrime, publicKey.s, publicKey.n);
 
-        BigInteger m = cPrime.multiply(invFourDeltaSquared).mod(publicKey.ns);
+        BigInteger m = cPrime.multiply(publicKey.invFourDeltaSquared).mod(publicKey.ns);
 
-        return m.mod(publicKey.ns);
+        return m;
     }
 
     @Override

@@ -9,7 +9,7 @@ import org.apache.commons.math3.primes.Primes;
 public class PrimeGen {
 
     //TODO: change back to random
-    Random rnd = new Random(1);
+    Random rnd = new Random();
 
     public BigInteger genPrime(int primeBits){
             /*int base = rnd.nextInt(primeBits);
