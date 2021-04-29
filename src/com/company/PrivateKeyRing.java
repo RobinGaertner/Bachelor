@@ -24,7 +24,7 @@ public class PrivateKeyRing {
         if (keyShareList.size() == 0) {
             throw new Exception("Must have at least one PrivateKeyShare");
         }
-        List<String> test = new LinkedList<String>();
+        List<String> test = new LinkedList<>();
         for (int i = 0; i < keyShareList.size(); i++) {
             if (!test.contains(keyShareList.get(i).publicKey.pkHash())) {
                 test.add(keyShareList.get(i).publicKey.pkHash());
@@ -152,6 +152,18 @@ public class PrivateKeyRing {
 
         BigInteger m = cPrime.multiply(publicKey.invFourDeltaSquared).mod(publicKey.ns);
 
+
+
+
+        //TODO: THIS IS TESTING FOR NEGATIVE NUMBERS:
+
+        if (m.compareTo(publicKey.ns.divide(BigInteger.valueOf(2)))==1){
+            m = m.subtract(publicKey.ns);
+            //System.out.println("special minus case triggered");
+            //System.out.println("ns is: " + publicKey.ns);
+        }
+
+        //TODO: TEST END
         return m;
     }
 

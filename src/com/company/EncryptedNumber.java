@@ -82,10 +82,8 @@ public class EncryptedNumber {
 
     public EncryptedNumber trueDiv(BigInteger d){
         System.out.println("Input in Div: " + d);
-        EncryptedNumber res = new EncryptedNumber();
-        System.out.println("d Inverse: " + d.modInverse(publicKey.ns1));
-        res.init(value.multiply(d.modInverse(publicKey.ns1)), publicKey);
-        return res;
+        System.out.println("inverse is: "+d.modInverse(publicKey.ns1));
+        return mul(d.modInverse(publicKey.ns1));
     }
 
     public boolean equal(EncryptedNumber other){
@@ -95,7 +93,7 @@ public class EncryptedNumber {
         were encrypted using the same PublicKey can still be not equal due to
         randomness in the encryption process.
      */
-        return ((this.value == other.value) & (this.publicKey.equals(other.publicKey)));
+        return ((this.value.equals(value)) & (this.publicKey.equals(other.publicKey)));
     }
 
     @Override

@@ -58,6 +58,7 @@ public class HomomorphicTest {
 
             assertEquals(plain1, containter.getPrivateKeyRing().decrypt(c1));
             assertEquals(plain2, containter.getPrivateKeyRing().decrypt(c2));
+            System.out.println("numbers expected: " + plain1.subtract(plain2));
             assertEquals(plain1.subtract(plain2), decrypted);
 
         }
@@ -101,7 +102,7 @@ public class HomomorphicTest {
             System.out.println("plainText: " + plainText);
 
             EncryptedNumber cipher = containter.getPublicKey().encrypt(plainText);
-            cipher.trueDiv(scalar);
+            cipher = cipher.trueDiv(scalar);
 
             BigInteger decrypted = containter.getPrivateKeyRing().decrypt(cipher);
 

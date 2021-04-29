@@ -17,7 +17,6 @@ public class PublicKey {
     public BigInteger ns;
     BigInteger ns1;
     BigInteger nsm;
-    Random rand = new Random();
     public BigInteger invFourDeltaSquared;
 
     void init(BigInteger n, int  s, BigInteger  m, int  t, BigInteger d) {
@@ -42,7 +41,7 @@ public class PublicKey {
 
     public BigInteger nextRandomBigInteger(BigInteger n) {
         //TODO: change seed
-        Random rand = new Random(1);
+        Random rand = new Random();
         BigInteger result = new BigInteger(n.bitLength(), rand);
         while( result.compareTo(n) >= 0 ) {
             result = new BigInteger(n.bitLength(), rand);
@@ -77,11 +76,11 @@ public class PublicKey {
 
     boolean equal(PublicKey other){
 
-        return other.delta == this.delta
-            && other.n == this.n
-            && other.s == this.s
+        return other.delta.equals(delta)
+            && other.n.equals(n)
+            && other.s == s
             && other.threshold == this.threshold
-            && other.m == this.m;
+            && other.m.equals(m);
 
     }
 
