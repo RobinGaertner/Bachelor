@@ -169,5 +169,17 @@ public class IntMatrix {
 
     }
 
+    public String toString(){
+        String res = "";
+        for (int i = 0; i < N; i++) {
+            String tmp = "";
+            for (int j = 0; j < M; j++) {
+                tmp += data[i][j] +" ";
+            }
+            res += tmp +  "\n";
+        }
+        return res;
+    }
+
 
 }

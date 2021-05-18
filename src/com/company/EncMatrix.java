@@ -6,8 +6,8 @@ import java.util.List;
 
 public class EncMatrix {
 
-        private final int M;             // number of rows
-        private final int N;             // number of columns
+        public final int M;             // number of rows
+        public final int N;             // number of columns
         private PublicKey publicKey;
         private final EncryptedNumber[][] data;   // M-by-N array
 
@@ -36,6 +36,16 @@ public class EncMatrix {
             }
         }
 
+
+    public EncMatrix plus(EncMatrix B) throws Exception {
+        if (B.M != M || B.N != N) throw new RuntimeException("Illegal matrix dimensions.");
+        if(!B.publicKey.equals(publicKey)) throw new RuntimeException("Different publickeys");
+        EncMatrix C = new EncMatrix(M, N, publicKey);
+        for (int i = 0; i < M; i++)
+            for (int j = 0; j < N; j++)
+                C.data[i][j] = data[i][j].add(B.data[i][j]);
+        return C;
+    }
 
     // copy constructor
         //private EncMatrix(com.company.EncMatrix A) { this(A.data); }
