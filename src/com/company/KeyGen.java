@@ -18,6 +18,14 @@ public class KeyGen {
     while the PrivateKeyRing contains a number of PrivateKeyShares which
     must be used together to decrypt encrypted numbers.
 
+    :param n_bits: The number of bits to use in the public and private keys.
+    :param s: The power to which n = p * q will be raised. Plaintexts live in Z_n^s.
+    :param threshold: The minimum number of PrivateKeyShares needed to decrypt an encrypted number.
+    :param n_shares: The number of PrivateKeyShares to generate.
+    :return: A tuple containing the generated PublicKey and PrivateKeyRing.
+    """
+
+
          */
         if (nBits<16) {
             //TODO: comment only for testing

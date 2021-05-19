@@ -144,6 +144,17 @@ public class Utils {
     }
 
 
+    public EncMatrix addEncMatrices(List<EncMatrix> matrixList) throws Exception {
+
+        EncMatrix start = matrixList.get(0);
+        matrixList.remove(0);
+        for ( EncMatrix matrix: matrixList) {
+            start.plus(matrix);
+        }
+        return start;
+    }
+
+
 /*
     int crm (List<Integer> aList, List<Integer> nList){
         //Applies the Chinese Remainder Theorem to find the unique x

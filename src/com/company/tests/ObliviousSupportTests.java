@@ -12,7 +12,7 @@ public class ObliviousSupportTests {
     Random rnd = new Random();
     KeyGen keyGen = new KeyGen();
     PrimeGen primeGen = new PrimeGen();
-    ObliviousAlgebra obliviousAlgebra = new ObliviousAlgebra();
+    //ObliviousAlgebra obliviousAlgebra = new ObliviousAlgebra();
 
 
     @org.junit.jupiter.api.Test

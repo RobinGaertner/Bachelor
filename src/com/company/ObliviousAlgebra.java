@@ -1,90 +1,98 @@
 package com.company;
 
 
+import java.math.BigInteger;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
 public class ObliviousAlgebra {
 
-
+    Utils utils = new Utils();
     Random rnd = new Random();
-    List parties = new LinkedList();
-    PublicKey publicKey = new PublicKey();
-    //N = number of parties
-    int N = 10;
-    // t = matrixsize
-    //TODO: change
-    int t = 5;
+    PublicKey publicKey;
+    PrivateKeyShare privateKeyShare;
+    //a is the number this party has for this computation
+    int a;
+    private IntMatrix Rl;
+    private IntMatrix Rr;
+
+    public ObliviousAlgebra(PublicKey pK, PrivateKeyShare keyShare){
+        publicKey = pK;
+        privateKeyShare = keyShare;
+    }
 
 
-    EncMatrix secMult(EncMatrix Ml, EncMatrix Mr, PublicKey pK) throws Exception {
 
-        int size = Ml.M;
-        this.publicKey = pK;
-        //1.
-        for (int i = 0; i < parties.size(); i++) {
+
+    List<EncMatrix> secMultPart1(EncMatrix Ml, EncMatrix Mr, int size, PublicKey pK) throws Exception {
 
             //2.
-            long rndArray [][] = new long[size][size];
+            BigInteger rndArray [][] = new BigInteger[size][size];
             for (int x = 0; x < size; x++) {
                 for (int y = 0; y < size; y++) {
                     //TODO: nextint?? what bound?
-                    rndArray[x][y] = rnd.nextInt();
+                    rndArray[x][y] = BigInteger.valueOf(rnd.nextInt());
                 }
             }
 
-            IntMatrix Rl = new IntMatrix(rndArray);
+            Rl = new IntMatrix(rndArray);
 
-            long rndArray2 [][] = new long[size][size];
+            BigInteger rndArray2 [][] = new BigInteger[size][size];
             for (int x = 0; x < size; x++) {
                 for (int y = 0; y < size; y++) {
                     //TODO: nextint?? what bound?
-                    rndArray[x][y] = rnd.nextInt();
+                    rndArray[x][y] = BigInteger.valueOf(rnd.nextInt());
                 }
             }
-            IntMatrix Rr = new IntMatrix(rndArray2);
+            Rr = new IntMatrix(rndArray2);
 
             //3.
             EncMatrix cl = new EncMatrix(Rl, pK);
             EncMatrix cr = new EncMatrix(Rr, pK);
 
             //TODO: do this right
-            //EncMatrix dr = new EncMatrix(Ml.times(Rr), pK);
-            //EncMatrix dl = new EncMatrix(Mr.times(Rl), pK);
+            EncMatrix dr = Ml.times(Rr);
+            EncMatrix dl = Rl.timesEnc(Mr);
 
-            //4
+            List<EncMatrix> res = new LinkedList<>();
+            res.add(cl);
+            res.add(cr);
+            res.add(dl);
+            res.add(dr);
 
-        //5.
-        }
+            return res;
+    }
+
+
+    EncMatrix secMultPart2(EncMatrix Ml, EncMatrix Mr, List<EncMatrix> clList, List<EncMatrix> crList) throws Exception {
         //6
-        //TODO: make right sized matrix
-        IntMatrix mt = new IntMatrix(2,2);
-        //sum up
-        for (int i = 0; i < N; i++) {
-            //IntMatrix tmp = new IntMatrix();
-            //mt.plus(tmp);
+        //make list with right matrices
+        List<EncMatrix> cTildeParts = new LinkedList<>();
+        for (int i = 0; i < crList.size(); i++) {
+            //TODO: remove the matrix, where i=j
+            if(i!=a){
+                cTildeParts.add(Rl.timesEnc(crList.get(i)));
+            }
         }
-        //encrypt
+        EncMatrix cTilde = utils.addEncMatrices(cTildeParts);
 
         //broadcast
-
-        //7
-        //sum up the cls
-        EncMatrix sum = new EncMatrix(t, t, publicKey);
-
-        for (int i = 0; i < N; i++) {
-
-            //sum.plus();
-        }
-
-        EncMatrix Mlp = new EncMatrix(Ml, pK);
-        Mlp.plus(sum);
-
-        //TODO: same for right
+        //broadcast cTilde
+        return cTilde;
+    }
 
 
-        return sum;
+    void secMultpart3(List<EncMatrix> dlList, List<EncMatrix> drList, List<EncMatrix> cTildeList, IntMatrix MlPrime, IntMatrix MrPrime) throws Exception {
+        //8
+        //9
+        EncMatrix dTilde = new EncMatrix(MlPrime.times(MrPrime), publicKey);
+        //10
+        EncMatrix e = ((dTilde.minus(utils.addEncMatrices(dlList))).minus(utils.addEncMatrices(drList))).minus(utils.addEncMatrices(cTildeList));
+        System.out.println("Party " + a + " returned " + e + " from secmult");
+        //11
+
+
     }
 
 
@@ -108,9 +116,9 @@ public class ObliviousAlgebra {
 
 
         //TODO: do this right
-        EncMatrix X = addEncMatrices(Xis);
-        EncMatrix L = addEncMatrices(Lis);
-        EncMatrix U = addEncMatrices(Uis);
+        EncMatrix X = utils.addEncMatrices(Xis);
+        EncMatrix L = utils.addEncMatrices(Lis);
+        EncMatrix U = utils.addEncMatrices(Uis);
 
 
         //3
@@ -121,15 +129,17 @@ public class ObliviousAlgebra {
 
 
         //4
-        long [][] data = new long[t][1];
+        BigInteger [][] data = new BigInteger[t][1];
         for (int i = 0; i < t; i++) {
-            data[i][1] = rnd.nextInt();
+            //TODO: check for boundary
+            data[i][1] = BigInteger.valueOf(rnd.nextInt());
         }
         EncMatrix ui = new EncMatrix(new IntMatrix(data), publicKey);
 
-        data = new long[t][1];
+        data = new BigInteger[t][1];
         for (int i = 0; i < t; i++) {
-            data[i][1] = rnd.nextInt();
+            //TODO: check for boundary
+            data[i][1] = BigInteger.valueOf(rnd.nextInt());
         }
         EncMatrix vi = new EncMatrix(new IntMatrix(data), publicKey);
 
@@ -141,8 +151,8 @@ public class ObliviousAlgebra {
 
         //y is u in text
         //z is v in text
-        EncMatrix y = addEncMatrices(ujs);
-        EncMatrix z = addEncMatrices(vjs);
+        EncMatrix y = utils.addEncMatrices(ujs);
+        EncMatrix z = utils.addEncMatrices(vjs);
 
 
         //AAA is weird a in text
@@ -160,9 +170,9 @@ public class ObliviousAlgebra {
     }
 
     public IntMatrix identityMatrixTimes(int size, int mul){
-        long[][] data = new long[size][size];
+        BigInteger[][] data = new BigInteger[size][size];
         for (int i = 0; i < size; i++) {
-            data[i][i] = mul;
+            data[i][i] = BigInteger.valueOf(mul);
         }
         return new IntMatrix(data);
     }
@@ -170,16 +180,17 @@ public class ObliviousAlgebra {
 
     public IntMatrix lowerToeplitz(int t){
 
-        long [][] data = new long [t][t];
+        BigInteger [][] data = new BigInteger [t][t];
 
         for (int i = 0; i < t; i++) {
             //after every diagonal get a new number
+            //TODO: check for boundary
             int tmp = rnd.nextInt();
             for (int j = 0; j < t; j++) {
                 //check if inbound
                 if(1+j+i<t) {
                     //insert at the whole diagonal
-                    data[1+j+i][0+j] = tmp;
+                    data[1+j+i][0+j] = BigInteger.valueOf(tmp);
                 }
             }
         }
@@ -189,29 +200,22 @@ public class ObliviousAlgebra {
 
     }
 
-    public EncMatrix addEncMatrices(List<EncMatrix> matrixList) throws Exception {
 
-        EncMatrix start = matrixList.get(0);
-        matrixList.remove(0);
-        for ( EncMatrix matrix: matrixList) {
-            start.plus(matrix);
-        }
-        return start;
-    }
 
 
     public IntMatrix upperToeplitz(int t){
 
-        long [][] data = new long [t][t];
+        BigInteger [][] data = new BigInteger [t][t];
 
         for (int i = 0; i < t; i++) {
             //after every diagonal get a new number
+            //TODO: check for boundary
             int tmp = rnd.nextInt();
             for (int j = 0; j < t; j++) {
                 //check if inbound
                 if(1+j+i<t) {
                     //insert at the whole diagonal
-                    data[0+j][1+j+i] = tmp;
+                    data[0+j][1+j+i] = BigInteger.valueOf(tmp);
                 }
             }
         }
@@ -223,11 +227,12 @@ public class ObliviousAlgebra {
 
     public IntMatrix diagonalMatrix(int t){
 
-        long [][] data = new long [t][t];
+        BigInteger [][] data = new BigInteger [t][t];
 
         for (int i = 0; i < t; i++) {
             //every place on the diagonal gets a random number
-            data[i][i] = rnd.nextInt();
+            //TODO: check for boundary
+            data[i][i] = BigInteger.valueOf(rnd.nextInt());
         }
         System.out.println(data);
         IntMatrix ret = new IntMatrix(data);

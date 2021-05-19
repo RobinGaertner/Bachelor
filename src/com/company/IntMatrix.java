@@ -1,13 +1,15 @@
 package com.company;
 
+import java.math.BigInteger;
+
 public class IntMatrix {
 
     private final int M;             // number of rows
     private final int N;             // number of columns
-    private final long[][] data;   // M-by-N array
+    private final BigInteger[][] data;   // M-by-N array
 
 
-    public long[][] getData() {
+    public BigInteger[][] getData() {
         return data;
     }
 
@@ -23,14 +25,14 @@ public class IntMatrix {
     public IntMatrix(int M, int N) {
         this.M = M;
         this.N = N;
-        data = new long[M][N];
+        data = new BigInteger[M][N];
     }
 
     // create matrix based on 2d array
-    public IntMatrix(long[][] data) {
+    public IntMatrix(BigInteger[][] data) {
         M = data.length;
         N = data[0].length;
-        this.data = new long[M][N];
+        this.data = new BigInteger[M][N];
         for (int i = 0; i < M; i++)
             for (int j = 0; j < N; j++)
                 this.data[i][j] = data[i][j];
@@ -46,7 +48,7 @@ public class IntMatrix {
         IntMatrix A = new IntMatrix(M, N);
         for (int i = 0; i < M; i++)
             for (int j = 0; j < N; j++)
-                A.data[i][j] = (long) Math.random();
+                A.data[i][j] = BigInteger.valueOf((long) Math.random());
         return A;
     }
 
@@ -54,13 +56,13 @@ public class IntMatrix {
     public static IntMatrix identity(int N) {
         IntMatrix I = new IntMatrix(N, N);
         for (int i = 0; i < N; i++)
-            I.data[i][i] = 1;
+            I.data[i][i] = BigInteger.ONE;
         return I;
     }
 
     // swap rows i and j
     private void swap(int i, int j) {
-        long[] temp = data[i];
+        BigInteger[] temp = data[i];
         data[i] = data[j];
         data[j] = temp;
     }
@@ -81,7 +83,7 @@ public class IntMatrix {
         IntMatrix C = new IntMatrix(M, N);
         for (int i = 0; i < M; i++)
             for (int j = 0; j < N; j++)
-                C.data[i][j] = A.data[i][j] + B.data[i][j];
+                C.data[i][j] = A.data[i][j].add(B.data[i][j]);
         return C;
     }
 
@@ -93,7 +95,7 @@ public class IntMatrix {
         IntMatrix C = new IntMatrix(M, N);
         for (int i = 0; i < M; i++)
             for (int j = 0; j < N; j++)
-                C.data[i][j] = A.data[i][j] - B.data[i][j];
+                C.data[i][j] = A.data[i][j].subtract(B.data[i][j]);
         return C;
     }
 
@@ -115,11 +117,29 @@ public class IntMatrix {
         for (int i = 0; i < C.M; i++)
             for (int j = 0; j < C.N; j++)
                 for (int k = 0; k < A.N; k++)
-                    C.data[i][j] += (A.data[i][k] * B.data[k][j]);
+                    C.data[i][j] =  C.data[i][j].add(A.data[i][k].multiply(B.data[k][j]) );
+        return C;
+    }
+
+    //made by me
+    // return C = A * B
+    public EncMatrix timesEnc(EncMatrix B) throws Exception {
+        IntMatrix A = this;
+        if (A.N != B.M) throw new RuntimeException("Illegal matrix dimensions.");
+        EncryptedNumber[][] data = new EncryptedNumber[A.M][B.N];
+        //IntMatrix C = new IntMatrix(A.M, B.getN());
+        for (int i = 0; i < A.M; i++)
+            for (int j = 0; j < B.N; j++)
+                for (int k = 0; k < A.N; k++) {
+                    data[i][j] = data[i][j].add(B.getData()[k][j].mul(A.data[i][k]));
+                }
+        EncMatrix C = new EncMatrix(data, B.getPublicKey());
         return C;
     }
 
 
+
+/*
     // return x = A^-1 b, assuming A is square and has full rank
     public IntMatrix solve(IntMatrix rhs) {
         if (M != N || rhs.M != N || rhs.N != 1)
@@ -168,6 +188,8 @@ public class IntMatrix {
         return x;
 
     }
+
+ */
 
     public String toString(){
         String res = "";

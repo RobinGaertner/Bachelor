@@ -174,4 +174,15 @@ public class PrivateKeyRing {
                 ", privateKeyShareList=" + privateKeyShareList +
                 '}';
     }
+
+    public IntMatrix decryptMatrix(EncMatrix inputMatrix) {
+        //TODO: check if x and y are swapped
+        BigInteger[][] data = new BigInteger[inputMatrix.M][inputMatrix.N];
+        for (int i = 0; i < inputMatrix.M; i++) {
+            for (int j = 0; j < inputMatrix.N; j++) {
+                data[i][j] = decrypt(inputMatrix.getData()[i][j]);
+            }
+        }
+        return new IntMatrix(data);
+    }
 }
