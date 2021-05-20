@@ -1,6 +1,5 @@
 package com.company;
 
-import java.security.Key;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -12,27 +11,27 @@ public class ObliviousAlgebraCoordinator {
     int t;
     List<ObliviousAlgebra> parties = new LinkedList<>();
     KeyGen keyGen = new KeyGen();
-    PrivateKeyRing privateKeyRing;
-    PublicKey publicKey;
+    public PrivateKeyRing privateKeyRing;
+    public PublicKey publicKey;
     Utils utils = new Utils();
 
     public ObliviousAlgebraCoordinator(int numParties, int matrixSize) throws Exception {
         //setup
         //TODO: change to the right needed numbers
-        Containter con = KeyGen.keyGen(16, 3, numParties, numParties);
+        Containter con = keyGen.keyGen(16, 3, numParties, numParties);
         publicKey = con.getPublicKey();
         List<PrivateKeyShare> KeyShareList = con.getPrivateKeyRing().privateKeyShareList;
         //TODO: remove the privatekeyring
         privateKeyRing = con.getPrivateKeyRing();
 
         for (int i = 0; i < numParties; i++) {
-            parties.add(new ObliviousAlgebra(publicKey, KeyShareList.get(i)));
+            parties.add(new ObliviousAlgebra(publicKey, KeyShareList.get(i), i));
         }
         t = matrixSize;
     }
 
 
-    void secMult(EncMatrix Ml, EncMatrix Mr, PublicKey pK) throws Exception {
+    public List<EncMatrix> secMult(EncMatrix Ml, EncMatrix Mr, PublicKey pK) throws Exception {
 
         List<EncMatrix> clList = new LinkedList<>();
         List<EncMatrix> crList = new LinkedList<>();
@@ -53,7 +52,7 @@ public class ObliviousAlgebraCoordinator {
         //lines 6
         List<EncMatrix> cTildeList = new LinkedList<>();
         for (int i = 0; i < parties.size(); i++) {
-            cTildeList.add(parties.get(i).secMultPart2(Ml, Mr, clList, crList));
+            cTildeList.add(parties.get(i).secMultPart2(crList));
         }
         //7
 
@@ -64,10 +63,18 @@ public class ObliviousAlgebraCoordinator {
         IntMatrix MrPrime = privateKeyRing.decryptMatrix(MrPrimeEnc);
 
         //line 8-11
-        for (int i = 0; i < parties.size(); i++) {
-            parties.get(i).secMultpart3(dlList, drList, cTildeList, MlPrime, MrPrime);
+        List<EncMatrix> retVal = new LinkedList<>();
+        //TODO: change back to starting at 0, this worked
+        for (int i = 1; i < parties.size(); i++) {
+            System.out.println("MlPrime for " + i+ " is " + MlPrime);
+            System.out.println("MrPrime for " + i+ " is " + MrPrime);
+            System.out.println("dlList for " + i+ " is " + dlList);
+            System.out.println("drList for " + i+ " is " + drList);
+            System.out.println("cTildeList for " + i+ " is " + cTildeList);
+            retVal.add(parties.get(i).secMultpart3( MlPrime, MrPrime, dlList, drList, cTildeList));
         }
 
+        return retVal;
 
     }
 

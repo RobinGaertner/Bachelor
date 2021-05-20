@@ -147,9 +147,9 @@ public class Utils {
     public EncMatrix addEncMatrices(List<EncMatrix> matrixList) throws Exception {
 
         EncMatrix start = matrixList.get(0);
-        matrixList.remove(0);
-        for ( EncMatrix matrix: matrixList) {
-            start.plus(matrix);
+
+        for (int i = 1; i < matrixList.size(); i++) {
+            start = start.plus(matrixList.get(i));
         }
         return start;
     }

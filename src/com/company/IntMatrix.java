@@ -1,6 +1,7 @@
 package com.company;
 
 import java.math.BigInteger;
+import java.util.Random;
 
 public class IntMatrix {
 
@@ -25,7 +26,15 @@ public class IntMatrix {
     public IntMatrix(int M, int N) {
         this.M = M;
         this.N = N;
-        data = new BigInteger[M][N];
+        BigInteger[][] tmp = new BigInteger[M][N];
+        for (int i = 0; i < M; i++) {
+            for (int j = 0; j < N; j++) {
+                tmp[i][j] = BigInteger.ZERO;
+            }
+        }
+        data = tmp;
+
+
     }
 
     // create matrix based on 2d array
@@ -33,9 +42,19 @@ public class IntMatrix {
         M = data.length;
         N = data[0].length;
         this.data = new BigInteger[M][N];
-        for (int i = 0; i < M; i++)
-            for (int j = 0; j < N; j++)
+        for (int i = 0; i < M; i++){
+            for (int j = 0; j < N; j++){
                 this.data[i][j] = data[i][j];
+            }
+        }
+        for (int i = 0; i < M; i++){
+            for (int j = 0; j < N; j++){
+                if(this.data[i][j] == null){
+                    //remove the nulls and input 0s
+                    this.data[i][j] = BigInteger.ZERO;
+                }
+            }
+        }
     }
 
     // copy constructor
@@ -45,10 +64,11 @@ public class IntMatrix {
 
     // create and return a random M-by-N matrix with values between 0 and 1
     public static IntMatrix random(int M, int N) {
+        Random rnd = new Random();
         IntMatrix A = new IntMatrix(M, N);
         for (int i = 0; i < M; i++)
             for (int j = 0; j < N; j++)
-                A.data[i][j] = BigInteger.valueOf((long) Math.random());
+                A.data[i][j] = BigInteger.valueOf((long) rnd.nextInt());
         return A;
     }
 
@@ -105,7 +125,9 @@ public class IntMatrix {
         if (B.M != A.M || B.N != A.N) throw new RuntimeException("Illegal matrix dimensions.");
         for (int i = 0; i < M; i++)
             for (int j = 0; j < N; j++)
-                if (A.data[i][j] != B.data[i][j]) return false;
+            {
+                if (!A.data[i][j].equals(B.data[i][j])) return false;
+            }
         return true;
     }
 
@@ -131,7 +153,11 @@ public class IntMatrix {
         for (int i = 0; i < A.M; i++)
             for (int j = 0; j < B.N; j++)
                 for (int k = 0; k < A.N; k++) {
-                    data[i][j] = data[i][j].add(B.getData()[k][j].mul(A.data[i][k]));
+                    if(data[i][j] == null){
+                        data[i][j] = B.getData()[k][j].mul(A.data[i][k]);
+                    }else {
+                        data[i][j] = data[i][j].add(B.getData()[k][j].mul(A.data[i][k]));
+                    }
                 }
         EncMatrix C = new EncMatrix(data, B.getPublicKey());
         return C;

@@ -74,6 +74,8 @@ public class PublicKey {
         return resList;
     }
 
+
+
     boolean equal(PublicKey other){
 
         return other.delta.equals(delta)

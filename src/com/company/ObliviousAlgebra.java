@@ -17,7 +17,8 @@ public class ObliviousAlgebra {
     private IntMatrix Rl;
     private IntMatrix Rr;
 
-    public ObliviousAlgebra(PublicKey pK, PrivateKeyShare keyShare){
+    public ObliviousAlgebra(PublicKey pK, PrivateKeyShare keyShare, int num){
+        a = num;
         publicKey = pK;
         privateKeyShare = keyShare;
     }
@@ -28,7 +29,7 @@ public class ObliviousAlgebra {
     List<EncMatrix> secMultPart1(EncMatrix Ml, EncMatrix Mr, int size, PublicKey pK) throws Exception {
 
             //2.
-            BigInteger rndArray [][] = new BigInteger[size][size];
+            BigInteger[][] rndArray = new BigInteger[size][size];
             for (int x = 0; x < size; x++) {
                 for (int y = 0; y < size; y++) {
                     //TODO: nextint?? what bound?
@@ -38,7 +39,7 @@ public class ObliviousAlgebra {
 
             Rl = new IntMatrix(rndArray);
 
-            BigInteger rndArray2 [][] = new BigInteger[size][size];
+            BigInteger[][] rndArray2 = new BigInteger[size][size];
             for (int x = 0; x < size; x++) {
                 for (int y = 0; y < size; y++) {
                     //TODO: nextint?? what bound?
@@ -65,13 +66,13 @@ public class ObliviousAlgebra {
     }
 
 
-    EncMatrix secMultPart2(EncMatrix Ml, EncMatrix Mr, List<EncMatrix> clList, List<EncMatrix> crList) throws Exception {
+    EncMatrix secMultPart2(List<EncMatrix> crList) throws Exception {
         //6
         //make list with right matrices
         List<EncMatrix> cTildeParts = new LinkedList<>();
         for (int i = 0; i < crList.size(); i++) {
             //TODO: remove the matrix, where i=j
-            if(i!=a){
+            if( i != a ){
                 cTildeParts.add(Rl.timesEnc(crList.get(i)));
             }
         }
@@ -83,15 +84,14 @@ public class ObliviousAlgebra {
     }
 
 
-    void secMultpart3(List<EncMatrix> dlList, List<EncMatrix> drList, List<EncMatrix> cTildeList, IntMatrix MlPrime, IntMatrix MrPrime) throws Exception {
+    EncMatrix secMultpart3(IntMatrix MlPrime, IntMatrix MrPrime, List<EncMatrix> dlList, List<EncMatrix> drList, List<EncMatrix> cTildeList) throws Exception {
         //8
         //9
         EncMatrix dTilde = new EncMatrix(MlPrime.times(MrPrime), publicKey);
         //10
         EncMatrix e = ((dTilde.minus(utils.addEncMatrices(dlList))).minus(utils.addEncMatrices(drList))).minus(utils.addEncMatrices(cTildeList));
-        System.out.println("Party " + a + " returned " + e + " from secmult");
         //11
-
+        return e;
 
     }
 
@@ -123,9 +123,9 @@ public class ObliviousAlgebra {
 
         //3
         //EncN = XUML
-        EncMatrix EncN = secMult(X, U, publicKey);
-        EncN = secMult(EncN, M, publicKey);
-        EncN = secMult(EncN, L, publicKey);
+        //EncMatrix EncN = secMult(X, U, publicKey);
+        //EncN = secMult(EncN, M, publicKey);
+        //EncN = secMult(EncN, L, publicKey);
 
 
         //4
