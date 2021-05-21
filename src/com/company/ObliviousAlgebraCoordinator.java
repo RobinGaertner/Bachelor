@@ -27,7 +27,7 @@ public class ObliviousAlgebraCoordinator {
         privateKeyRing = con.getPrivateKeyRing();
 
         for (int i = 0; i < numParties; i++) {
-            parties.add(new ObliviousAlgebra(publicKey, KeyShareList.get(i), i));
+            parties.add(new ObliviousAlgebra(publicKey, KeyShareList.get(i), this, i));
         }
         t = matrixSize;
     }
@@ -90,71 +90,45 @@ public class ObliviousAlgebraCoordinator {
 
 
     int secRank(EncMatrix M) throws Exception {
+        //matrix needs to be square
 
         int t = M.M;
         if (M.M!=M.N){
             throw new Exception("not a square matrix");
         }
 
-        List<EncMatrix> uList = new LinkedList<>();
-        List<EncMatrix> lList = new LinkedList<>();
-        List<EncMatrix> xList = new LinkedList<>();
+        List<EncMatrix> UList = new LinkedList<>();
+        List<EncMatrix> LList = new LinkedList<>();
+        List<EncMatrix> XList = new LinkedList<>();
 
         //1
         for (int i = 0; i < parties.size(); i++) {
 
             List<EncMatrix> tmp = parties.get(i).secRankPart1(t);
-            uList.add(tmp.get(0));
-            lList.add(tmp.get(1));
-            xList.add(tmp.get(2));
+            UList.add(tmp.get(0));
+            LList.add(tmp.get(1));
+            XList.add(tmp.get(2));
         }
 
         //2
-
-
-        //3
-        //EncN = XUML
-        //EncMatrix EncN = secMult(X, U, publicKey);
-        //EncN = secMult(EncN, M, publicKey);
-        //EncN = secMult(EncN, L, publicKey);
-
-
-        //4
-        BigInteger [][] data = new BigInteger[t][1];
-        for (int i = 0; i < t; i++) {
-            //TODO: check for boundary
-            data[i][1] = BigInteger.valueOf(rnd.nextInt());
-        }
-        EncMatrix ui = new EncMatrix(new IntMatrix(data), publicKey);
-
-        data = new BigInteger[t][1];
-        for (int i = 0; i < t; i++) {
-            //TODO: check for boundary
-            data[i][1] = BigInteger.valueOf(rnd.nextInt());
-        }
-        EncMatrix vi = new EncMatrix(new IntMatrix(data), publicKey);
-
-
-        //5
-
-        List<EncMatrix> ujs = new LinkedList<>();
-        List<EncMatrix> vjs = new LinkedList<>();
-
-        //y is u in text
-        //z is v in text
-        EncMatrix y = utils.addEncMatrices(ujs);
-        EncMatrix z = utils.addEncMatrices(vjs);
-
-
-        //AAA is weird a in text
-        List<EncryptedNumber> AAA = new LinkedList<>();
-
-        for (int i = 0; i < 2*log2(t); i++) {
-            //TODO: ask for this part
+        for (ObliviousAlgebra party : parties) {
+            party.secRankPart2(UList, LList, XList);
         }
 
-        //6
-        //TODO: missing
+        List<EncMatrix> uList = new LinkedList<>();
+        List<EncMatrix> vList = new LinkedList<>();
+
+        //line 3-4
+        for (int i = 0; i < parties.size(); i++) {
+
+            List<EncMatrix> tmp = parties.get(i).secRankPart3(M);
+            uList.add(tmp.get(0));
+            vList.add(tmp.get(1));
+        }
+
+        for (int i = 0; i < parties.size(); i++) {
+            parties.get(i).secRankPart4(uList, vList, t);
+        }
 
 
         return 1;

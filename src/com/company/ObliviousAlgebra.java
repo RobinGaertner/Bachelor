@@ -12,6 +12,7 @@ public class ObliviousAlgebra {
     Random rnd = new Random();
     PublicKey publicKey;
     PrivateKeyShare privateKeyShare;
+    ObliviousAlgebraCoordinator coordinator;
 
     //stuff for secMult
     //a is the number this party has for this computation
@@ -20,15 +21,16 @@ public class ObliviousAlgebra {
     private IntMatrix Rr;
 
     //stuff for secRank
-    EncMatrix U,L,X;
+    EncMatrix U,L,X, EncN;
 
 
 
 
-    public ObliviousAlgebra(PublicKey pK, PrivateKeyShare keyShare, int num){
+    public ObliviousAlgebra(PublicKey pK, PrivateKeyShare keyShare,ObliviousAlgebraCoordinator oAC, int num){
         a = num;
         publicKey = pK;
         privateKeyShare = keyShare;
+        coordinator = oAC;
     }
 
 
@@ -187,7 +189,7 @@ public class ObliviousAlgebra {
 
     void secRankPart2(List<EncMatrix> uList, List<EncMatrix> lList, List<EncMatrix> xList) throws Exception {
 
-        //TODO: do this right
+
         X = utils.addEncMatrices(xList);
 
         EncMatrix tmp = utils.addEncMatrices(uList);
@@ -199,6 +201,69 @@ public class ObliviousAlgebra {
         L = tmp.minus(tmp2);
     }
 
+    List<EncMatrix> secRankPart3(EncMatrix M) throws Exception {
+        //matrix has to be square
+        int t = M.N;
+
+        //line 3
+        //EncMatrix EncN = XUML
+        EncN = coordinator.secMult(X,U,publicKey);
+        EncN = coordinator.secMult(EncN, M, publicKey);
+        EncN = coordinator.secMult(EncN, L, publicKey);
+
+
+        //line 4
+
+        BigInteger [][] data = new BigInteger[t][1];
+        for (int i = 0; i < t; i++) {
+            //TODO: check for boundary
+            data[i][1] = BigInteger.valueOf(rnd.nextInt());
+        }
+        EncMatrix u = new EncMatrix(new IntMatrix(data), publicKey);
+
+        for (int i = 0; i < t; i++) {
+            //TODO: check for boundary
+            data[i][1] = BigInteger.valueOf(rnd.nextInt());
+        }
+        EncMatrix v = new EncMatrix(new IntMatrix(data), publicKey);
+
+        List<EncMatrix> resList = new LinkedList<>();
+        resList.add(u);
+        resList.add(v);
+
+        return resList;
+    }
+
+    void secRankPart4(List<EncMatrix> uList, List<EncMatrix> vList, int t) throws Exception {
+
+        //t is again size of the matrices
+
+        //5
+
+        EncMatrix Encu = utils.addEncMatrices(uList);
+        EncMatrix Encv = utils.addEncMatrices(vList);
+
+
+        //AAA is weird a in text
+        List<EncMatrix> AAA = new LinkedList<>();
+
+        int limit = 2*log2(t);
+
+        EncMatrix Npow = new EncMatrix(identityMatrixTimes(t,1), publicKey);
+
+        for (int i = 0; i < limit; i++) {
+            //TODO: ask for this part
+
+            EncMatrix tmp = coordinator.secMult(Encu, Npow, publicKey);
+            tmp = coordinator.secMult(tmp, Encv, publicKey);
+            //tmp = u*N^j*v
+            AAA.add(tmp);
+            Npow = coordinator.secMult(Npow, EncN, publicKey);
+        }
+
+        //6
+        //TODO: missing
+    }
 
 
     public IntMatrix diagonalMatrix(int t){

@@ -73,7 +73,7 @@ public class EncMatrix {
     public EncMatrix minus(EncMatrix B) throws Exception {
         if (B.M != M || B.N != N) throw new RuntimeException("Illegal matrix dimensions.");
         //TODO: add this check back
-        //if(!B.publicKey.equals(publicKey)) throw new RuntimeException("Different publickeys");
+        if(!B.publicKey.equals(publicKey)) throw new RuntimeException("Different publickeys");
         EncMatrix C = new EncMatrix(M, N, publicKey);
         for (int i = 0; i < M; i++)
             for (int j = 0; j < N; j++)
