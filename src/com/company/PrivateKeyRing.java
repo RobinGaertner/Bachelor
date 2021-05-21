@@ -152,8 +152,50 @@ public class PrivateKeyRing {
 
         BigInteger m = cPrime.multiply(publicKey.invFourDeltaSquared).mod(publicKey.ns);
 
+        //TODO: THIS IS TESTING FOR NEGATIVE NUMBERS:
 
+        if (m.compareTo(publicKey.ns.divide(BigInteger.valueOf(2)))==1){
+            m = m.subtract(publicKey.ns);
+            //System.out.println("special minus case triggered");
+            //System.out.println("ns is: " + publicKey.ns);
+        }
 
+        //TODO: TEST END
+
+        return m;
+    }
+
+    public BigInteger decrypt(List<BigInteger> cList) {
+        //this one is using the partial decryptions as an input
+      /*:param c: An EncryptedNumber.
+      :return: An integer containing the decryption of `c`.
+     """
+       # Use PrivateKeyShares to decrypt
+         */
+        /*
+        List<BigInteger> cList = new LinkedList();
+        for (int i = 0; i < privateKeyShareList.size(); i++) {
+            cList.add(privateKeyShareList.get(i).decrypt(c));
+        }
+
+         */
+
+        //System.out.println("cList: " +cList);
+        //decrypt the whole thing
+        BigInteger cPrime = BigInteger.ONE;
+
+        for (int j = 0; j < iList.size(); j++) {
+            //preparation
+            BigInteger cJ = cList.get(j);
+            BigInteger lam2 = lambda(iList.get(j)).multiply(BigInteger.valueOf(2));
+
+            cPrime = (cPrime.multiply(cJ.modPow(lam2, publicKey.ns1))).mod(publicKey.ns1);
+            //System.out.println("cPrime after changing is: " + cPrime);
+        }
+
+        cPrime = damgardJurikReduce(cPrime, publicKey.s, publicKey.n);
+
+        BigInteger m = cPrime.multiply(publicKey.invFourDeltaSquared).mod(publicKey.ns);
 
         //TODO: THIS IS TESTING FOR NEGATIVE NUMBERS:
 
@@ -164,8 +206,29 @@ public class PrivateKeyRing {
         }
 
         //TODO: TEST END
+
         return m;
     }
+
+
+    public IntMatrix decryptMatrix(List<IntMatrix> inputMatrices) {
+
+
+        //TODO: check if x and y are swapped
+        BigInteger[][] data = new BigInteger[inputMatrices.get(0).getM()][inputMatrices.get(0).getN()];
+        for (int i = 0; i < inputMatrices.get(0).getM(); i++) {
+            for (int j = 0; j < inputMatrices.get(0).getN(); j++) {
+                List<BigInteger> tmp = new LinkedList<>();
+                for (int k = 0; k < privateKeyShareList.size(); k++) {
+                    tmp.add(inputMatrices.get(k).getData()[i][j]);
+                }
+                data[i][j] = decrypt(tmp);
+                //data[i][j] = decrypt(inputMatrix.getData()[i][j]);
+            }
+        }
+        return new IntMatrix(data);
+    }
+
 
     @Override
     public String toString() {
@@ -176,6 +239,9 @@ public class PrivateKeyRing {
     }
 
     public IntMatrix decryptMatrix(EncMatrix inputMatrix) {
+
+
+        List<IntMatrix> parts = new LinkedList<>();
         //TODO: check if x and y are swapped
         BigInteger[][] data = new BigInteger[inputMatrix.M][inputMatrix.N];
         for (int i = 0; i < inputMatrix.M; i++) {

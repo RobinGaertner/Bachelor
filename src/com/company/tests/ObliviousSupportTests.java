@@ -27,7 +27,7 @@ public class ObliviousSupportTests {
     @org.junit.jupiter.api.Test
     void secMultTest1() throws Exception {
         int x = 5;
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 3; i++) {
 
 
 
@@ -39,16 +39,16 @@ public class ObliviousSupportTests {
             EncMatrix BEnc = new EncMatrix(B, pk);
 
             System.out.println("got to multiplication of normal matrices");
+
             System.out.println(A.times(B));
             System.out.println("finished normal multiplication");
-            List<EncMatrix> multResult = coordinator.secMult(AEnc, BEnc, pk);
+            EncMatrix multResult = coordinator.secMult(AEnc, BEnc, pk);
 
-            for (int j = 0; j <multResult.size(); j++) {
-                System.out.println("Party " + j + " returned " + coordinator.privateKeyRing.decryptMatrix(multResult.get(j)));
-            }
             System.out.println("Plain A.times B is  " + A.times(B));
 
-            IntMatrix intResult = coordinator.privateKeyRing.decryptMatrix(multResult.get(0));
+            IntMatrix intResult = coordinator.privateKeyRing.decryptMatrix(multResult);
+
+            System.out.println("secMult result is:  " + intResult);
 
             assertTrue(A.times(B).eq(intResult));
 

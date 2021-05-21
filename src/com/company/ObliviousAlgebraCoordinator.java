@@ -1,5 +1,6 @@
 package com.company;
 
+import java.math.BigInteger;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -10,7 +11,6 @@ public class ObliviousAlgebraCoordinator {
     //t = matrixsize
     int t;
     List<ObliviousAlgebra> parties = new LinkedList<>();
-    KeyGen keyGen = new KeyGen();
     public PrivateKeyRing privateKeyRing;
     public PublicKey publicKey;
     Utils utils = new Utils();
@@ -18,7 +18,7 @@ public class ObliviousAlgebraCoordinator {
     public ObliviousAlgebraCoordinator(int numParties, int matrixSize) throws Exception {
         //setup
         //TODO: change to the right needed numbers
-        Containter con = keyGen.keyGen(16, 3, numParties, numParties);
+        Containter con = KeyGen.keyGen(16, 3, numParties, numParties);
         publicKey = con.getPublicKey();
         List<PrivateKeyShare> KeyShareList = con.getPrivateKeyRing().privateKeyShareList;
         //TODO: remove the privatekeyring
@@ -31,18 +31,16 @@ public class ObliviousAlgebraCoordinator {
     }
 
 
-    public List<EncMatrix> secMult(EncMatrix Ml, EncMatrix Mr, PublicKey pK) throws Exception {
+    public EncMatrix secMult(EncMatrix Ml, EncMatrix Mr, PublicKey pK) throws Exception {
 
         List<EncMatrix> clList = new LinkedList<>();
         List<EncMatrix> crList = new LinkedList<>();
         List<EncMatrix> dlList = new LinkedList<>();
         List<EncMatrix> drList = new LinkedList<>();
 
-
-
         //lines 1-5
-        for (int i = 0; i < parties.size(); i++) {
-            List<EncMatrix> result1 = parties.get(i).secMultPart1(Ml, Mr, t, pK);
+        for (ObliviousAlgebra party : parties) {
+            List<EncMatrix> result1 = party.secMultPart1(Ml, Mr, t, pK);
             clList.add(result1.get(0));
             crList.add(result1.get(1));
             dlList.add(result1.get(2));
@@ -51,30 +49,39 @@ public class ObliviousAlgebraCoordinator {
 
         //lines 6
         List<EncMatrix> cTildeList = new LinkedList<>();
-        for (int i = 0; i < parties.size(); i++) {
-            cTildeList.add(parties.get(i).secMultPart2(crList));
+        for (ObliviousAlgebra party : parties) {
+            cTildeList.add(party.secMultPart2(crList));
         }
         //7
 
         EncMatrix MlPrimeEnc = Ml.plus(utils.addEncMatrices(clList));
         EncMatrix MrPrimeEnc = Mr.plus(utils.addEncMatrices(crList));
 
-        IntMatrix MlPrime = privateKeyRing.decryptMatrix(MlPrimeEnc);
-        IntMatrix MrPrime = privateKeyRing.decryptMatrix(MrPrimeEnc);
+
+        //This is the start of the test
+        List<IntMatrix> MlPrimeParts = new LinkedList<>();
+        for (int i = 0; i < parties.size(); i++) {
+            MlPrimeParts.add(parties.get(i).getPartialDecryptionMatrix(MlPrimeEnc));
+        }
+        IntMatrix MlPrime = privateKeyRing.decryptMatrix(MlPrimeParts);
+
+        List<IntMatrix> MrPrimeParts = new LinkedList<>();
+        for (int i = 0; i < parties.size(); i++) {
+            MrPrimeParts.add(parties.get(i).getPartialDecryptionMatrix(MrPrimeEnc));
+        }
+        IntMatrix MrPrime = privateKeyRing.decryptMatrix(MrPrimeParts);
+
+        //this is the end of the Test
 
         //line 8-11
         List<EncMatrix> retVal = new LinkedList<>();
-        //TODO: change back to starting at 0, this worked
-        for (int i = 1; i < parties.size(); i++) {
-            System.out.println("MlPrime for " + i+ " is " + MlPrime);
-            System.out.println("MrPrime for " + i+ " is " + MrPrime);
-            System.out.println("dlList for " + i+ " is " + dlList);
-            System.out.println("drList for " + i+ " is " + drList);
-            System.out.println("cTildeList for " + i+ " is " + cTildeList);
+
+        for (int i = 0; i < parties.size(); i++) {
             retVal.add(parties.get(i).secMultpart3( MlPrime, MrPrime, dlList, drList, cTildeList));
         }
 
-        return retVal;
+        //returns the result from the first party, but they are all equal, so it should not matter
+        return retVal.get(0);
 
     }
 

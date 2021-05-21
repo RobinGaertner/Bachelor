@@ -31,10 +31,23 @@ public class PrivateKeyShare {
         return bigRes;
     }
 
+
+    IntMatrix decryptMatrix(EncMatrix e){
+        BigInteger[][] data = new BigInteger[e.M][e.N];
+        EncryptedNumber[][] encData = e.getData();
+        for (int i = 0; i < e.M; i++) {
+            for (int j = 0; j < e.N; j++) {
+                data[i][j] = decrypt(encData[i][j]);
+            }
+        }
+        System.out.println("Decrypt matrix returns: " + new IntMatrix(data));
+        return new IntMatrix(data);
+    }
+
     boolean equal(PrivateKeyShare other){
         return this.publicKey == other.publicKey
                 && this.i == other.i
-                && this.si == other.si;
+                && this.si.equals(other.si);
     }
 
 

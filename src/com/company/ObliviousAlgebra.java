@@ -95,6 +95,15 @@ public class ObliviousAlgebra {
 
     }
 
+    BigInteger getPartialDecryption(EncryptedNumber e){
+        return privateKeyShare.decrypt(e);
+    }
+
+
+    IntMatrix getPartialDecryptionMatrix(EncMatrix e){
+        return privateKeyShare.decryptMatrix(e);
+    }
+
 
     int secRank(EncMatrix M) throws Exception {
 
