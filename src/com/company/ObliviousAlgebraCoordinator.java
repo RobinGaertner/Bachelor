@@ -3,6 +3,7 @@ package com.company;
 import java.math.BigInteger;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 
 public class ObliviousAlgebraCoordinator {
 
@@ -14,6 +15,7 @@ public class ObliviousAlgebraCoordinator {
     public PrivateKeyRing privateKeyRing;
     public PublicKey publicKey;
     Utils utils = new Utils();
+    Random rnd = new Random();
 
     public ObliviousAlgebraCoordinator(int numParties, int matrixSize) throws Exception {
         //setup
@@ -79,10 +81,90 @@ public class ObliviousAlgebraCoordinator {
         for (int i = 0; i < parties.size(); i++) {
             retVal.add(parties.get(i).secMultpart3( MlPrime, MrPrime, dlList, drList, cTildeList));
         }
-
         //returns the result from the first party, but they are all equal, so it should not matter
         return retVal.get(0);
 
     }
+
+
+
+
+    int secRank(EncMatrix M) throws Exception {
+
+        int t = M.M;
+        if (M.M!=M.N){
+            throw new Exception("not a square matrix");
+        }
+
+        List<EncMatrix> uList = new LinkedList<>();
+        List<EncMatrix> lList = new LinkedList<>();
+        List<EncMatrix> xList = new LinkedList<>();
+
+        //1
+        for (int i = 0; i < parties.size(); i++) {
+
+            List<EncMatrix> tmp = parties.get(i).secRankPart1(t);
+            uList.add(tmp.get(0));
+            lList.add(tmp.get(1));
+            xList.add(tmp.get(2));
+        }
+
+        //2
+
+
+        //3
+        //EncN = XUML
+        //EncMatrix EncN = secMult(X, U, publicKey);
+        //EncN = secMult(EncN, M, publicKey);
+        //EncN = secMult(EncN, L, publicKey);
+
+
+        //4
+        BigInteger [][] data = new BigInteger[t][1];
+        for (int i = 0; i < t; i++) {
+            //TODO: check for boundary
+            data[i][1] = BigInteger.valueOf(rnd.nextInt());
+        }
+        EncMatrix ui = new EncMatrix(new IntMatrix(data), publicKey);
+
+        data = new BigInteger[t][1];
+        for (int i = 0; i < t; i++) {
+            //TODO: check for boundary
+            data[i][1] = BigInteger.valueOf(rnd.nextInt());
+        }
+        EncMatrix vi = new EncMatrix(new IntMatrix(data), publicKey);
+
+
+        //5
+
+        List<EncMatrix> ujs = new LinkedList<>();
+        List<EncMatrix> vjs = new LinkedList<>();
+
+        //y is u in text
+        //z is v in text
+        EncMatrix y = utils.addEncMatrices(ujs);
+        EncMatrix z = utils.addEncMatrices(vjs);
+
+
+        //AAA is weird a in text
+        List<EncryptedNumber> AAA = new LinkedList<>();
+
+        for (int i = 0; i < 2*log2(t); i++) {
+            //TODO: ask for this part
+        }
+
+        //6
+        //TODO: missing
+
+
+        return 1;
+    }
+
+
+
+
+
+
+
 
 }
