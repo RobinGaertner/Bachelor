@@ -154,6 +154,73 @@ public class Utils {
         return start;
     }
 
+    //from https://www.geeksforgeeks.org/program-check-matrix-singular-not/
+
+    static void getCofactor(IntMatrix M, BigInteger temp[][], int p,
+                            int q, int n)
+    {
+        int i = 0, j = 0;
+
+        // Looping for each element of the matrix
+        for (int row = 0; row < n; row++)
+        {
+            for (int col = 0; col < n; col++)
+            {
+
+                // Copying into temporary matrix only
+                // those element which are not in given
+                // row and column
+                if (row != p && col != q)
+                {
+                    temp[i][j++] = M.getData()[row][col];
+
+                    // Row is filled, so increase row
+                    // index and reset col index
+                    if (j == n - 1)
+                    {
+                        j = 0;
+                        i++;
+                    }
+                }
+            }
+        }
+    }
+
+    //from https://www.geeksforgeeks.org/program-check-matrix-singular-not/
+
+    /* Recursive function to check if mat[][] is
+    singular or not. */
+    public BigInteger isSingular(IntMatrix M, int n)
+    {
+        //works only for square matrices
+        BigInteger D = BigInteger.ZERO; // Initialize result
+
+        // Base case : if matrix contains single element
+        if (n == 1)
+        {
+            return M.getData()[0][0];
+        }
+
+        BigInteger temp[][] = new BigInteger[n][n]; // To store cofactors
+
+        BigInteger sign = BigInteger.ONE; // To store sign multiplier
+
+        // Iterate for each element of first row
+        for (int f = 0; f < n; f++)
+        {
+
+            // Getting Cofactor of mat[0][f]
+            getCofactor(M, temp, 0, f, n);
+            D = D.add(sign.multiply(M.getData()[0][f]).multiply(isSingular(new IntMatrix(temp), n - 1)));
+
+            // terms are to be added with alternate sign
+            sign = BigInteger.ZERO.subtract(sign);
+        }
+
+        return D;
+    }
+
+
 
 /*
     int crm (List<Integer> aList, List<Integer> nList){

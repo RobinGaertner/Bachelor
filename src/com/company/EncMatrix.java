@@ -101,7 +101,7 @@ public class EncMatrix {
     }
 
     // copy constructor
-        //private EncMatrix(com.company.EncMatrix A) { this(A.data); }
+    public EncMatrix(com.company.EncMatrix A) { this(A.data, A.getPublicKey()); }
 
 
 }

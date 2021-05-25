@@ -1,6 +1,5 @@
 package com.company;
 
-import java.math.BigInteger;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -33,6 +32,50 @@ public class ObliviousAlgebraCoordinator {
     }
 
 
+
+    public EncMatrix secInv(EncMatrix M) throws Exception {
+
+        //line 1
+        for (int i = 0; i < parties.size(); i++) {
+            parties.get(i).secInvPart1(t);
+        }
+
+        //line 2
+        EncMatrix MPrime = new EncMatrix(M);
+
+        //line 3
+        for (ObliviousAlgebra party : parties) {
+            //line 4-5
+            MPrime = party.secInvPart2(MPrime);
+            //line 6
+        }
+
+        //line 7
+        //decryption without the secretkeys
+        List<IntMatrix> MPrimeParts = new LinkedList<>();
+        for (int i = 0; i < parties.size(); i++) {
+            MPrimeParts.add(parties.get(i).getPartialDecryptionMatrix(MPrime));
+        }
+        IntMatrix decMPrime = privateKeyRing.decryptMatrix(MPrimeParts);
+
+        EncMatrix NPrime = new EncMatrix(decMPrime.inverse(), publicKey);
+
+        //line 8
+        for (int i = 0; i < parties.size(); i++) {
+            //go from N to 1
+            //line 9-10
+            NPrime = parties.get(parties.size() - i).secInvPart3(NPrime);
+            //line 11
+        }
+        //line 12
+        return NPrime;
+
+    }
+
+
+
+
+
     public EncMatrix secMult(EncMatrix Ml, EncMatrix Mr, PublicKey pK) throws Exception {
 
         List<EncMatrix> clList = new LinkedList<>();
@@ -61,6 +104,7 @@ public class ObliviousAlgebraCoordinator {
 
 
         //This is the start of the test
+        //decryption without the secretkeys
         List<IntMatrix> MlPrimeParts = new LinkedList<>();
         for (int i = 0; i < parties.size(); i++) {
             MlPrimeParts.add(parties.get(i).getPartialDecryptionMatrix(MlPrimeEnc));

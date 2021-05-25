@@ -1,5 +1,8 @@
 package com.company;
 
+import org.apache.commons.math3.linear.MatrixUtils;
+import org.apache.commons.math3.linear.RealMatrix;
+
 import java.math.BigInteger;
 import java.util.Random;
 
@@ -8,6 +11,8 @@ public class IntMatrix {
     private final int M;             // number of rows
     private final int N;             // number of columns
     private final BigInteger[][] data;   // M-by-N array
+
+    //from https://introcs.cs.princeton.edu/java/95linear/Matrix.java.html
 
 
     public BigInteger[][] getData() {
@@ -108,6 +113,8 @@ public class IntMatrix {
     }
 
 
+
+
     // return C = A - B
     public IntMatrix minus(IntMatrix B) {
         IntMatrix A = this;
@@ -141,6 +148,34 @@ public class IntMatrix {
                 for (int k = 0; k < A.N; k++)
                     C.data[i][j] =  C.data[i][j].add(A.data[i][k].multiply(B.data[k][j]) );
         return C;
+    }
+
+
+    //made by me
+
+    public IntMatrix inverse(){
+        //TODO: check for casting
+        BigInteger[][] oldData = data;
+
+        double[][] newData = new double[M][N];
+        for (int i = 0; i < M; i++) {
+            for (int j = 0; j < N; j++) {
+                newData[i][j] = oldData[i][j].doubleValue();
+            }
+        }
+        RealMatrix tmpMatrix = MatrixUtils.inverse(MatrixUtils.createRealMatrix(newData));
+
+        double[][] resdata = tmpMatrix.getData();
+
+        //TODO: casting!!! bad!!!
+        for (int i = 0; i < M; i++) {
+            for (int j = 0; j < N; j++) {
+                oldData[i][j] = BigInteger.valueOf((long) resdata[i][j]);
+            }
+        }
+        IntMatrix resMatrix = new IntMatrix(oldData);
+
+        return  resMatrix;
     }
 
     //made by me
@@ -216,6 +251,10 @@ public class IntMatrix {
     }
 
  */
+
+
+
+
 
     public String toString(){
         String res = "";

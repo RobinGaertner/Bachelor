@@ -23,6 +23,9 @@ public class ObliviousAlgebra {
     //stuff for secRank
     EncMatrix U,L,X, EncN;
 
+    //stuff for secInv
+    private IntMatrix R;
+
 
 
 
@@ -263,6 +266,64 @@ public class ObliviousAlgebra {
 
         //6
         //TODO: missing
+
+
+    }
+
+
+
+
+    void secInvPart1(int t){
+        //line 1
+
+        BigInteger[][] rndArray = new BigInteger[t][t];
+        for (int x = 0; x < t; x++) {
+            for (int y = 0; y < t; y++) {
+                //TODO: nextint?? what bound?
+                rndArray[x][y] = BigInteger.valueOf(rnd.nextInt());
+            }
+        }
+
+        IntMatrix res = new IntMatrix(rndArray);
+        //TODO: check if Matrix is non-singular
+
+        while(!utils.isSingular(res, res.getN()).equals(BigInteger.ONE)){
+            //as long as the matrix is not singular
+            //make a new random matrix
+
+            for (int x = 0; x < t; x++) {
+                for (int y = 0; y < t; y++) {
+                    //TODO: nextint?? what bound?
+                    rndArray[x][y] = BigInteger.valueOf(rnd.nextInt());
+                }
+            }
+
+            res = new IntMatrix(rndArray);
+
+
+        }
+
+        R = res;
+    }
+
+    EncMatrix secInvPart2(EncMatrix MPrime) throws Exception {
+
+        //line 4
+        EncMatrix newMPrime = R.timesEnc(MPrime);
+
+        //line 5
+        return newMPrime;
+    }
+
+
+    public EncMatrix secInvPart3(EncMatrix NPrime) throws Exception {
+
+        //line 9
+        //IntMatrix RInv = R.inverse();
+        EncMatrix newNPrime = NPrime.times(R.inverse());
+
+        //line 10
+        return  newNPrime;
     }
 
 
@@ -286,5 +347,6 @@ public class ObliviousAlgebra {
         if(n <= 0) throw new IllegalArgumentException();
         return 31 - Integer.numberOfLeadingZeros(n);
     }
+
 
 }
