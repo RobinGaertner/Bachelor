@@ -119,15 +119,6 @@ public class ObliviousAlgebra {
 
 
 
-    public IntMatrix identityMatrixTimes(int size, int mul){
-        BigInteger[][] data = new BigInteger[size][size];
-        for (int i = 0; i < size; i++) {
-            data[i][i] = BigInteger.valueOf(mul);
-        }
-        return new IntMatrix(data);
-    }
-
-
     public IntMatrix lowerToeplitz(int t){
 
         BigInteger [][] data = new BigInteger [t][t];
@@ -196,11 +187,11 @@ public class ObliviousAlgebra {
         X = utils.addEncMatrices(xList);
 
         EncMatrix tmp = utils.addEncMatrices(uList);
-        EncMatrix tmp2 = new EncMatrix(identityMatrixTimes(uList.get(0).M, uList.size()-1), publicKey);
+        EncMatrix tmp2 = new EncMatrix(utils.identityMatrixTimes(uList.get(0).M, uList.size()-1), publicKey);
         U = tmp.minus(tmp2);
 
         tmp = utils.addEncMatrices(lList);
-        tmp2 = new EncMatrix(identityMatrixTimes(lList.get(0).M, lList.size()-1), publicKey);
+        tmp2 = new EncMatrix(utils.identityMatrixTimes(lList.get(0).M, lList.size()-1), publicKey);
         L = tmp.minus(tmp2);
     }
 
@@ -252,7 +243,7 @@ public class ObliviousAlgebra {
 
         int limit = 2*log2(t);
 
-        EncMatrix Npow = new EncMatrix(identityMatrixTimes(t,1), publicKey);
+        EncMatrix Npow = new EncMatrix(utils.identityMatrixTimes(t,1), publicKey);
 
         for (int i = 0; i < limit; i++) {
             //TODO: ask for this part
@@ -286,8 +277,7 @@ public class ObliviousAlgebra {
 
         IntMatrix res = new IntMatrix(rndArray);
         //TODO: check if Matrix is non-singular
-
-        while(!utils.isSingular(res, res.getN()).equals(BigInteger.ONE)){
+        while(utils.isSingular(res)){
             //as long as the matrix is not singular
             //make a new random matrix
 

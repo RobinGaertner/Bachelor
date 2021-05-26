@@ -8,6 +8,7 @@ import java.util.Random;
 
 public class IntMatrix {
 
+    private static Utils utils = new Utils();
     private final int M;             // number of rows
     private final int N;             // number of columns
     private final BigInteger[][] data;   // M-by-N array
@@ -153,6 +154,7 @@ public class IntMatrix {
 
     //made by me
 
+    /*
     public IntMatrix inverse(){
         //TODO: check for casting
         BigInteger[][] oldData = data;
@@ -163,7 +165,11 @@ public class IntMatrix {
                 newData[i][j] = oldData[i][j].doubleValue();
             }
         }
+
+        System.out.println("input to utils is: " + newData[0][0] + " " + newData[0][1] + " " + newData[0][2]);
+        System.out.println("inputMatrix is: " + MatrixUtils.createRealMatrix(newData).toString());
         RealMatrix tmpMatrix = MatrixUtils.inverse(MatrixUtils.createRealMatrix(newData));
+        System.out.println("output from utils is: " + tmpMatrix);
 
         double[][] resdata = tmpMatrix.getData();
 
@@ -175,8 +181,16 @@ public class IntMatrix {
         }
         IntMatrix resMatrix = new IntMatrix(oldData);
 
+        System.out.println("invertMatrix returned: " + resMatrix);
         return  resMatrix;
     }
+
+
+
+     */
+
+
+
 
     //made by me
     // return C = A * B
@@ -251,6 +265,129 @@ public class IntMatrix {
     }
 
  */
+
+
+
+
+    //https://www.geeksforgeeks.org/adjoint-inverse-matrix/
+    IntMatrix getCofactor(IntMatrix A, int p, int q, int n)
+    {
+        int i = 0, j = 0;
+
+        BigInteger[][] tempData = new BigInteger[n][n];
+
+        // Looping for each element of the matrix
+        for (int row = 0; row < n; row++)
+        {
+            for (int col = 0; col < n; col++)
+            {
+                // Copying into temporary matrix only those element
+                // which are not in given row and column
+                if (row != p && col != q)
+                {
+                    tempData[i][j++] = A.data[row][col];
+
+                    // Row is filled, so increase row index and
+                    // reset col index
+                    if (j == n - 1)
+                    {
+                        j = 0;
+                        i++;
+                    }
+                }
+            }
+        }
+        return new IntMatrix(tempData);
+    }
+
+    /* Recursive function for finding determinant of matrix.
+    n is current dimension of A[][]. */
+    BigInteger determinant(IntMatrix A, int n)
+    {
+        BigInteger D = BigInteger.ZERO; // Initialize result
+
+
+        // Base case : if matrix contains single element
+        if (n == 1)
+            return A.data[0][0];
+
+        BigInteger [][]temp = new BigInteger[A.M][A.N]; // To store cofactors
+
+        int sign = 1; // To store sign multiplier
+
+        // Iterate for each element of first row
+        for (int f = 0; f < n; f++)
+        {
+            // Getting Cofactor of A[0][f]
+            temp = getCofactor(A, 0, f, n).data;
+            D = D.add(BigInteger.valueOf(sign).multiply( A.data[0][f]).multiply( determinant(new IntMatrix(temp), n - 1)));
+
+            // terms are to be added with alternate sign
+            sign = -sign;
+        }
+
+        return D;
+    }
+
+    // Function to get adjoint of A[N][N] in adj[N][N].
+    public IntMatrix adjoint(IntMatrix A)
+    {
+        int t = A.getM();
+        BigInteger[][] adjData = new BigInteger[t][t];
+        if (t == 1)
+        {
+            adjData[0][0] = BigInteger.ONE;
+            return new IntMatrix(adjData);
+        }
+
+        // temp is used to store cofactors of A[][]
+        int sign = 1;
+        BigInteger [][]temp = new BigInteger[t][t];
+
+        for (int i = 0; i < N; i++)
+        {
+            for (int j = 0; j < N; j++)
+            {
+                // Get cofactor of A[i][j]
+                temp = getCofactor(A, i, j, t).data;
+
+                // sign of adj[j][i] positive if sum of row
+                // and column indexes is even.
+                sign = ((i + j) % 2 == 0)? 1: -1;
+
+                // Interchanging rows and columns to get the
+                // transpose of the cofactor matrix
+                adjData[j][i] = BigInteger.valueOf(sign).multiply(determinant(new IntMatrix(temp), N-1));
+            }
+        }
+        return new IntMatrix(adjData);
+    }
+
+    // Function to calculate and store inverse, returns false if
+    // matrix is singular
+    public IntMatrix inverse() throws Exception {
+        IntMatrix A = this;
+        // Find determinant of A[][]
+        int t = A.M;
+
+        BigInteger det = determinant(A, A.getN());
+        if(det.equals(BigInteger.ZERO)){
+            throw new Exception("Matrix is singular");
+        }
+
+        BigInteger[][] inverse = new BigInteger[A.getM()][A.getN()];
+
+
+        // Find adjoint
+        IntMatrix adj = adjoint(A);
+
+        // Find Inverse using formula "inverse(A) = adj(A)/det(A)"
+        for (int i = 0; i < N; i++)
+            for (int j = 0; j < N; j++)
+                inverse[i][j] = adj.data[i][j].divide(det);
+
+        return new IntMatrix(inverse);
+    }
 
 
 

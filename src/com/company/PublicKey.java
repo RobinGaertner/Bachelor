@@ -61,7 +61,7 @@ public class PublicKey {
         EncryptedNumber res = new EncryptedNumber();
 
         res.init(c, this);
-        System.out.println("PublicKey finished encryption");
+        //System.out.println("PublicKey finished encryption");
         return res;
     }
 

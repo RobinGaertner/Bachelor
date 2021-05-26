@@ -40,7 +40,7 @@ public class PrivateKeyShare {
                 data[i][j] = decrypt(encData[i][j]);
             }
         }
-        System.out.println("Decrypt matrix returns: " + new IntMatrix(data));
+        //System.out.println("Decrypt matrix returns: " + new IntMatrix(data));
         return new IntMatrix(data);
     }
 

@@ -34,6 +34,7 @@ public class ObliviousAlgebraCoordinator {
 
 
     public EncMatrix secInv(EncMatrix M) throws Exception {
+        t = M.M;
 
         //line 1
         for (int i = 0; i < parties.size(); i++) {
@@ -42,6 +43,8 @@ public class ObliviousAlgebraCoordinator {
 
         //line 2
         EncMatrix MPrime = new EncMatrix(M);
+        System.out.println("Input M: " + privateKeyRing.decryptMatrix(M));
+        System.out.println(" MPrime before changing: " + privateKeyRing.decryptMatrix(MPrime));
 
         //line 3
         for (ObliviousAlgebra party : parties) {
@@ -50,6 +53,10 @@ public class ObliviousAlgebraCoordinator {
             //line 6
         }
 
+        //only for Test:
+        System.out.println(" easy decryption: " + privateKeyRing.decryptMatrix(MPrime));
+
+
         //line 7
         //decryption without the secretkeys
         List<IntMatrix> MPrimeParts = new LinkedList<>();
@@ -57,14 +64,24 @@ public class ObliviousAlgebraCoordinator {
             MPrimeParts.add(parties.get(i).getPartialDecryptionMatrix(MPrime));
         }
         IntMatrix decMPrime = privateKeyRing.decryptMatrix(MPrimeParts);
+        System.out.println("decMPrime is: " + decMPrime);
+
+
+        //TODO: The error is here: inverse wants to give out floating numbers
+        IntMatrix tmp = decMPrime.inverse();
+        System.out.println("DecPrime inverse" + tmp);
+
 
         EncMatrix NPrime = new EncMatrix(decMPrime.inverse(), publicKey);
+        System.out.println("start NPrime is: " + privateKeyRing.decryptMatrix(NPrime));
+
 
         //line 8
         for (int i = 0; i < parties.size(); i++) {
             //go from N to 1
             //line 9-10
-            NPrime = parties.get(parties.size() - i).secInvPart3(NPrime);
+            NPrime = parties.get(parties.size() - (i+1)).secInvPart3(NPrime);
+            System.out.println("new NPrime is: " + privateKeyRing.decryptMatrix(NPrime));
             //line 11
         }
         //line 12

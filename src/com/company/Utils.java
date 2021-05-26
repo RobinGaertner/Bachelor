@@ -186,6 +186,19 @@ public class Utils {
         }
     }
 
+
+
+
+
+    public Boolean isSingular(IntMatrix A){
+        if(isSingular(A, A.getM()).equals(BigInteger.ZERO)){
+            return true;
+        }else{
+            return false;
+        }
+
+    }
+
     //from https://www.geeksforgeeks.org/program-check-matrix-singular-not/
 
     /* Recursive function to check if mat[][] is
@@ -219,6 +232,19 @@ public class Utils {
 
         return D;
     }
+
+
+    //mie
+    public IntMatrix identityMatrixTimes(int size, int mul){
+        BigInteger[][] data = new BigInteger[size][size];
+        for (int i = 0; i < size; i++) {
+            data[i][i] = BigInteger.valueOf(mul);
+        }
+        return new IntMatrix(data);
+    }
+
+
+
 
 
 
