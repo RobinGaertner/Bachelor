@@ -154,6 +154,17 @@ public class Utils {
         return start;
     }
 
+    public EncryptedNumber addEncNumbers(List<EncryptedNumber> numberList) throws Exception {
+
+        EncryptedNumber start = numberList.get(0);
+
+        for (int i = 1; i < numberList.size(); i++) {
+            start = start.add(numberList.get(i));
+        }
+        return start;
+    }
+
+
     //from https://www.geeksforgeeks.org/program-check-matrix-singular-not/
 
     static void getCofactor(IntMatrix M, BigInteger temp[][], int p,

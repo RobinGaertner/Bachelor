@@ -27,4 +27,16 @@ public class Polynomial {
 
         return fx;
     }
+
+    public BigInteger call(BigInteger X){
+        BigInteger fx = BigInteger.valueOf(0);
+        for (int i = 0; i < coeffs.size(); i++) {
+            BigInteger tmp = X.modPow(BigInteger.valueOf(i), modulus);
+            BigInteger tmp2 = tmp.multiply(coeffs.get(i)).mod(modulus);
+            fx = tmp2.add(fx).mod(modulus);
+        }
+
+
+        return fx;
+    }
 }
