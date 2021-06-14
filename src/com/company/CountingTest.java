@@ -33,10 +33,15 @@ public class CountingTest {
     }
 
     //line 2
-    List<EncryptedNumber> MPCTpart1(List<BigInteger> sharedAlphas){
+    List<EncryptedNumber> MPCTpart1(List<BigInteger> sharedAlphas, BigInteger setMod){
 
         //here we need the input set
-        poly.init();
+        List<BigInteger> negativeInputSet = new LinkedList<>(inputSet);
+        for (int i = 0; i < negativeInputSet.size(); i++) {
+            negativeInputSet.set(i, BigInteger.ZERO.subtract(negativeInputSet.get(i)));
+        }
+
+        poly.init(multiplyOut(negativeInputSet), setMod);
 
         //empty the last thing out
         evalPoints.clear();
@@ -75,7 +80,7 @@ public class CountingTest {
             EncryptedNumber part2 = publicKey.encrypt(poly.call(inputAlphas.get(j)));
 
             EncryptedNumber[] newD = new EncryptedNumber[3];
-            newD[0] = inputAlphas.get(j);
+
             newD[1] = part1;
             newD[2] = part2;
             dList.add(newD);
@@ -85,8 +90,24 @@ public class CountingTest {
 
 
         //line 4
-        return !coordinator.SDT(dList, pks);
+        return !coordinator.SDT(dList, inputAlphas, pks);
 
     }
 
+
+
+    List<BigInteger> multiplyOut (List<BigInteger> inputList){
+        List<BigInteger> resList = new LinkedList();
+        for (int i = 0; i < inputList.size(); i++) {
+            List<BigInteger> tmpList = new LinkedList<>();
+            tmpList.add(BigInteger.ONE);
+            for (int j = 0; j < resList.size(); j++) {
+                BigInteger tmpInt = resList.remove(j);
+                tmpInt = tmpInt.multiply(inputList.get(i)).add(resList.get(j+1));
+                tmpList.add(tmpInt);
+            }
+            resList = new LinkedList<>(tmpList);
+        }
+        return resList;
+    }
 }

@@ -16,6 +16,7 @@ public class CountingTestCoordinator {
     public PublicKey publicKey;
     Utils utils = new Utils();
     Random rnd = new Random();
+    ObliviousAlgebraCoordinator oCoordinator;
 
 
 
@@ -28,6 +29,8 @@ public class CountingTestCoordinator {
         //TODO: remove the privatekeyring
         privateKeyRing = con.getPrivateKeyRing();
 
+        oCoordinator = new ObliviousAlgebraCoordinator(numParties, t);
+
 
 
         for (int i = 0; i < numParties; i++) {
@@ -36,14 +39,14 @@ public class CountingTestCoordinator {
         t = treshold;
     }
 
-    void MPCT(List<BigInteger> inputAlphas){
+    void MPCT(List<BigInteger> inputAlphas, BigInteger setMod){
 
         List<List<EncryptedNumber>> encPointsList = new LinkedList<>();
         //line 1 already done in setup
 
         //line 2
         for (int i = 0; i < parties.size(); i++) {
-            encPointsList.add(parties.get(i).MPCTpart1(inputAlphas));
+            encPointsList.add(parties.get(i).MPCTpart1(inputAlphas, setMod));
         }
 
         //line 3
@@ -53,9 +56,27 @@ public class CountingTestCoordinator {
     }
 
 
-    boolean SDT(List<EncryptedNumber[]> dList, PrivateKeyShare privateKeyShare){
+    boolean SDT(List<EncryptedNumber[]> dList, List<BigInteger> alphaList, PrivateKeyShare privateKeyShare) throws Exception {
+
+        //line 2
+        //generate the system
+        //TODO: init right
+        EncMatrix Mr = new EncMatrix();
+        EncMatrix y = new EncMatrix();
+
+        EncryptedNumber part1 = oCoordinator.secRank(Mr);
+        EncryptedNumber part2 = oCoordinator.secRank(Mr.plus(y));
+
+        if(part1.sub(part2).decZero != 0) {
+            return false;
+        }
+
+        //line 3
+
 
     }
+
+
 
 
 

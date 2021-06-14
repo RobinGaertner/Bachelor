@@ -1,5 +1,6 @@
 package com.company;
 
+import java.math.BigInteger;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -150,7 +151,7 @@ public class ObliviousAlgebraCoordinator {
 
 
 
-    int secRank(EncMatrix M) throws Exception {
+    EncryptedNumber secRank(EncMatrix M) throws Exception {
         //matrix needs to be square
 
         int t = M.M;
@@ -192,7 +193,8 @@ public class ObliviousAlgebraCoordinator {
         }
 
 
-        return 1;
+        //TODO: return right
+        return publicKey.encrypt(BigInteger.ONE);
     }
 
 
