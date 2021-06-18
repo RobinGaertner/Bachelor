@@ -90,7 +90,7 @@ public class CountingTest {
 
 
         //line 4
-        return !coordinator.SDT(dList, inputAlphas, pks);
+        return !coordinator.SDTtemp();
 
     }
 

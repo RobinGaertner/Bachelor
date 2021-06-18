@@ -39,4 +39,8 @@ public class Polynomial {
 
         return fx;
     }
+
+    public int degree(){
+        return coeffs.size()-1;
+    }
 }
