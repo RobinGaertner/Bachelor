@@ -58,7 +58,7 @@ public class CountingTestCoordinator {
 
     boolean SDT(List<BigInteger> fList, List<BigInteger> alphaList, PrivateKeyShare privateKeyShare, int t) throws Exception {
 
-        //line 2
+        //line 1
         //generate the system
 
         //do first half
@@ -179,19 +179,49 @@ public class CountingTestCoordinator {
          //line 4
         //compute the polynomials
 
-        Polynomial Cv1 =;
-        Polynomial Cv2 =;
-        Polynomial Cw1 =;
-        Polynomial Cw2 =;
+        //from 0-t
+        List<BigInteger> Cv1List = new LinkedList<BigInteger>();
+        for (int i = 0; i < t+1; i++) {
+            Cv1List.add(cv1.getData()[i][0]);
+        }
+        Polynomial Cv1 = new Polynomial();
+        Cv1.init(Cv1List, publicKey.ns1);
+
+        //from 1-t
+        List<BigInteger> Cv2List = new LinkedList<BigInteger>();
+        Cv2List.add(BigInteger.ONE);
+        for (int i = 0; i < t; i++) {
+            Cv1List.add(cv2.getData()[i][0]);
+        }
+        Polynomial Cv2 = new Polynomial();
+        Cv1.init(Cv2List, publicKey.ns1);
+
+
+        //do this again for w
+        //from 0-t
+        List<BigInteger> Cw1List = new LinkedList<BigInteger>();
+        for (int i = 0; i < t+1; i++) {
+            Cw1List.add(cw1.getData()[i][0]);
+        }
+        Polynomial Cw1 = new Polynomial();
+        Cw1.init(Cw1List, publicKey.ns1);
+
+        //from 1-t
+        List<BigInteger> Cw2List = new LinkedList<BigInteger>();
+        Cw2List.add(BigInteger.ONE);
+        for (int i = 0; i < t; i++) {
+            Cw2List.add(cw2.getData()[i][0]);
+        }
+        Polynomial Cw2 = new Polynomial();
+        Cw2.init(Cw2List, publicKey.ns1);
 
 
         //compute the endresult
-        int z;
+        BigInteger z = Cv1.call(alphaList.get(0)).multiply(Cw2.call(alphaList.get(0)));
+        z = z.subtract(Cw1.call(alphaList.get(0).multiply(Cv2.call(alphaList.get(0)))));
 
-
-
-        return z==0;
-
+        //line 5
+        return z.equals(BigInteger.ZERO);
     }
 
 

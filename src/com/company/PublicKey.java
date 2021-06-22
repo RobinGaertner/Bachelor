@@ -15,7 +15,8 @@ public class PublicKey {
     int threshold;
     BigInteger delta;
     public BigInteger ns;
-    BigInteger ns1;
+    //I think this is the mod
+    public BigInteger ns1;
     BigInteger nsm;
     public BigInteger invFourDeltaSquared;
 
