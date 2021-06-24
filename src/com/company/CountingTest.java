@@ -86,12 +86,9 @@ public class CountingTest {
             dList.add(newD);
         }
 
-
-
-
         //line 4
-        return !coordinator.SDTtemp();
-
+        //return !coordinator.SDTtemp();
+        return true;
     }
 
 

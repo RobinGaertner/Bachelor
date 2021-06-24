@@ -1,5 +1,9 @@
 package com.company;
 
+import org.apache.commons.math3.analysis.polynomials.PolynomialFunction;
+import org.apache.commons.math3.linear.ArrayRealVector;
+import org.apache.commons.math3.linear.RealVector;
+
 import java.math.BigInteger;
 import java.util.LinkedList;
 import java.util.List;
@@ -17,6 +21,7 @@ public class CountingTestCoordinator {
     Utils utils = new Utils();
     Random rnd = new Random();
     ObliviousAlgebraCoordinator oCoordinator;
+    DummyFunctions dummy = new DummyFunctions();
 
 
 
@@ -105,6 +110,7 @@ public class CountingTestCoordinator {
             y[k] = new IntMatrix(data2);
 
             //one half of r done
+            //second coordinate of y is always 0
         }
 
 
@@ -125,110 +131,72 @@ public class CountingTestCoordinator {
         //combination done
 
         //line 2
-
-        BigInteger part1 = oCoordinator.secRank(MrPlain[0]);
-        BigInteger part2 = oCoordinator.secRank(Mry[0]);
+        //TODO: change
+        int part1 = dummy.rankOfMatrix(MrPlain[0]);
+        int part2 = dummy.rankOfMatrix(Mry[0]);
 
         //if not zero, abort
-        if(!part1.subtract(part2).equals(BigInteger.ZERO)){
+        if(part1 - part2 != 0){
             return false;
         }
 
         //line 3
-         IntMatrix cv = OLS(MrPlain[0]);
-         IntMatrix cw = OLS(MrPlain[1]);
-
-            BigInteger[][] oldData = cv.getData();
-            BigInteger[][] newData1 = new BigInteger[cv.getM()][cv.getN()/2];
-            for (int j = 0; j < cv.getM(); j++) {
-                for (int k = 0; k < cv.getN()/2; k++) {
-                    newData1[j][k] = oldData[j][k];
-                }
-            }
-        IntMatrix cv1 = new IntMatrix(newData1);
-
-        BigInteger[][] newData2 = new BigInteger[cv.getM()][cv.getN()/2];
-        for (int j = 0; j < cv.getM(); j++) {
-            for (int k = 0; k < cv.getN()/2; k++) {
-                newData2[j][k] = oldData[j][k+cv.getN()/2];
-            }
-        }
-        IntMatrix cv2 = new IntMatrix(newData2);
+        //returning value is going to the right, so first coordinate is always 0
+        List<Double> cv = dummy.OLS(MrPlain[0], y[0]);
+        List<Double> cw = dummy.OLS(MrPlain[1], y[1]);
 
 
+        List<Double> cv1 = cv.subList(0, t+1);
+        List<Double> cv2 = cv.subList(t+1, (2*t)+1);
 
-        BigInteger[][] oldDataw = cw.getData();
-        BigInteger[][] newData1w = new BigInteger[cw.getM()][cw.getN()/2];
-        for (int j = 0; j < cw.getM(); j++) {
-            for (int k = 0; k < cv.getN()/2; k++) {
-                newData1w[j][k] = oldDataw[j][k];
-            }
-        }
-        IntMatrix cw1 = new IntMatrix(newData1w);
-
-        BigInteger[][] newData2w = new BigInteger[cw.getM()][cw.getN()/2];
-        for (int j = 0; j < cw.getM(); j++) {
-            for (int k = 0; k < cw.getN()/2; k++) {
-                newData2w[j][k] = oldDataw[j][k+cw.getN()/2];
-            }
-        }
-        IntMatrix cw2 = new IntMatrix(newData2w);
-
-
+        List<Double> cw1 = cw.subList(0, t+1);
+        List<Double> cw2 = cw.subList(t+1, (2*t)+1);
 
          //line 4
         //compute the polynomials
 
         //from 0-t
-        List<BigInteger> Cv1List = new LinkedList<BigInteger>();
+        double[] Cv1Array = new double[t+1];
         for (int i = 0; i < t+1; i++) {
-            Cv1List.add(cv1.getData()[i][0]);
+            Cv1Array[i] = cv1.get(i);
         }
-        Polynomial Cv1 = new Polynomial();
-        Cv1.init(Cv1List, publicKey.ns1);
+        PolynomialFunction Cv1 = new PolynomialFunction(Cv1Array);
 
         //from 1-t
-        List<BigInteger> Cv2List = new LinkedList<BigInteger>();
-        Cv2List.add(BigInteger.ONE);
-        for (int i = 0; i < t; i++) {
-            Cv1List.add(cv2.getData()[i][0]);
+        double[] Cv2Array = new double[t];
+        for (int i = 0; i < t+1; i++) {
+            Cv2Array[i] = cv2.get(i+t+1);
         }
-        Polynomial Cv2 = new Polynomial();
-        Cv1.init(Cv2List, publicKey.ns1);
+        PolynomialFunction Cv2 = new PolynomialFunction(Cv2Array);
 
 
         //do this again for w
         //from 0-t
-        List<BigInteger> Cw1List = new LinkedList<BigInteger>();
+
+        double[] Cw1Array = new double[t+1];
         for (int i = 0; i < t+1; i++) {
-            Cw1List.add(cw1.getData()[i][0]);
+            Cw1Array[i] = cw1.get(i);
         }
-        Polynomial Cw1 = new Polynomial();
-        Cw1.init(Cw1List, publicKey.ns1);
+        PolynomialFunction Cw1 = new PolynomialFunction(Cw1Array);
 
         //from 1-t
-        List<BigInteger> Cw2List = new LinkedList<BigInteger>();
-        Cw2List.add(BigInteger.ONE);
-        for (int i = 0; i < t; i++) {
-            Cw2List.add(cw2.getData()[i][0]);
+        double[] Cw2Array = new double[t];
+        for (int i = 0; i < t+1; i++) {
+            Cw2Array[i] = cw2.get(i+t+1);
         }
-        Polynomial Cw2 = new Polynomial();
-        Cw2.init(Cw2List, publicKey.ns1);
+        PolynomialFunction Cw2 = new PolynomialFunction(Cw2Array);
+
 
 
         //compute the endresult
-        BigInteger z = Cv1.call(alphaList.get(0)).multiply(Cw2.call(alphaList.get(0)));
-        z = z.subtract(Cw1.call(alphaList.get(0).multiply(Cv2.call(alphaList.get(0)))));
+        double Z = Cv1.value(alphaList.get(0).doubleValue()) * Cw2.value((alphaList.get(0).doubleValue()));
+        Z -= Cw1.value(alphaList.get(0).doubleValue() * Cv2.value(alphaList.get(0).doubleValue()));
+
 
         //line 5
-        return z.equals(BigInteger.ZERO);
+        return Z == 0;
     }
 
-
-
-    public IntMatrix OLS(IntMatrix intMatrix){
-        return new IntMatrix(2,2);
-    }
 
     boolean SDTtemp(Polynomial p1, Polynomial p2, int threshold) throws Exception {
         if(p1.degree()<threshold){
