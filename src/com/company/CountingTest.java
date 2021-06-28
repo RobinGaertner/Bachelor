@@ -12,11 +12,9 @@ public class CountingTest {
     List<BigInteger> evalPoints = new LinkedList<>();
     //TODO: secure random?
     Random rnd = new Random();
-    DummyFunctions dummy = new DummyFunctions();
     List<EncryptedNumber> cList = new LinkedList<>();
     PrivateKeyShare pks;
     PublicKey publicKey;
-    Utils utils = new Utils();
     List<BigInteger> inputSet;
     CountingTestCoordinator coordinator;
 
@@ -94,7 +92,7 @@ public class CountingTest {
 
 
     List<BigInteger> multiplyOut (List<BigInteger> inputList){
-        List<BigInteger> resList = new LinkedList();
+        List<BigInteger> resList = new LinkedList<>();
         for (int i = 0; i < inputList.size(); i++) {
             List<BigInteger> tmpList = new LinkedList<>();
             tmpList.add(BigInteger.ONE);

@@ -82,23 +82,23 @@ public class KeyGen {
 
 
 
-        System.out.println("list1"+list1);
-        System.out.println("list2" +list2);
+        //System.out.println("list1"+list1);
+        //System.out.println("list2" +list2);
 
         BigInteger D = crt.chinese_remainder_theorem(list1, list2, 2);
 
-        System.out.println("crm return "+D);
+        //System.out.println("crm return "+D);
 
 
         List<Share> shares = shamirSecretSharing.shareSecret(D, nsm, threshold, nShares);
 
-        System.out.println("shamirSecret sharing finished ");
+        //System.out.println("shamirSecret sharing finished ");
         //Create PublicKey and PrivateKeyShares
         BigInteger delta =  factorial(nShares);
-        System.out.println("factorial finished : " + delta);
+        //System.out.println("factorial finished : " + delta);
         PublicKey publicKey = new PublicKey();
         publicKey.init(n, s, m, threshold, delta);
-        System.out.println("PublicKey init finished ");
+        //System.out.println("PublicKey init finished ");
 
         List<PrivateKeyShare> privateKeyShares = new LinkedList<PrivateKeyShare>();
 
@@ -108,11 +108,11 @@ public class KeyGen {
             privateKeyShares.add(tmp);
         }
 
-        System.out.println("before PrivateKeyRing init ");
+        //System.out.println("before PrivateKeyRing init ");
         PrivateKeyRing privateKeyRing = new PrivateKeyRing();
         privateKeyRing.init(privateKeyShares);
 
-        System.out.println("after privatekeyring init ");
+        //System.out.println("after privatekeyring init ");
         return new Containter(publicKey, privateKeyRing);
     }
 

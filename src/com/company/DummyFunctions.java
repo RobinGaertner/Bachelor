@@ -8,19 +8,17 @@ import org.apache.commons.math3.linear.*;
 
 public class DummyFunctions {
 
-    int encryptCounter;
-    DecompositionSolver solver;
 
 
 
 
-    BigInteger encrypt (BigInteger input){
-        encryptCounter++;
-        return input;
-    }
+    public List<Double> OLS(RealMatrix matrix, RealVector vector){
 
-    public List<Double> OLS(IntMatrix matrix, IntMatrix vector){
+        System.out.println("OLS gets the matrices: " + matrix);
+        System.out.println("OLS gets the vector: " + vector);
 
+
+        /*
         //bring the input into the right format
         BigInteger[][] data = matrix.getData();
         double[][] newData = new double[matrix.getM()][matrix.getN()];
@@ -31,14 +29,14 @@ public class DummyFunctions {
             }
         }
 
-        RealMatrix coefficients =
-                new Array2DRowRealMatrix(newData,
-                        false);
+         */
+
+        RealMatrix coefficients = matrix;
         DecompositionSolver solver = new LUDecomposition(coefficients).getSolver();
 
 
 
-
+/*
         BigInteger[][] vectorData = vector.getData();
 
         double[] newVectorData = new double[vector.getN()];
@@ -51,13 +49,17 @@ public class DummyFunctions {
         System.out.println(newVectorData[2]);
 
 
-        RealVector constants = new ArrayRealVector(newVectorData, false);
+ */
+
+        RealVector constants = vector;
         RealVector solution = solver.solve(constants);
+
 
         System.out.println("Solution: " + solution);
 
+        System.out.println("solution dimension: " + solution.getDimension());
         List<Double> resultList = new LinkedList<>();
-        for (int i = 0; i < solution.getMaxIndex(); i++) {
+        for (int i = 0; i < solution.getDimension(); i++) {
             //TODO: casting here
             resultList.add( solution.getEntry(i));
         }
@@ -92,10 +94,17 @@ public class DummyFunctions {
         }
     }
 
+
+    public int rankOfMatrix(RealMatrix A){
+
+        //TODO: change this
+        return 0;
+    }
+
+
     // function for finding rank of matrix
     public int rankOfMatrix(IntMatrix A)
     {
-
         int rank = A.getN();
 
         for (int row = 0; row < rank; row++)

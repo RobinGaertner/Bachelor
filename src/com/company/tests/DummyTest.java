@@ -1,14 +1,15 @@
 package com.company.tests;
 
 import com.company.*;
+import org.apache.commons.math3.linear.Array2DRowRealMatrix;
+import org.apache.commons.math3.linear.ArrayRealVector;
+import org.apache.commons.math3.linear.RealMatrix;
+import org.apache.commons.math3.linear.RealVector;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
-import java.util.List;
-import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 class DummyTest {
 
@@ -77,20 +78,22 @@ class DummyTest {
     void OLSTest(){
 
 
-         BigInteger[][] matrix1 =  { {  BigInteger.valueOf(2), BigInteger.valueOf(3), BigInteger.valueOf(-2) },
-                                     {  BigInteger.valueOf(-1), BigInteger.valueOf(7), BigInteger.valueOf(6)},
-                                     {  BigInteger.valueOf(4), BigInteger.valueOf(-3), BigInteger.valueOf(5)}
+         double[][] matrix1 =  { {  2,3, -2 },
+                                     {  -1, 7, 6},
+                                     {  4, -3, 5}
          };
 
-         IntMatrix M = new IntMatrix(matrix1);
+         RealMatrix M = new Array2DRowRealMatrix(matrix1);
 
-        BigInteger[][] matrix2 =  { {  BigInteger.valueOf(1),BigInteger.valueOf(-2), BigInteger.valueOf(1) } };
+        double[] matrix2 =  {  1,-2, 1 };
 
 
-        IntMatrix y = new IntMatrix(matrix2);
+        RealVector y = new ArrayRealVector(matrix2);
 
         System.out.println(dummyFunctions.OLS(M, y));
         //assertEquals(, dummyFunctions.OLS(M, y));
+
+
 
     }
 

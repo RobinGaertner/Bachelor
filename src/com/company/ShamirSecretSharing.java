@@ -48,7 +48,7 @@ public class ShamirSecretSharing {
 
         Polynomial polynomial = new Polynomial();
         polynomial.init(coeffs, modulus);
-        System.out.println("Coeffs of the polynomial" + coeffs);
+        //System.out.println("Coeffs of the polynomial" + coeffs);
 
 
         List<Integer> X = new LinkedList<>();
