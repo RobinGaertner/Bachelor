@@ -74,6 +74,11 @@ public class CountingTestCoordinator {
         RealMatrix[] MrPlain = new RealMatrix[2];
         RealVector[] y = new RealVector[2];
 
+
+        System.out.println("treshold is: " + t);
+        System.out.println("fList: " + fList);
+        System.out.println("alphaList: " + alphaList);
+
         for (int k = 0; k < 2; k++) {
 
             double[][] data = new double[2*t+1][2*t+1];
@@ -90,7 +95,7 @@ public class CountingTestCoordinator {
                     System.out.println("Data " + tmp +" is written to " + ((t)-i) + " " + j);
 
                     data[(t)-i][j] = tmp;
-                    tmp = tmp * (alphaList.get(j+((t+1)*k)));
+                    tmp = tmp * (alphaList.get(j+((2*t+1)*k)));
                 }
             }
             //left half should be filled now
@@ -99,26 +104,30 @@ public class CountingTestCoordinator {
             //now to t+1 to 2t+1
             //y coordinate
             for (int j = 0; j < 2*t+1; j++) {
-                double tmp = 0 - (fList.get(j+((t+1)*k)));
+                double tmp = 0 - (fList.get(j+((2*t+1)*k)));
                 //x coordinate
                 for (int i = 0; i < t; i++) {
 
+                    System.out.println("Part 2 gets written " + tmp + " to " + (2*t-i) + " " + j);
                     data[2*t-i][j] = tmp;
-                    tmp = tmp * alphaList.get(j+((t+1)*k));
+                    tmp = tmp * alphaList.get(j+((2*t+1)*k));
                 }
 
             }
 
             //second half filled as well
+
+            //going for y now
             MrPlain[k] = new Array2DRowRealMatrix(data, false);
             System.out.println("Matrix right after finishing " + MrPlain[k]);
 
 
             double [] data2 = new double[2*t+1];
             for (int i = 0; i < 2 * t + 1; i++) {
-                data2[i] = pow(fList.get(i+((t+1)*k)) * (alphaList.get(i+((t+1)*k))),t);
+                data2[i] = fList.get(i+((2*t+1)*k)) * pow((alphaList.get(i+((2*t+1)*k))),t);
             }
             y[k] = new ArrayRealVector(data2);
+            System.out.println("y is: " + y[k]);
 
             //one half of r done
             //second coordinate of y is always 0

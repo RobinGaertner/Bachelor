@@ -30,9 +30,10 @@ public class DummyFunctions {
         }
 
          */
-
         RealMatrix coefficients = matrix;
         DecompositionSolver solver = new LUDecomposition(coefficients).getSolver();
+
+        System.out.println("solver sais matrix is nonsingular: " + solver.isNonSingular());
 
 
 
