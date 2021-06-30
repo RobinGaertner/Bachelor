@@ -21,7 +21,7 @@ class SDTTests {
 
 
     int numparties = 10;
-    int treshold = 3;
+    int treshold = 5;
 
 
     SDTTests() throws Exception {
@@ -43,19 +43,18 @@ class SDTTests {
         List<Double> inputList = new LinkedList<>();
 
         for (int i = 0; i < 4*t+2; i++) {
-            inputList.add((double) i+2);
+            inputList.add((double) 2*i+2);
         }
 
 
-
-        double[] p1Array = new double[t-1];
+        double[] p1Array = new double[t+1];
         for (int i = 0; i < t-1; i++) {
             p1Array[i] = i+2;
         }
         PolynomialFunction p1 = new PolynomialFunction(p1Array);
 
 
-        double[] p2Array = new double[t-1];
+        double[] p2Array = new double[t+1];
         for (int i = 0; i < t-1; i++) {
             p2Array[i] = 6+i;
         }

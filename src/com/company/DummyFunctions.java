@@ -31,11 +31,7 @@ public class DummyFunctions {
 
          */
         RealMatrix coefficients = matrix;
-        DecompositionSolver solver = new LUDecomposition(coefficients).getSolver();
-
-        System.out.println("solver sais matrix is nonsingular: " + solver.isNonSingular());
-
-
+        DecompositionSolver solver = new QRDecomposition(coefficients).getSolver();
 
 /*
         BigInteger[][] vectorData = vector.getData();
@@ -57,18 +53,11 @@ public class DummyFunctions {
 
 
         System.out.println("Solution: " + solution);
-
-        System.out.println("solution dimension: " + solution.getDimension());
         List<Double> resultList = new LinkedList<>();
         for (int i = 0; i < solution.getDimension(); i++) {
             //TODO: casting here
             resultList.add( solution.getEntry(i));
         }
-
-        System.out.println("Size: " + resultList.size());
-        System.out.println("Size: " + resultList.get(0));
-        System.out.println("Size: " + resultList.get(1));
-        System.out.println("Size: " + resultList.get(2));
         return resultList;
     }
 

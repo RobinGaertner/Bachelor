@@ -160,6 +160,11 @@ public class CountingTestCoordinator {
             return false;
         }
 
+        System.out.println("directly in front of OLS");
+        //TODO: change back
+        MrPlain[0].getData()[3][3] = 300;
+
+
         //line 3
         //returning value is going to the right, so first coordinate is always 0
         List<Double> cv = dummy.OLS(MrPlain[0], y[0]);
@@ -181,16 +186,17 @@ public class CountingTestCoordinator {
         //from 0-t
         double[] Cv1Array = new double[t+1];
         for (int i = 0; i < t+1; i++) {
-            Cv1Array[i] = cv1.get(i);
+            Cv1Array[t-i] = cv1.get(i);
         }
         PolynomialFunction Cv1 = new PolynomialFunction(Cv1Array);
 
         //from 1-t
         double[] Cv2Array = new double[t+1];
         //first coefficient will be 1
-        Cv2Array[0] = 1;
+        Cv2Array[t] = 1;
         for (int i = 0; i < t; i++) {
-            Cv2Array[i+1] = cv2.get(i);
+            //do from the back, because first part of solution needs the highest exponent
+            Cv2Array[t-i-1] = cv2.get(i);
         }
         PolynomialFunction Cv2 = new PolynomialFunction(Cv2Array);
 
@@ -200,23 +206,30 @@ public class CountingTestCoordinator {
 
         double[] Cw1Array = new double[t+1];
         for (int i = 0; i < t+1; i++) {
-            Cw1Array[i] = cw1.get(i);
+            //do from the back, because first part of solution needs the highest exponent
+            Cw1Array[t-i] = cw1.get(i);
         }
         PolynomialFunction Cw1 = new PolynomialFunction(Cw1Array);
 
         //from 1-t
         double[] Cw2Array = new double[t+1];
-        Cw2Array[0] = 1;
+        Cw2Array[t] = 1;
         for (int i = 0; i < t; i++) {
-            Cw2Array[i+1] = cw2.get(i);
+            //do from the back, because first part of solution needs the highest exponent
+            Cw2Array[t-i-1] = cw2.get(i);
         }
         PolynomialFunction Cw2 = new PolynomialFunction(Cw2Array);
 
+        System.out.println("Poly v1: " + Cv1);
+        System.out.println("Poly v2: " + Cv2);
+        System.out.println("Poly w1: " + Cw1);
+        System.out.println("Poly w2: " + Cw2);
 
 
         //compute the endresult
-        double Z = Cv1.value(alphaList.get(0)) * Cw2.value((alphaList.get(0)));
-        Z -= Cw1.value(alphaList.get(0) * Cv2.value(alphaList.get(0)));
+        //get on point t?
+        double Z = Cv1.value(alphaList.get(t)) * Cw2.value((alphaList.get(t)));
+        Z -= Cw1.value(alphaList.get(t) * Cv2.value(alphaList.get(t)));
 
 
         System.out.println("retVal of SDT would be: " + Z);
