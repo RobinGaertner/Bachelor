@@ -3,6 +3,7 @@ package com.company.tests;
 import com.company.*;
 import org.apache.commons.math3.analysis.polynomials.PolynomialFunction;
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
+import org.apache.commons.math3.linear.RealMatrix;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -21,7 +22,8 @@ class SDTTests {
 
 
     int numparties = 10;
-    int treshold = 5;
+    int treshold = 4;
+    Utils utils = new Utils();
 
 
     SDTTests() throws Exception {
@@ -47,14 +49,14 @@ class SDTTests {
         }
 
 
-        double[] p1Array = new double[t+1];
+        double[] p1Array = new double[t-1];
         for (int i = 0; i < t-1; i++) {
             p1Array[i] = i+2;
         }
         PolynomialFunction p1 = new PolynomialFunction(p1Array);
 
 
-        double[] p2Array = new double[t+1];
+        double[] p2Array = new double[t-1];
         for (int i = 0; i < t-1; i++) {
             p2Array[i] = 6+i;
         }
@@ -64,7 +66,7 @@ class SDTTests {
         List<Double> fList = new LinkedList<>();
 
         for (int i = 0; i < inputList.size(); i++) {
-            fList.add(p1.value(i) / p2.value(i));
+            fList.add(p2.value(i) / p1.value(i));
         }
 
 
@@ -80,5 +82,27 @@ class SDTTests {
 
         */
     }
+
+
+    @Test
+    void matrixRankTest(){
+
+        double[][] data = new double[5][5];
+
+        data[0] = new double[]{5, 6, 7, 8, 9};
+        data[1] = new double[]{4, 6, 7, 8, 10};
+        data[2] = new double[]{5, 6, 7, 9, 12};
+        data[3] = new double[]{2, 6, 4, 7, 9};
+        data[4] = new double[]{5, 17, 7, 8, 9};
+
+
+
+        RealMatrix m = new Array2DRowRealMatrix(data);
+
+        assertEquals(5, utils.rankOfMatrix(m));
+
+    }
+
+
 
 }

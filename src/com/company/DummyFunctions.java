@@ -88,6 +88,8 @@ public class DummyFunctions {
     public int rankOfMatrix(RealMatrix A){
 
         //TODO: change this
+        SingularValueDecomposition test;
+
         return 0;
     }
 

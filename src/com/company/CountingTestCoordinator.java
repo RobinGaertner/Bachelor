@@ -22,6 +22,7 @@ public class CountingTestCoordinator {
     public PublicKey publicKey;
     ObliviousAlgebraCoordinator oCoordinator;
     DummyFunctions dummy = new DummyFunctions();
+    Utils utils = new Utils();
 
 
 
@@ -151,18 +152,23 @@ public class CountingTestCoordinator {
         //combination done
 
         //line 2
-        //TODO: change
-        int part1 = dummy.rankOfMatrix(MrPlain[0]);
-        int part2 = dummy.rankOfMatrix(Mry[0]);
+        //fine now
+        for (int i = 0; i < 2; i++) {
+            int part1 = utils.rankOfMatrix(MrPlain[i]);
+            int part2 = utils.rankOfMatrix(Mry[i]);
 
-        //if not zero, abort
-        if(part1 - part2 != 0){
-            return false;
+            System.out.println("MrY: " + Mry[i]);
+            System.out.println("rank of matrix 1: " + part1);
+            System.out.println("rank of matrix 2: " + part2);
+
+            //if not zero, abort
+            if(part1 - part2 != 0){
+                return false;
+            }
         }
 
+
         System.out.println("directly in front of OLS");
-        //TODO: change back
-        MrPlain[0].getData()[3][3] = 300;
 
 
         //line 3
@@ -228,8 +234,14 @@ public class CountingTestCoordinator {
 
         //compute the endresult
         //get on point t?
-        double Z = Cv1.value(alphaList.get(t)) * Cw2.value((alphaList.get(t)));
-        Z -= Cw1.value(alphaList.get(t) * Cv2.value(alphaList.get(t)));
+        PolynomialFunction PZ = Cv1.multiply(Cw2).subtract(Cw1.multiply(Cv2));
+
+
+        System.out.println("retVal in PZ: " + PZ.value(alphaList.get(0))) ;
+
+
+        double Z = Cv1.value(alphaList.get(0)) * Cw2.value((alphaList.get(0)));
+        Z -= Cw1.value(alphaList.get(0) * Cv2.value(alphaList.get(0)));
 
 
         System.out.println("retVal of SDT would be: " + Z);
