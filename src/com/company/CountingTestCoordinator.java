@@ -1,16 +1,13 @@
 package com.company;
 
 import org.apache.commons.math3.analysis.polynomials.PolynomialFunction;
-import org.apache.commons.math3.linear.Array2DRowRealMatrix;
-import org.apache.commons.math3.linear.ArrayRealVector;
-import org.apache.commons.math3.linear.RealMatrix;
-import org.apache.commons.math3.linear.RealVector;
+import org.jlinalg.LinSysSolver;
+import org.jlinalg.Matrix;
+import org.jlinalg.Vector;
 
 import java.math.BigInteger;
 import java.util.LinkedList;
 import java.util.List;
-
-import static java.lang.Math.pow;
 
 public class CountingTestCoordinator {
 
@@ -65,15 +62,16 @@ public class CountingTestCoordinator {
     }
 
 
-    public boolean SDT(List<Double> fList, List<Double> alphaList, int t){
+    public boolean SDT(List<FModular> fList, List<BigInteger> alphaList, int t, BigInteger modulus){
 
         //line 1
         //generate the system
+        FModular.FModularFactory factory = FModular.FACTORY;
 
         //do first half
         //TODO: init right
-        RealMatrix[] MrPlain = new RealMatrix[2];
-        RealVector[] y = new RealVector[2];
+        IntMatrix[] MrPlain = new IntMatrix[2];
+        IntMatrix[] y = new IntMatrix[2];
 
 
         System.out.println("treshold is: " + t);
@@ -82,21 +80,22 @@ public class CountingTestCoordinator {
 
         for (int k = 0; k < 2; k++) {
 
-            double[][] data = new double[2*t+1][2*t+1];
+            BigInteger[][] data = new BigInteger[2*t+1][2*t+1];
 
             System.out.println("matrix size: " + (2*t+1));
 
             //dimensions: 2t+1 to right, 2t+1 down
             //y coordinate
             for (int j = 0; j < 2*t+1; j++) {
-                double tmp = 1;
+                BigInteger tmp = BigInteger.ONE;
                 //x coordinate
                 for (int i = 0; i < t+1; i++) {
 
                     System.out.println("Data " + tmp +" is written to " + ((t)-i) + " " + j);
 
                     data[(t)-i][j] = tmp;
-                    tmp = tmp * (alphaList.get(j+((2*t+1)*k)));
+                    tmp = tmp.multiply(alphaList.get(j+((2*t+1)*k)));
+
                 }
             }
             //left half should be filled now
@@ -105,13 +104,13 @@ public class CountingTestCoordinator {
             //now to t+1 to 2t+1
             //y coordinate
             for (int j = 0; j < 2*t+1; j++) {
-                double tmp = 0 - (fList.get(j+((2*t+1)*k)));
+                BigInteger tmp = BigInteger.ZERO.subtract(fList.get(j+((2*t+1)*k)).value);
                 //x coordinate
                 for (int i = 0; i < t; i++) {
 
                     System.out.println("Part 2 gets written " + tmp + " to " + (2*t-i) + " " + j);
                     data[2*t-i][j] = tmp;
-                    tmp = tmp * alphaList.get(j+((2*t+1)*k));
+                    tmp = tmp.multiply(alphaList.get(j+((2*t+1)*k)));
                 }
 
             }
@@ -119,15 +118,15 @@ public class CountingTestCoordinator {
             //second half filled as well
 
             //going for y now
-            MrPlain[k] = new Array2DRowRealMatrix(data, false);
+            MrPlain[k] = new IntMatrix(data);
             System.out.println("Matrix right after finishing " + MrPlain[k]);
 
 
-            double [] data2 = new double[2*t+1];
+            BigInteger[][] data2 = new BigInteger[2*t+1][1];
             for (int i = 0; i < 2 * t + 1; i++) {
-                data2[i] = fList.get(i+((2*t+1)*k)) * pow((alphaList.get(i+((2*t+1)*k))),t);
+                data2[i][0] = fList.get(i+((2*t+1)*k)).value.multiply((alphaList.get(i+((2*t+1)*k))).pow(t));
             }
-            y[k] = new ArrayRealVector(data2);
+            y[k] = new IntMatrix(data2);
             System.out.println("y is: " + y[k]);
 
             //one half of r done
@@ -135,18 +134,18 @@ public class CountingTestCoordinator {
         }
 
 
-        RealMatrix[] Mry = new RealMatrix[2];
+        IntMatrix[] Mry = new IntMatrix[2];
         //combine them for Mr||y
         for (int k = 0; k < 2; k++) {
-            double[][] newData = new double[2*t+2][2*t+1];
+            BigInteger[][] newData = new BigInteger[2*t+2][2*t+1];
 
             for (int i = 0; i < 2 * t + 1; i++) {
                 for (int j = 0; j < 2 * t + 1; j++) {
                     newData[j][i] = MrPlain[k].getData()[j][i];
                 }
-                newData[2*t+1][i] = y[k].getEntry(i);
+                newData[2*t+1][i] = y[k].getData()[i][0];
             }
-            Mry[k] = new Array2DRowRealMatrix(newData, false);
+            Mry[k] = new IntMatrix(newData);
         }
 
         //combination done
@@ -154,8 +153,8 @@ public class CountingTestCoordinator {
         //line 2
         //fine now
         for (int i = 0; i < 2; i++) {
-            int part1 = utils.rankOfMatrix(MrPlain[i]);
-            int part2 = utils.rankOfMatrix(Mry[i]);
+            int part1 = rankOfMatrix(MrPlain[i]);
+            int part2 = rankOfMatrix(Mry[i]);
 
             System.out.println("MrY: " + Mry[i]);
             System.out.println("rank of matrix 1: " + part1);
@@ -173,29 +172,40 @@ public class CountingTestCoordinator {
 
         //line 3
         //returning value is going to the right, so first coordinate is always 0
-        List<Double> cv = dummy.OLS(MrPlain[0], y[0]);
-        List<Double> cw = dummy.OLS(MrPlain[1], y[1]);
+        Vector<FModular> cv = OLS(MrPlain[0], y[0]);
+        Vector<FModular> cw = OLS(MrPlain[1], y[1]);
 
 
-        System.out.println("CvSize = " + cv.size());
-        System.out.println("2t+1: " + ((2*t)+1));
-        System.out.println("t+1: " + (t+1));
-        List<Double> cv1 = cv.subList(0, t+1);
-        List<Double> cv2 = cv.subList(t+1, (2*t)+1);
+        //System.out.println("CvSize = " + cv.size());
+        //System.out.println("2t+1: " + ((2*t)+1));
+        //System.out.println("t+1: " + (t+1));
 
-        List<Double> cw1 = cw.subList(0, t+1);
-        List<Double> cw2 = cw.subList(t+1, (2*t)+1);
+        //List<Double> cv2 = cv.subList(t+1, (2*t)+1);
+
+        //List<Double> cw1 = cw.subList(0, t+1);
+        //List<Double> cw2 = cw.subList(t+1, (2*t)+1);
 
          //line 4
         //compute the polynomials
 
         //from 0-t
-        double[] Cv1Array = new double[t+1];
+        List<BigInteger> cv1 = new LinkedList<>();
         for (int i = 0; i < t+1; i++) {
-            Cv1Array[t-i] = cv1.get(i);
+            cv1.add(cv.getEntry(t-i+1).value);
         }
-        PolynomialFunction Cv1 = new PolynomialFunction(Cv1Array);
+        Polynomial polynomialCv1 = new Polynomial();
+        polynomialCv1.init(cv1, modulus);
 
+        //from t+1 to 2t+1
+        List<BigInteger> cv2 = new LinkedList<>();
+        cv2.add(BigInteger.ONE);
+        for (int i = 0; i < t+1; i++) {
+            cv2.add(cv.getEntry(2*t-i+1).value);
+        }
+        Polynomial polynomialCv2 = new Polynomial();
+        polynomialCv2.init(cv2, modulus);
+
+        /*
         //from 1-t
         double[] Cv2Array = new double[t+1];
         //first coefficient will be 1
@@ -207,6 +217,32 @@ public class CountingTestCoordinator {
         PolynomialFunction Cv2 = new PolynomialFunction(Cv2Array);
 
 
+         */
+
+
+        //do this again for w
+        //from 0-t
+        //from 0-t
+        List<BigInteger> cw1 = new LinkedList<>();
+        for (int i = 0; i < t+1; i++) {
+            cw1.add(cw.getEntry(t-i+1).value);
+        }
+        Polynomial polynomialCw1 = new Polynomial();
+        polynomialCw1.init(cw1, modulus);
+
+        //from t+1 to 2t+1
+        List<BigInteger> cw2 = new LinkedList<>();
+        cw2.add(BigInteger.ONE);
+        for (int i = 0; i < t+1; i++) {
+            cw2.add(cw.getEntry(2*t-i+1).value);
+        }
+        Polynomial polynomialCw2 = new Polynomial();
+        polynomialCw2.init(cw2, modulus);
+
+
+
+
+        /*
         //do this again for w
         //from 0-t
 
@@ -226,27 +262,72 @@ public class CountingTestCoordinator {
         }
         PolynomialFunction Cw2 = new PolynomialFunction(Cw2Array);
 
-        System.out.println("Poly v1: " + Cv1);
-        System.out.println("Poly v2: " + Cv2);
-        System.out.println("Poly w1: " + Cw1);
-        System.out.println("Poly w2: " + Cw2);
+         */
+
+        //System.out.println("Poly v1: " + Cv1);
+        //System.out.println("Poly v2: " + Cv2);
+        //System.out.println("Poly w1: " + Cw1);
+        //System.out.println("Poly w2: " + Cw2);
 
 
         //compute the endresult
         //get on point t?
-        PolynomialFunction PZ = Cv1.multiply(Cw2).subtract(Cw1.multiply(Cv2));
+        FModular result1 = factory.get(polynomialCv1.call(alphaList.get(0))).multiply(factory.get(polynomialCw2.call(alphaList.get(0))));
+        FModular result2 = factory.get(polynomialCw1.call(alphaList.get(0))).multiply(factory.get(polynomialCv2.call(alphaList.get(0))));
+
+        System.out.println("res1 is: " + result1);
+        System.out.println("res2 is: " + result2);
+
+        FModular res = result1.subtract(result2);
+        System.out.println("res is: " + res);
+
+        return res.isZero();
+
+    }
 
 
-        System.out.println("retVal in PZ: " + PZ.value(alphaList.get(0))) ;
+    private Vector<FModular> OLS (IntMatrix matrix, IntMatrix vector){
+
+        BigInteger[][] Data = matrix.getData();
+        FModular [][] fData = new FModular[matrix.getM()][matrix.getN()];
+        FModular.FModularFactory factory = FModular.FACTORY;
+
+        for (int i = 0; i < matrix.getM(); i++) {
+            for (int j = 0; j < matrix.getN(); j++) {
+                fData[i][j] = factory.get(Data[i][j]);
+            }
+        }
+        Matrix<FModular> fMatrix = new Matrix<FModular>(fData);
+
+        // create a vector
+
+        BigInteger[][] vectorData = vector.getData();
+        FModular[] fVectorData = new FModular[vector.getM()];
+        for (int i = 0; i < vector.getM(); i++) {
+                fVectorData[i] = factory.get(vectorData[i][0]);
+        }
+        Vector<FModular> fVector = new Vector<FModular>(fVectorData);
+
+        // calculate the solution and print it
+        Vector<FModular> solution = LinSysSolver.solve(fMatrix, fVector);
+        return solution;
+    }
 
 
-        double Z = Cv1.value(alphaList.get(0)) * Cw2.value((alphaList.get(0)));
-        Z -= Cw1.value(alphaList.get(0) * Cv2.value(alphaList.get(0)));
+    private int rankOfMatrix(IntMatrix intMatrix){
 
+        BigInteger[][] Data = intMatrix.getData();
+        FModular [][] fData = new FModular[intMatrix.getM()][intMatrix.getN()];
+        FModular.FModularFactory factory = FModular.FACTORY;
 
-        System.out.println("retVal of SDT would be: " + Z);
-        //line 5
-        return Z == 0;
+        for (int i = 0; i < intMatrix.getM(); i++) {
+            for (int j = 0; j < intMatrix.getN(); j++) {
+                fData[i][j] = factory.get(Data[i][j]);
+            }
+        }
+
+        Matrix<FModular> matrix = new Matrix<FModular>(fData);
+        return matrix.rank();
     }
 
 

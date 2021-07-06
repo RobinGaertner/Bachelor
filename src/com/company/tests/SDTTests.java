@@ -1,14 +1,29 @@
 package com.company.tests;
 
 import com.company.*;
-import org.apache.commons.math3.analysis.polynomials.PolynomialFunction;
+import io.netty.channel.nio.NioEventLoopGroup;
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.RealMatrix;
+import org.jlinalg.Matrix;
+import org.jlinalg.Vector;
+import org.jlinalg.f2.F2;
+import org.jlinalg.field_p.FieldP;
+import org.jlinalg.field_p.FieldPAbstractFactory;
+import org.jlinalg.field_p.FieldPBigFactory;
+import org.jlinalg.field_p.FieldPFactoryMap;
+import org.jlinalg.polynomial.PolynomialFactory;
+import org.jlinalg.rational.Rational;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import javax.naming.OperationNotSupportedException;
+import java.math.BigInteger;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+
+import org.jlinalg.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -37,50 +52,83 @@ class SDTTests {
 
         //t is important
         int t = treshold;
+        //TODO: change to p
+        BigInteger modulus = BigInteger.valueOf(7);
 
         //degree of the Polynomials
         int d = 5;
 
 
-        List<Double> inputList = new LinkedList<>();
+        FModular.FModularFactory factory = FModular.FACTORY;
+
+
+
+        List<BigInteger> inputList = new LinkedList<>();
 
         for (int i = 0; i < 4*t+2; i++) {
-            inputList.add((double) 2*i+2);
+            inputList.add(BigInteger.valueOf(2*i+2));
         }
-
-
-        double[] p1Array = new double[t-1];
-        for (int i = 0; i < t-1; i++) {
-            p1Array[i] = i+2;
-        }
-        PolynomialFunction p1 = new PolynomialFunction(p1Array);
-
-
-        double[] p2Array = new double[t-1];
-        for (int i = 0; i < t-1; i++) {
-            p2Array[i] = 6+i;
-        }
-        PolynomialFunction p2 = new PolynomialFunction(p2Array);
-
-
-        List<Double> fList = new LinkedList<>();
-
-        for (int i = 0; i < inputList.size(); i++) {
-            fList.add(p2.value(i) / p1.value(i));
-        }
-
-
-        assertEquals(true, counting.SDT(fList, inputList, t));
-
-
 
         /*
-       new Array2DRowRealMatrix(
-        {{8.0,27.0,64.0,125.0,216.0,343.0,512.0},{4.0,9.0,16.0,25.0,36.0,49.0,64.0},{2.0,3.0,4.0,5.0,6.0,7.0,8.0},{1.0,1.0,1.0,1.0,1.0,1.0,1.0},{-1.3333333333,-3.4615384615,-6.4,-10.1851851852,-14.8235294118,-20.3170731707,-26.6666666667},{-0.6666666667,-1.1538461538,-1.6,-2.037037037,-2.4705882353,-2.9024390244,-3.3333333333},{-0.3333333333,-0.3846153846,-0.4,-0.4074074074,-0.4117647059,-0.4146341463,-0.4166666667}}
-       )
+        Map<Integer, FModular> coefficients1 = new HashMap<Integer, FModular>();
+        for (int i = 0; i < t-1; i++) {
+            coefficients1.put(i, factory.get(i+1));
+        }
+
+        Map<Integer, FModular> coefficients2 = new HashMap<Integer, FModular>();
+        for (int i = 0; i < t-1; i++) {
+            coefficients2.put(i, factory.get(i+5));
+        }
+
+        PolynomialFactory<FModular> pfactory = PolynomialFactory.getFactory(factory);
 
 
-        */
+        org.jlinalg.polynomial.Polynomial<?> polynomial1 = pfactory.get(coefficients1);
+        org.jlinalg.polynomial.Polynomial<?> polynomial2 = pfactory.get(coefficients2);
+
+        polynomial1.apply(factory.get(inputList));
+
+        List<FModular> fList = new LinkedList<>();
+        for (int i = 0; i < inputList.size(); i++) {
+            fList.add(polynomial1.apply(inputList.get(i)));
+        }
+
+         */
+
+        //make the polynomials
+        List<BigInteger> poly1List = new LinkedList<>();
+        for (int i = 0; i < t - 1; i++) {
+            poly1List.add(BigInteger.valueOf(i+1));
+        }
+
+        Polynomial polynomial1 = new Polynomial();
+        polynomial1.init(poly1List, modulus);
+
+        //make second polynomial
+        List<BigInteger> poly2List = new LinkedList<>();
+        for (int i = 0; i < t - 1; i++) {
+            poly2List.add(BigInteger.valueOf(i+10));
+        }
+        Polynomial polynomial2 = new Polynomial();
+        polynomial2.init(poly2List, modulus);
+
+
+        //divide them
+        List<FModular> fList = new LinkedList<>();
+        for (int i = 0; i < inputList.size(); i++) {
+            FModular tmp1 = factory.get(polynomial1.call(inputList.get(i)));
+            FModular tmp2 = factory.get(polynomial2.call(inputList.get(i)));
+            System.out.println("tmp1: " + tmp1);
+            System.out.println("tmp2: " + tmp2);
+            fList.add(tmp1.divide(tmp2));
+        }
+
+
+
+        assertEquals(true, counting.SDT(fList, inputList, t, modulus));
+
+
+
     }
 
 
@@ -102,6 +150,89 @@ class SDTTests {
         assertEquals(5, utils.rankOfMatrix(m));
 
     }
+
+    @Test
+    void otherTest(){
+
+        // Create some rational numbers from the default (singelton) factory.
+        Rational r1, r2, r3, r4, r5, r6;
+        r1 = Rational.FACTORY.get(1);
+        r2 = Rational.FACTORY.get(2);
+        r3 = Rational.FACTORY.get(3);
+        r4 = Rational.FACTORY.get(4);
+        r5 = Rational.FACTORY.get(5);
+        r6 = Rational.FACTORY.get(6);
+
+
+        FModular.FModularFactory factory = FModular.FACTORY;
+
+        // create a matrix
+        Matrix<FModular> a = new Matrix<FModular>(new FModular[][]
+                {
+                        {
+                                factory.get(1), factory.get(2), factory.get(3)
+                        },
+                        {
+                               factory.get(4), factory.get(5), factory.get(6)
+                        }
+                });
+
+        // create a vector
+        Vector<FModular> b = new Vector<FModular>(new FModular[]
+                {
+                        factory.get(1), factory.get(2)
+                });
+
+        // calculate the solution and print it
+        Vector<FModular> solution = LinSysSolver.solve(a, b);
+
+        System.out.println("x = " + solution);
+
+    }
+
+
+
+    @Test
+    void TestFModular(){
+
+        FModular.FModularFactory factory = FModular.FACTORY;
+
+        FModular ten = factory.get(10);
+        FModular twenty = factory.get(20);
+
+        System.out.println(twenty.compareTo(ten));
+        System.out.println(BigInteger.valueOf(20).compareTo(BigInteger.valueOf(10)));
+
+
+    }
+
+    @Test
+    void TestFModular2(){
+
+        FModular.FModularFactory factory = FModular.FACTORY;
+
+        FModular ten = factory.get(10);
+        FModular twenty = factory.get(20);
+
+        FModular res = ten.add(twenty);
+        FModular sub = ten.subtract(twenty);
+
+        System.out.println("add:" + res);
+
+        System.out.println("sub: " +sub);
+
+        FModular mul = ten.multiply(twenty);
+        System.out.println("mul: " + mul);
+
+        FModular div = twenty.divide(ten);
+        System.out.println("div: " + div);
+
+
+
+    }
+
+
+
 
 
 

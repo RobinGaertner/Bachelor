@@ -6,7 +6,10 @@ import java.util.List;
 public class Polynomial {
 
     List<BigInteger> coeffs;
+    //sorted increasing:
+    //starts with c0*x^0, c1*x^1, c2*x^2
     BigInteger modulus;
+
 
     public void init(List<BigInteger> coeffs, BigInteger mod){
         //Initializes the polynomial.

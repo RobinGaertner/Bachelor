@@ -99,7 +99,7 @@ public class Utils {
 
     public BigInteger invModBig(BigInteger a, BigInteger mod){
 
-        if(a.compareTo(BigInteger.ZERO)==-1){
+        if(a.compareTo(BigInteger.ZERO) < 0){
             //if  a<0
             a = a.add(mod);
         }

@@ -398,7 +398,7 @@ public class IntMatrix {
         for (int i = 0; i < N; i++) {
             String tmp = "";
             for (int j = 0; j < M; j++) {
-                tmp += data[i][j] +" ";
+                tmp += data[j][i] +" ";
             }
             res += tmp +  "\n";
         }
