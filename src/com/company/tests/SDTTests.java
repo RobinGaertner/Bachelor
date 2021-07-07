@@ -37,7 +37,7 @@ class SDTTests {
 
 
     int numparties = 10;
-    int treshold = 4;
+    int treshold = 3;
     Utils utils = new Utils();
 
 
@@ -53,7 +53,7 @@ class SDTTests {
         //t is important
         int t = treshold;
         //TODO: change to p
-        BigInteger modulus = BigInteger.valueOf(7);
+        BigInteger modulus = BigInteger.valueOf(1097);
 
         //degree of the Polynomials
         int d = 5;
@@ -66,7 +66,7 @@ class SDTTests {
         List<BigInteger> inputList = new LinkedList<>();
 
         for (int i = 0; i < 4*t+2; i++) {
-            inputList.add(BigInteger.valueOf(2*i+2));
+            inputList.add(BigInteger.valueOf(7*i+17));
         }
 
         /*
@@ -97,18 +97,31 @@ class SDTTests {
 
         //make the polynomials
         List<BigInteger> poly1List = new LinkedList<>();
-        for (int i = 0; i < t - 1; i++) {
-            poly1List.add(BigInteger.valueOf(i+1));
-        }
+        //for (int i = 0; i < t - 1; i++) {
+        //    poly1List.add(BigInteger.valueOf(i+1));
+        //}
+        poly1List.add(BigInteger.valueOf(18));
+        poly1List.add(BigInteger.valueOf(27));
+        poly1List.add(BigInteger.valueOf(10));
+        poly1List.add(BigInteger.valueOf(1));
 
         Polynomial polynomial1 = new Polynomial();
         polynomial1.init(poly1List, modulus);
 
         //make second polynomial
         List<BigInteger> poly2List = new LinkedList<>();
-        for (int i = 0; i < t - 1; i++) {
-            poly2List.add(BigInteger.valueOf(i+10));
-        }
+        //poly2List.add(BigInteger.ONE);
+        //for (int i = 0; i < t - 2; i++) {
+        //    poly2List.add(BigInteger.valueOf(3*i+37));
+        //}
+
+        poly2List.add(BigInteger.valueOf(70));
+        poly2List.add(BigInteger.valueOf(59));
+        poly2List.add(BigInteger.valueOf(14));
+        poly2List.add(BigInteger.valueOf(1));
+
+
+
         Polynomial polynomial2 = new Polynomial();
         polynomial2.init(poly2List, modulus);
 
@@ -118,7 +131,10 @@ class SDTTests {
         for (int i = 0; i < inputList.size(); i++) {
             FModular tmp1 = factory.get(polynomial1.call(inputList.get(i)));
             FModular tmp2 = factory.get(polynomial2.call(inputList.get(i)));
+
+            System.out.println("input list: " + inputList.get(i));
             System.out.println("tmp1: " + tmp1);
+            System.out.println("tmp1 should be: " + polynomial2.call(inputList.get(i)));
             System.out.println("tmp2: " + tmp2);
             fList.add(tmp1.divide(tmp2));
         }
@@ -203,6 +219,7 @@ class SDTTests {
         System.out.println(twenty.compareTo(ten));
         System.out.println(BigInteger.valueOf(20).compareTo(BigInteger.valueOf(10)));
 
+        System.out.println(factory.get(-20));
 
     }
 

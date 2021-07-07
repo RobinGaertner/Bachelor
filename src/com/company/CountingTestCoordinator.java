@@ -125,6 +125,12 @@ public class CountingTestCoordinator {
             BigInteger[][] data2 = new BigInteger[2*t+1][1];
             for (int i = 0; i < 2 * t + 1; i++) {
                 data2[i][0] = fList.get(i+((2*t+1)*k)).value.multiply((alphaList.get(i+((2*t+1)*k))).pow(t));
+                if(k==1){
+                    System.out.println("y check first part: " + fList.get(i+((2*t+1)*k)).value);
+                    System.out.println("y check second part: " + (alphaList.get(i+((2*t+1)*k))).pow(t));
+                    System.out.println("y check multiplication: " + fList.get(i+((2*t+1)*k)).value.multiply((alphaList.get(i+((2*t+1)*k))).pow(t)));
+
+                }
             }
             y[k] = new IntMatrix(data2);
             System.out.println("y is: " + y[k]);
@@ -176,6 +182,23 @@ public class CountingTestCoordinator {
         Vector<FModular> cw = OLS(MrPlain[1], y[1]);
 
 
+
+        //TESTING:
+
+        FModular [][] fData = new FModular[MrPlain[0].getM()][MrPlain[0].getN()];
+        for (int i = 0; i < MrPlain[0].getM(); i++) {
+            for (int j = 0; j < MrPlain[0].getN(); j++) {
+                fData[i][j] = factory.get(MrPlain[0].getData()[j][i]);
+            }
+        }
+        Matrix<FModular> fMatrix = new Matrix<FModular>(fData);
+
+
+        System.out.println("vector solution test: " + fMatrix.multiply(cv));
+
+
+
+
         //System.out.println("CvSize = " + cv.size());
         //System.out.println("2t+1: " + ((2*t)+1));
         //System.out.println("t+1: " + (t+1));
@@ -199,7 +222,7 @@ public class CountingTestCoordinator {
         //from t+1 to 2t+1
         List<BigInteger> cv2 = new LinkedList<>();
         cv2.add(BigInteger.ONE);
-        for (int i = 0; i < t+1; i++) {
+        for (int i = 0; i < t; i++) {
             cv2.add(cv.getEntry(2*t-i+1).value);
         }
         Polynomial polynomialCv2 = new Polynomial();
@@ -233,7 +256,7 @@ public class CountingTestCoordinator {
         //from t+1 to 2t+1
         List<BigInteger> cw2 = new LinkedList<>();
         cw2.add(BigInteger.ONE);
-        for (int i = 0; i < t+1; i++) {
+        for (int i = 0; i < t; i++) {
             cw2.add(cw.getEntry(2*t-i+1).value);
         }
         Polynomial polynomialCw2 = new Polynomial();
@@ -269,6 +292,11 @@ public class CountingTestCoordinator {
         //System.out.println("Poly w1: " + Cw1);
         //System.out.println("Poly w2: " + Cw2);
 
+        System.out.println("coeffs of CV1: " + polynomialCv1.coeffs);
+        System.out.println("coeffs of CV2: " + polynomialCv2.coeffs);
+        System.out.println("coeffs of CW1: " + polynomialCw1.coeffs);
+        System.out.println("coeffs of CW2: " + polynomialCw2.coeffs);
+
 
         //compute the endresult
         //get on point t?
@@ -294,7 +322,7 @@ public class CountingTestCoordinator {
 
         for (int i = 0; i < matrix.getM(); i++) {
             for (int j = 0; j < matrix.getN(); j++) {
-                fData[i][j] = factory.get(Data[i][j]);
+                fData[i][j] = factory.get(Data[j][i]);
             }
         }
         Matrix<FModular> fMatrix = new Matrix<FModular>(fData);
@@ -308,8 +336,13 @@ public class CountingTestCoordinator {
         }
         Vector<FModular> fVector = new Vector<FModular>(fVectorData);
 
+
+        System.out.println("Ols gets: " + fMatrix);
+        System.out.println("Ols vector plain: " + vector);
+        System.out.println("and vector: " + fVector);
         // calculate the solution and print it
         Vector<FModular> solution = LinSysSolver.solve(fMatrix, fVector);
+        System.out.println("OLS returns: " + solution);
         return solution;
     }
 
