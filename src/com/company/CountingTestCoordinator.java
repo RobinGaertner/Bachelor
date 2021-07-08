@@ -1,6 +1,5 @@
 package com.company;
 
-import org.apache.commons.math3.analysis.polynomials.PolynomialFunction;
 import org.jlinalg.LinSysSolver;
 import org.jlinalg.Matrix;
 import org.jlinalg.Vector;
@@ -14,7 +13,7 @@ public class CountingTestCoordinator {
     //N = number of parties
     //t = matrixsize
     int t;
-    List<CountingTest> parties = new LinkedList<>();
+    public List<CountingTest> parties = new LinkedList<>();
     public PrivateKeyRing privateKeyRing;
     public PublicKey publicKey;
     ObliviousAlgebraCoordinator oCoordinator;
@@ -35,30 +34,28 @@ public class CountingTestCoordinator {
 
 
         //TODO: maybe add this again
-        /*
+
         for (int i = 0; i < numParties; i++) {
-            parties.add(new CountingTest(treshold, KeyShareList.get(i), publicKey, this));
+            parties.add(new CountingTest(treshold, publicKey, this));
         }
-        */
         t = treshold;
 
 
     }
 
-    void MPCT(List<BigInteger> inputAlphas, BigInteger setMod){
+    public boolean MPCT(List<BigInteger> inputAlphas, BigInteger setMod) throws Exception {
 
-        List<List<EncryptedNumber>> encPointsList = new LinkedList<>();
+        List<List<BigInteger>> encPointsList = new LinkedList<>();
         //line 1 already done in setup
 
         //line 2
         for (int i = 0; i < parties.size(); i++) {
             encPointsList.add(parties.get(i).MPCTpart1(inputAlphas, setMod));
         }
-
+        System.out.println("encPointsList:" + encPointsList);
+        System.out.println("aphasList: " + inputAlphas);
         //line 3
-
-
-
+        return parties.get(0).MPCTpart2(encPointsList, inputAlphas, setMod, t);
     }
 
 
@@ -104,6 +101,7 @@ public class CountingTestCoordinator {
             //now to t+1 to 2t+1
             //y coordinate
             for (int j = 0; j < 2*t+1; j++) {
+
                 BigInteger tmp = BigInteger.ZERO.subtract(fList.get(j+((2*t+1)*k)).value);
                 //x coordinate
                 for (int i = 0; i < t; i++) {

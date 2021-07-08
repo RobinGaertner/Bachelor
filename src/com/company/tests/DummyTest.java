@@ -8,6 +8,8 @@ import org.apache.commons.math3.linear.RealVector;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
+import java.util.LinkedList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -22,6 +24,7 @@ class DummyTest {
 
         BigInteger[][] data = new BigInteger[3][3];
         data[0][0] = BigInteger.valueOf(10);
+        data[0][1] = BigInteger.valueOf(20);
         data[0][1] = BigInteger.valueOf(20);
         data[0][2] = BigInteger.valueOf(10);
 
@@ -96,5 +99,26 @@ class DummyTest {
 
 
     }
+
+
+    @Test
+    void multiplyoutTest(){
+
+        CountingTest countingTest = new CountingTest(5, null, null);
+
+
+        List<BigInteger> testList = new LinkedList<>();
+
+        testList.add(BigInteger.valueOf(2));
+        testList.add(BigInteger.valueOf(3));
+        testList.add(BigInteger.valueOf(4));
+        testList.add(BigInteger.valueOf(5));
+
+
+        System.out.println("resList" + countingTest.multiplyOut(testList));
+
+
+    }
+
 
 }

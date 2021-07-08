@@ -48,7 +48,7 @@ class SDTTests {
 
 
     @Test
-    void getRankDummyTest() throws Exception {
+    void SDT() throws Exception {
 
         //t is important
         int t = treshold;

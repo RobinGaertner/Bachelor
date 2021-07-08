@@ -1,5 +1,7 @@
 package com.company;
 
+import org.apache.commons.math3.analysis.polynomials.PolynomialFunction;
+
 import java.math.BigInteger;
 import java.util.LinkedList;
 import java.util.List;
@@ -12,37 +14,40 @@ public class CountingTest {
     List<BigInteger> evalPoints = new LinkedList<>();
     //TODO: secure random?
     Random rnd = new Random();
-    List<EncryptedNumber> cList = new LinkedList<>();
+    List<BigInteger> cList = new LinkedList<>();
     PrivateKeyShare pks;
     PublicKey publicKey;
     List<BigInteger> inputSet;
     CountingTestCoordinator coordinator;
 
 
-    public CountingTest(int t, PrivateKeyShare privateKeyShare, PublicKey pk, CountingTestCoordinator coord){
+    public CountingTest(int t, PublicKey pk, CountingTestCoordinator coord){
         threshold = t;
-        pks = privateKeyShare;
         publicKey = pk;
-        //TODO: set the Set that we want to test
-        for (int i = 0; i < t; i++) {
-            inputSet.add(BigInteger.valueOf(rnd.nextInt()));
-        }
         coordinator = coord;
     }
 
+    public void setInputSet(List<BigInteger> input){
+            inputSet = input;
+    }
+
     //line 2
-    List<EncryptedNumber> MPCTpart1(List<BigInteger> sharedAlphas, BigInteger setMod){
+    List<BigInteger> MPCTpart1(List<BigInteger> sharedAlphas, BigInteger setMod){
 
         //here we need the input set
         List<BigInteger> negativeInputSet = new LinkedList<>(inputSet);
         for (int i = 0; i < negativeInputSet.size(); i++) {
             negativeInputSet.set(i, BigInteger.ZERO.subtract(negativeInputSet.get(i)));
         }
+        System.out.println("input set: " + inputSet);
+        System.out.println("negative input set: "+ negativeInputSet);
 
         poly.init(multiplyOut(negativeInputSet), setMod);
 
-        //empty the last thing out
-        evalPoints.clear();
+        //PolynomialFunction polyTest = new PolynomialFunction();
+        //polyTest.
+        ////empty the last thing out
+        //evalPoints.clear();
 
         //call the polynomial at the values 1 to 4t+3
         for (int i = 0; i < (4*threshold + 2); i++) {
@@ -54,54 +59,82 @@ public class CountingTest {
 
         //get r
         //TODO: rnd bound?
-        BigInteger r = BigInteger.valueOf(rnd.nextInt());
+        BigInteger r = BigInteger.valueOf(rnd.nextInt()).mod(setMod);
 
         //encrypt the points
         for (int i = 0; i < evalPoints.size(); i++) {
-            cList.add(publicKey.encrypt(r.multiply(evalPoints.get(i))));
+            cList.add((r.multiply(evalPoints.get(i))));
         }
 
+        System.out.println("shared alphas: " + sharedAlphas);
+        System.out.println("Ciphertext list: " + cList);
         return cList;
     }
 
     //line 3-4
-    boolean MPCTpart2(List<List<EncryptedNumber>> cList, List<BigInteger> inputAlphas) throws Exception {
+    boolean MPCTpart2(List<List<BigInteger>> cList, List<BigInteger> inputAlphas, BigInteger modulo, int threshold) throws Exception {
 
+        FModular.FModularFactory factory = FModular.FACTORY;
         //line 3
-        List<EncryptedNumber []> dList = new LinkedList<>();
+        List<FModular> dList = new LinkedList<>();
+        System.out.println("cList: " + cList);
 
-        for (int j = 0; j < cList.size(); j++) {
-            EncryptedNumber part1 = publicKey.encrypt(BigInteger.ZERO);
-            for (int i = 0; i < cList.get(0).size(); i++) {
-                part1 = part1.add(cList.get(j).get(i));
+        for (int j = 0; j < cList.get(0).size(); j++) {
+
+            System.out.println("j is: " + j);
+            FModular part1 = factory.get(0);
+            for (int i = 0; i < cList.size(); i++) {
+                System.out.println("i is: " + i);
+                part1 = part1.add(factory.get(cList.get(i).get(j)));
             }
-            EncryptedNumber part2 = publicKey.encrypt(poly.call(inputAlphas.get(j)));
+            FModular part2 = factory.get(poly.call(inputAlphas.get(j)));
+            System.out.println("poly wird gecallt auf: " + inputAlphas.get(j) + "und retrurnt: " + poly.call(inputAlphas.get(j) ));
 
-            EncryptedNumber[] newD = new EncryptedNumber[3];
 
-            newD[1] = part1;
-            newD[2] = part2;
-            dList.add(newD);
+            dList.add(part1.divide(part2));
         }
 
+
+
+
+
         //line 4
-        //return !coordinator.SDTtemp();
-        return true;
+        return coordinator.SDT(dList, inputAlphas, threshold , modulo);
     }
 
 
 
-    List<BigInteger> multiplyOut (List<BigInteger> inputList){
-        List<BigInteger> resList = new LinkedList<>();
+    public List<BigInteger> multiplyOut (List<BigInteger> inputList){
+
+        //erst spalte, dann zeile
+
+        BigInteger[][] bigArray = new BigInteger[inputList.size()+1][inputList.size()+1];
         for (int i = 0; i < inputList.size(); i++) {
-            List<BigInteger> tmpList = new LinkedList<>();
-            tmpList.add(BigInteger.ONE);
-            for (int j = 0; j < resList.size(); j++) {
-                BigInteger tmpInt = resList.remove(j);
-                tmpInt = tmpInt.multiply(inputList.get(i)).add(resList.get(j+1));
-                tmpList.add(tmpInt);
+            bigArray[i][0] = BigInteger.ZERO;
+        }
+        bigArray[inputList.size()][0] = BigInteger.ONE;
+        //i is Zeile
+        for (int i = 0; i < inputList.size(); i++) {
+
+            //j is spalte
+            for (int j = 0; j < inputList.size()+1; j++) {
+
+                //every field is field above * input + field abote-right
+                if(j==inputList.size()){
+                    bigArray[j][i+1] = bigArray[j][i].multiply(inputList.get(i));
+                }else {
+                    //now we are not in the rightest line
+                    bigArray[j][i+1] = bigArray[j][i].multiply(inputList.get(i)).add(bigArray[j+1][i]);
+
+                }
             }
-            resList = new LinkedList<>(tmpList);
+        }
+
+
+
+        List<BigInteger> resList = new LinkedList<>();
+        for (int i = 0; i < inputList.size() + 1; i++) {
+            resList.add(bigArray[inputList.size()-i][(inputList.size())]);
         }
         return resList;
     }
