@@ -18,6 +18,7 @@ public class Polynomial {
 
     }
 
+
     public BigInteger call(int x){
         BigInteger X = BigInteger.valueOf(x);
         BigInteger fx = BigInteger.valueOf(0);

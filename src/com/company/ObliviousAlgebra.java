@@ -135,7 +135,7 @@ public class ObliviousAlgebra {
                 }
             }
         }
-        System.out.println(data);
+        //System.out.println(data);
         IntMatrix ret = new IntMatrix(data);
         return ret;
 
@@ -160,7 +160,7 @@ public class ObliviousAlgebra {
                 }
             }
         }
-        System.out.println(data);
+        //System.out.println(data);
         IntMatrix ret = new IntMatrix(data);
         return ret;
 
@@ -326,7 +326,7 @@ public class ObliviousAlgebra {
             //TODO: check for boundary
             data[i][i] = BigInteger.valueOf(rnd.nextInt());
         }
-        System.out.println(data);
+        //System.out.println(data);
         IntMatrix ret = new IntMatrix(data);
         return ret;
 

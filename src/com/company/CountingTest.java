@@ -37,15 +37,9 @@ public class CountingTest {
         for (int i = 0; i < negativeInputSet.size(); i++) {
             negativeInputSet.set(i, BigInteger.ZERO.subtract(negativeInputSet.get(i)));
         }
-        System.out.println("input set: " + inputSet);
-        System.out.println("negative input set: "+ negativeInputSet);
 
         poly.init(multiplyOut(negativeInputSet), setMod);
 
-        //PolynomialFunction polyTest = new PolynomialFunction();
-        //polyTest.
-        ////empty the last thing out
-        //evalPoints.clear();
 
         //call the polynomial at the values 1 to 4t+3
         for (int i = 0; i < (4*threshold + 2); i++) {
@@ -64,42 +58,36 @@ public class CountingTest {
             cList.add(publicKey.encrypt(r.multiply(evalPoints.get(i))));
         }
 
-        System.out.println("shared alphas: " + sharedAlphas);
-        System.out.println("Ciphertext list: " + cList);
         return cList;
     }
 
     //line 3-4
-    boolean MPCTpart2(List<List<BigInteger>> cList, List<BigInteger> inputAlphas, BigInteger modulo, int threshold) throws Exception {
+    boolean MPCTpart2(List<List<EncryptedNumber>> cList, List<BigInteger> inputAlphas, BigInteger modulo, int threshold) throws Exception {
 
         FModular.FModularFactory factory = FModular.FACTORY;
         //line 3
-        List<FModular> dList = new LinkedList<>();
-        System.out.println("cList: " + cList);
+        List<EncryptedNumber> dList = new LinkedList<>();
+        //System.out.println("cList: " + cList);
 
         for (int j = 0; j < cList.get(0).size(); j++) {
 
-            System.out.println("j is: " + j);
-            FModular part1 = factory.get(0);
+            EncryptedNumber part1 = publicKey.encrypt(BigInteger.ZERO);
             for (int i = 0; i < cList.size(); i++) {
-                System.out.println("i is: " + i);
-                part1 = part1.add(factory.get(cList.get(i).get(j)));
+                part1 = part1.add(cList.get(i).get(j));
             }
             FModular part2 = factory.get(poly.call(inputAlphas.get(j)));
-            System.out.println("poly wird gecallt auf: " + inputAlphas.get(j) + "und retrurnt: " + poly.call(inputAlphas.get(j) ));
 
-
-            dList.add(part1.divide(part2));
+            dList.add(part1.mul(part2.invert().value));
         }
 
         List<EncryptedNumber> resList = new LinkedList<>();
         for (int i = 0; i < dList.size(); i++) {
-            resList.add(publicKey.encrypt(dList.get(i).getValue()));
+            //resList.add(publicKey.encrypt(dList.get(i).getValue()));
         }
 
 
         //line 4
-        return coordinator.SDT(resList, inputAlphas, threshold , modulo);
+        return coordinator.SDT(dList, inputAlphas, threshold , modulo);
     }
 
 

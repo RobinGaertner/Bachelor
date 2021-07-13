@@ -152,45 +152,6 @@ public class IntMatrix {
     }
 
 
-    //made by me
-
-    /*
-    public IntMatrix inverse(){
-        //TODO: check for casting
-        BigInteger[][] oldData = data;
-
-        double[][] newData = new double[M][N];
-        for (int i = 0; i < M; i++) {
-            for (int j = 0; j < N; j++) {
-                newData[i][j] = oldData[i][j].doubleValue();
-            }
-        }
-
-        System.out.println("input to utils is: " + newData[0][0] + " " + newData[0][1] + " " + newData[0][2]);
-        System.out.println("inputMatrix is: " + MatrixUtils.createRealMatrix(newData).toString());
-        RealMatrix tmpMatrix = MatrixUtils.inverse(MatrixUtils.createRealMatrix(newData));
-        System.out.println("output from utils is: " + tmpMatrix);
-
-        double[][] resdata = tmpMatrix.getData();
-
-        //TODO: casting!!! bad!!!
-        for (int i = 0; i < M; i++) {
-            for (int j = 0; j < N; j++) {
-                oldData[i][j] = BigInteger.valueOf((long) resdata[i][j]);
-            }
-        }
-        IntMatrix resMatrix = new IntMatrix(oldData);
-
-        System.out.println("invertMatrix returned: " + resMatrix);
-        return  resMatrix;
-    }
-
-
-
-     */
-
-
-
 
     //made by me
     // return C = A * B
@@ -211,60 +172,6 @@ public class IntMatrix {
         EncMatrix C = new EncMatrix(data, B.getPublicKey());
         return C;
     }
-
-
-
-/*
-    // return x = A^-1 b, assuming A is square and has full rank
-    public IntMatrix solve(IntMatrix rhs) {
-        if (M != N || rhs.M != N || rhs.N != 1)
-            throw new RuntimeException("Illegal matrix dimensions.");
-
-        // create copies of the data
-        IntMatrix A = new IntMatrix(this);
-        IntMatrix b = new IntMatrix(rhs);
-
-        // Gaussian elimination with partial pivoting
-        for (int i = 0; i < N; i++) {
-
-            // find pivot row and swap
-            int max = i;
-            for (int j = i + 1; j < N; j++)
-                if (Math.abs(A.data[j][i]) > Math.abs(A.data[max][i]))
-                    max = j;
-            A.swap(i, max);
-            b.swap(i, max);
-
-            // singular
-            if (A.data[i][i] == 0.0) throw new RuntimeException("Matrix is singular.");
-
-            // pivot within b
-            for (int j = i + 1; j < N; j++)
-                b.data[j][0] -= b.data[i][0] * A.data[j][i] / A.data[i][i];
-
-            // pivot within A
-            for (int j = i + 1; j < N; j++) {
-                long m = A.data[j][i] / A.data[i][i];
-                for (int k = i + 1; k < N; k++) {
-                    A.data[j][k] -= A.data[i][k] * m;
-                }
-                A.data[j][i] = 0;
-            }
-        }
-
-        // back substitution
-        IntMatrix x = new IntMatrix(N, 1);
-        for (int j = N - 1; j >= 0; j--) {
-            long t = 0;
-            for (int k = j + 1; k < N; k++)
-                t += A.data[j][k] * x.data[k][0];
-            x.data[j][0] = (b.data[j][0] - t) / A.data[j][j];
-        }
-        return x;
-
-    }
-
- */
 
 
 

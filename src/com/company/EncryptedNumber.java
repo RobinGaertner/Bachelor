@@ -83,8 +83,6 @@ public class EncryptedNumber {
 
 
     public EncryptedNumber trueDiv(BigInteger d){
-        System.out.println("Input in Div: " + d);
-        System.out.println("inverse is: "+d.modInverse(publicKey.ns1));
         return mul(d.modInverse(publicKey.ns1));
     }
 

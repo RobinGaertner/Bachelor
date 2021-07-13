@@ -17,7 +17,6 @@ public class CountingTestCoordinator {
     public PrivateKeyRing privateKeyRing;
     public PublicKey publicKey;
     ObliviousAlgebraCoordinator oCoordinator;
-    DummyFunctions dummy = new DummyFunctions();
     Utils utils = new Utils();
 
 
@@ -45,26 +44,19 @@ public class CountingTestCoordinator {
 
     public boolean MPCT(List<BigInteger> inputAlphas, BigInteger setMod) throws Exception {
 
-        List<List<BigInteger>> encPointsList = new LinkedList<>();
+        List<List<EncryptedNumber>> encPointsList = new LinkedList<>();
         //line 1 already done in setup
 
         //line 2
         for (int i = 0; i < parties.size(); i++) {
-            List<EncryptedNumber> tmpList = parties.get(i).MPCTpart1(inputAlphas, setMod);
-            encPointsList.add(new LinkedList<>());
-            for (int j = 0; j < tmpList.size(); j++) {
-                encPointsList.get(i).add(privateKeyRing.decrypt(tmpList.get(j)));
-            }
-            //encPointsList.add(parties.get(i).MPCTpart1(inputAlphas, setMod));
+            encPointsList.add(parties.get(i).MPCTpart1(inputAlphas, setMod));
         }
-        System.out.println("encPointsList:" + encPointsList);
-        System.out.println("aphasList: " + inputAlphas);
         //line 3
         return parties.get(0).MPCTpart2(encPointsList, inputAlphas, setMod, t);
     }
 
 
-    public boolean SDT(List<EncryptedNumber> cList, List<BigInteger> alphaList, int t, BigInteger modulus){
+    public boolean SDT(List<EncryptedNumber> cList, List<BigInteger> alphaList, int t, BigInteger modulus) throws Exception {
 
 
         FModular.FModularFactory factory = FModular.FACTORY;
@@ -81,31 +73,23 @@ public class CountingTestCoordinator {
 
         //do first half
         //TODO: init right
-        IntMatrix[] MrPlain = new IntMatrix[2];
-        IntMatrix[] y = new IntMatrix[2];
+        EncMatrix[] MrPlain = new EncMatrix[2];
+        EncMatrix[] y = new EncMatrix[2];
 
-
-        System.out.println("treshold is: " + t);
-        System.out.println("fList: " + fList);
-        System.out.println("alphaList: " + alphaList);
 
         for (int k = 0; k < 2; k++) {
 
-            BigInteger[][] data = new BigInteger[2*t+1][2*t+1];
-
-            System.out.println("matrix size: " + (2*t+1));
+            EncryptedNumber[][] data = new EncryptedNumber[2*t+1][2*t+1];
 
             //dimensions: 2t+1 to right, 2t+1 down
             //y coordinate
             for (int j = 0; j < 2*t+1; j++) {
-                BigInteger tmp = BigInteger.ONE;
+                EncryptedNumber tmp = publicKey.encrypt(BigInteger.ONE);
                 //x coordinate
                 for (int i = 0; i < t+1; i++) {
 
-                    System.out.println("Data " + tmp +" is written to " + ((t)-i) + " " + j);
-
                     data[(t)-i][j] = tmp;
-                    tmp = tmp.multiply(alphaList.get(j+((2*t+1)*k)));
+                    tmp = tmp.mul(alphaList.get(j+((2*t+1)*k)));
 
                 }
             }
@@ -116,13 +100,12 @@ public class CountingTestCoordinator {
             //y coordinate
             for (int j = 0; j < 2*t+1; j++) {
 
-                BigInteger tmp = BigInteger.ZERO.subtract(fList.get(j+((2*t+1)*k)).value);
+                EncryptedNumber tmp = publicKey.encrypt(BigInteger.ZERO).sub(cList.get(j+((2*t+1)*k)));
                 //x coordinate
                 for (int i = 0; i < t; i++) {
 
-                    System.out.println("Part 2 gets written " + tmp + " to " + (2*t-i) + " " + j);
                     data[2*t-i][j] = tmp;
-                    tmp = tmp.multiply(alphaList.get(j+((2*t+1)*k)));
+                    tmp = tmp.mul(alphaList.get(j+((2*t+1)*k)));
                 }
 
             }
@@ -130,32 +113,25 @@ public class CountingTestCoordinator {
             //second half filled as well
 
             //going for y now
-            MrPlain[k] = new IntMatrix(data);
-            System.out.println("Matrix right after finishing " + MrPlain[k]);
+            MrPlain[k] = new EncMatrix(data, publicKey);
 
 
-            BigInteger[][] data2 = new BigInteger[2*t+1][1];
+            EncryptedNumber[][] data2 = new EncryptedNumber[2*t+1][1];
             for (int i = 0; i < 2 * t + 1; i++) {
-                data2[i][0] = fList.get(i+((2*t+1)*k)).value.multiply((alphaList.get(i+((2*t+1)*k))).pow(t));
-                if(k==1){
-                    System.out.println("y check first part: " + fList.get(i+((2*t+1)*k)).value);
-                    System.out.println("y check second part: " + (alphaList.get(i+((2*t+1)*k))).pow(t));
-                    System.out.println("y check multiplication: " + fList.get(i+((2*t+1)*k)).value.multiply((alphaList.get(i+((2*t+1)*k))).pow(t)));
-
-                }
+                data2[i][0] = cList.get(i+((2*t+1)*k)).mul(((alphaList.get(i+((2*t+1)*k))).pow(t)));
             }
-            y[k] = new IntMatrix(data2);
-            System.out.println("y is: " + y[k]);
+
+            y[k] = new EncMatrix(data2, publicKey);
 
             //one half of r done
             //second coordinate of y is always 0
         }
 
 
-        IntMatrix[] Mry = new IntMatrix[2];
+        EncMatrix[] Mry = new EncMatrix[2];
         //combine them for Mr||y
         for (int k = 0; k < 2; k++) {
-            BigInteger[][] newData = new BigInteger[2*t+2][2*t+1];
+            EncryptedNumber[][] newData = new EncryptedNumber[2*t+2][2*t+1];
 
             for (int i = 0; i < 2 * t + 1; i++) {
                 for (int j = 0; j < 2 * t + 1; j++) {
@@ -163,7 +139,7 @@ public class CountingTestCoordinator {
                 }
                 newData[2*t+1][i] = y[k].getData()[i][0];
             }
-            Mry[k] = new IntMatrix(newData);
+            Mry[k] = new EncMatrix(newData, publicKey);
         }
 
         //combination done
@@ -174,10 +150,6 @@ public class CountingTestCoordinator {
             int part1 = rankOfMatrix(MrPlain[i]);
             int part2 = rankOfMatrix(Mry[i]);
 
-            System.out.println("MrY: " + Mry[i]);
-            System.out.println("rank of matrix 1: " + part1);
-            System.out.println("rank of matrix 2: " + part2);
-
             //if not zero, abort
             if(part1 - part2 != 0){
                 return false;
@@ -185,28 +157,10 @@ public class CountingTestCoordinator {
         }
 
 
-        System.out.println("directly in front of OLS");
-
-
         //line 3
         //returning value is going to the right, so first coordinate is always 0
         Vector<FModular> cv = OLS(MrPlain[0], y[0]);
         Vector<FModular> cw = OLS(MrPlain[1], y[1]);
-
-
-
-        //TESTING:
-
-        FModular [][] fData = new FModular[MrPlain[0].getM()][MrPlain[0].getN()];
-        for (int i = 0; i < MrPlain[0].getM(); i++) {
-            for (int j = 0; j < MrPlain[0].getN(); j++) {
-                fData[i][j] = factory.get(MrPlain[0].getData()[j][i]);
-            }
-        }
-        Matrix<FModular> fMatrix = new Matrix<FModular>(fData);
-
-
-        System.out.println("vector solution test: " + fMatrix.multiply(cv));
 
 
 
@@ -274,6 +228,37 @@ public class CountingTestCoordinator {
     }
 
 
+    private Vector<FModular> OLS (EncMatrix matrix, EncMatrix vector){
+
+        BigInteger[][] Data = privateKeyRing.decryptMatrix(matrix).getData();
+        FModular [][] fData = new FModular[matrix.M][matrix.N];
+        FModular.FModularFactory factory = FModular.FACTORY;
+
+        for (int i = 0; i < matrix.M; i++) {
+            for (int j = 0; j < matrix.N; j++) {
+                fData[i][j] = factory.get(Data[j][i]);
+            }
+        }
+        Matrix<FModular> fMatrix = new Matrix<>(fData);
+
+        // create a vector
+
+        BigInteger[][] vectorData = privateKeyRing.decryptMatrix(vector).getData();
+        FModular[] fVectorData = new FModular[vector.M];
+        for (int i = 0; i < vector.M; i++) {
+            fVectorData[i] = factory.get(vectorData[i][0]);
+        }
+        Vector<FModular> fVector = new Vector<FModular>(fVectorData);
+
+
+        // calculate the solution and print it
+        Vector<FModular> solution = LinSysSolver.solve(fMatrix, fVector);
+        return solution;
+    }
+
+
+
+
     private Vector<FModular> OLS (IntMatrix matrix, IntMatrix vector){
 
         BigInteger[][] Data = matrix.getData();
@@ -297,12 +282,8 @@ public class CountingTestCoordinator {
         Vector<FModular> fVector = new Vector<FModular>(fVectorData);
 
 
-        System.out.println("Ols gets: " + fMatrix);
-        System.out.println("Ols vector plain: " + vector);
-        System.out.println("and vector: " + fVector);
         // calculate the solution and print it
         Vector<FModular> solution = LinSysSolver.solve(fMatrix, fVector);
-        System.out.println("OLS returns: " + solution);
         return solution;
     }
 
@@ -323,19 +304,21 @@ public class CountingTestCoordinator {
         return matrix.rank();
     }
 
+    private int rankOfMatrix(EncMatrix encMatrix){
 
-    boolean SDTtemp(Polynomial p1, Polynomial p2, int threshold){
-        if(p1.degree()<threshold){
-            if (p2.degree() == p1.degree()){
-                System.out.println("degree is equal");
-                return true;
+        EncryptedNumber[][] Data = encMatrix.getData();
+        FModular [][] fData = new FModular[encMatrix.M][encMatrix.N];
+        FModular.FModularFactory factory = FModular.FACTORY;
+
+        for (int i = 0; i < encMatrix.M; i++) {
+            for (int j = 0; j < encMatrix.N; j++) {
+                fData[i][j] = factory.get(privateKeyRing.decrypt(Data[i][j]));
             }
-            System.out.println("degree is not equal");
         }
-        return false;
+
+        Matrix<FModular> matrix = new Matrix<FModular>(fData);
+        return matrix.rank();
     }
-
-
 
 
 

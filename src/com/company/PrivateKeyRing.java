@@ -48,16 +48,15 @@ public class PrivateKeyRing {
             iList.add(privateKeyShareList.get(j).i);
         }
 
-        System.out.println("directly before invmod");
         S = new HashSet<>(iList);
         BigInteger tmp = (publicKey.delta.pow(2)).multiply(BigInteger.valueOf(4));
-        System.out.println("delta is " + publicKey.delta);
-        System.out.println("tmp is: " + tmp);
+        //System.out.println("delta is " + publicKey.delta);
+        //System.out.println("tmp is: " + tmp);
         //invFourDeltaSquared = utils.invModBig(tmp, publicKey.ns);
         invFourDeltaSquared = tmp.modInverse(publicKey.ns);
-        System.out.println("directly after invmod ");
+        //System.out.println("directly after invmod ");
 
-        System.out.println("iList: " + iList);
+        //System.out.println("iList: " + iList);
     }
 
     //TODO: here is so much casted stuff
@@ -171,13 +170,6 @@ public class PrivateKeyRing {
       :return: An integer containing the decryption of `c`.
      """
        # Use PrivateKeyShares to decrypt
-         */
-        /*
-        List<BigInteger> cList = new LinkedList();
-        for (int i = 0; i < privateKeyShareList.size(); i++) {
-            cList.add(privateKeyShareList.get(i).decrypt(c));
-        }
-
          */
 
         //System.out.println("cList: " +cList);

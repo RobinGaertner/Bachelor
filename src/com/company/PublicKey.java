@@ -33,10 +33,7 @@ public class PublicKey {
         ns1 = ns.multiply(n);
         nsm = ns.multiply(m);
 
-        System.out.println("In public Key init ");
         BigInteger tmp = (delta.pow(2)).multiply(BigInteger.valueOf(4));
-        System.out.println("delta is " + delta);
-        System.out.println("tmp is: " + tmp);
         invFourDeltaSquared = tmp.modInverse(ns);
     }
 

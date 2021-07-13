@@ -44,8 +44,8 @@ public class ObliviousAlgebraCoordinator {
 
         //line 2
         EncMatrix MPrime = new EncMatrix(M);
-        System.out.println("Input M: " + privateKeyRing.decryptMatrix(M));
-        System.out.println(" MPrime before changing: " + privateKeyRing.decryptMatrix(MPrime));
+        //System.out.println("Input M: " + privateKeyRing.decryptMatrix(M));
+        //System.out.println(" MPrime before changing: " + privateKeyRing.decryptMatrix(MPrime));
 
         //line 3
         for (ObliviousAlgebra party : parties) {
@@ -55,7 +55,7 @@ public class ObliviousAlgebraCoordinator {
         }
 
         //only for Test:
-        System.out.println(" easy decryption: " + privateKeyRing.decryptMatrix(MPrime));
+        //System.out.println(" easy decryption: " + privateKeyRing.decryptMatrix(MPrime));
 
 
         //line 7
@@ -65,16 +65,16 @@ public class ObliviousAlgebraCoordinator {
             MPrimeParts.add(parties.get(i).getPartialDecryptionMatrix(MPrime));
         }
         IntMatrix decMPrime = privateKeyRing.decryptMatrix(MPrimeParts);
-        System.out.println("decMPrime is: " + decMPrime);
+        //System.out.println("decMPrime is: " + decMPrime);
 
 
         //TODO: The error is here: inverse wants to give out floating numbers
         IntMatrix tmp = decMPrime.inverse();
-        System.out.println("DecPrime inverse" + tmp);
+        //System.out.println("DecPrime inverse" + tmp);
 
 
         EncMatrix NPrime = new EncMatrix(decMPrime.inverse(), publicKey);
-        System.out.println("start NPrime is: " + privateKeyRing.decryptMatrix(NPrime));
+        //System.out.println("start NPrime is: " + privateKeyRing.decryptMatrix(NPrime));
 
 
         //line 8
@@ -82,7 +82,7 @@ public class ObliviousAlgebraCoordinator {
             //go from N to 1
             //line 9-10
             NPrime = parties.get(parties.size() - (i+1)).secInvPart3(NPrime);
-            System.out.println("new NPrime is: " + privateKeyRing.decryptMatrix(NPrime));
+            //System.out.println("new NPrime is: " + privateKeyRing.decryptMatrix(NPrime));
             //line 11
         }
         //line 12
