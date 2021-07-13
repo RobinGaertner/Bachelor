@@ -139,9 +139,15 @@ class SDTTests {
             fList.add(tmp1.divide(tmp2));
         }
 
+        List<EncryptedNumber> encList = new LinkedList<>();
+        for (int i = 0; i < fList.size(); i++) {
+            encList.add(counting.publicKey.encrypt(fList.get(i).getValue()));
+        }
 
 
-        assertEquals(true, counting.SDT(fList, inputList, t, modulus));
+
+
+        assertEquals(true, counting.SDT(encList, inputList, t, modulus));
 
 
 

@@ -1,7 +1,5 @@
 package com.company;
 
-import org.apache.commons.math3.analysis.polynomials.PolynomialFunction;
-
 import java.math.BigInteger;
 import java.util.LinkedList;
 import java.util.List;
@@ -14,7 +12,7 @@ public class CountingTest {
     List<BigInteger> evalPoints = new LinkedList<>();
     //TODO: secure random?
     Random rnd = new Random();
-    List<BigInteger> cList = new LinkedList<>();
+    List<EncryptedNumber> cList = new LinkedList<>();
     PrivateKeyShare pks;
     PublicKey publicKey;
     List<BigInteger> inputSet;
@@ -32,7 +30,7 @@ public class CountingTest {
     }
 
     //line 2
-    List<BigInteger> MPCTpart1(List<BigInteger> sharedAlphas, BigInteger setMod){
+    List<EncryptedNumber> MPCTpart1(List<BigInteger> sharedAlphas, BigInteger setMod){
 
         //here we need the input set
         List<BigInteger> negativeInputSet = new LinkedList<>(inputSet);
@@ -63,7 +61,7 @@ public class CountingTest {
 
         //encrypt the points
         for (int i = 0; i < evalPoints.size(); i++) {
-            cList.add((r.multiply(evalPoints.get(i))));
+            cList.add(publicKey.encrypt(r.multiply(evalPoints.get(i))));
         }
 
         System.out.println("shared alphas: " + sharedAlphas);
@@ -94,12 +92,14 @@ public class CountingTest {
             dList.add(part1.divide(part2));
         }
 
-
-
+        List<EncryptedNumber> resList = new LinkedList<>();
+        for (int i = 0; i < dList.size(); i++) {
+            resList.add(publicKey.encrypt(dList.get(i).getValue()));
+        }
 
 
         //line 4
-        return coordinator.SDT(dList, inputAlphas, threshold , modulo);
+        return coordinator.SDT(resList, inputAlphas, threshold , modulo);
     }
 
 

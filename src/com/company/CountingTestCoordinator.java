@@ -50,7 +50,12 @@ public class CountingTestCoordinator {
 
         //line 2
         for (int i = 0; i < parties.size(); i++) {
-            encPointsList.add(parties.get(i).MPCTpart1(inputAlphas, setMod));
+            List<EncryptedNumber> tmpList = parties.get(i).MPCTpart1(inputAlphas, setMod);
+            encPointsList.add(new LinkedList<>());
+            for (int j = 0; j < tmpList.size(); j++) {
+                encPointsList.get(i).add(privateKeyRing.decrypt(tmpList.get(j)));
+            }
+            //encPointsList.add(parties.get(i).MPCTpart1(inputAlphas, setMod));
         }
         System.out.println("encPointsList:" + encPointsList);
         System.out.println("aphasList: " + inputAlphas);
@@ -59,11 +64,20 @@ public class CountingTestCoordinator {
     }
 
 
-    public boolean SDT(List<FModular> fList, List<BigInteger> alphaList, int t, BigInteger modulus){
+    public boolean SDT(List<EncryptedNumber> cList, List<BigInteger> alphaList, int t, BigInteger modulus){
+
+
+        FModular.FModularFactory factory = FModular.FACTORY;
+        List<FModular> fList = new LinkedList<>();
+        for (int i = 0; i < cList.size(); i++) {
+            fList.add(factory.get(privateKeyRing.decrypt(cList.get(i))));
+        }
+
+
+
 
         //line 1
         //generate the system
-        FModular.FModularFactory factory = FModular.FACTORY;
 
         //do first half
         //TODO: init right
@@ -196,16 +210,6 @@ public class CountingTestCoordinator {
 
 
 
-
-        //System.out.println("CvSize = " + cv.size());
-        //System.out.println("2t+1: " + ((2*t)+1));
-        //System.out.println("t+1: " + (t+1));
-
-        //List<Double> cv2 = cv.subList(t+1, (2*t)+1);
-
-        //List<Double> cw1 = cw.subList(0, t+1);
-        //List<Double> cw2 = cw.subList(t+1, (2*t)+1);
-
          //line 4
         //compute the polynomials
 
@@ -226,19 +230,6 @@ public class CountingTestCoordinator {
         Polynomial polynomialCv2 = new Polynomial();
         polynomialCv2.init(cv2, modulus);
 
-        /*
-        //from 1-t
-        double[] Cv2Array = new double[t+1];
-        //first coefficient will be 1
-        Cv2Array[t] = 1;
-        for (int i = 0; i < t; i++) {
-            //do from the back, because first part of solution needs the highest exponent
-            Cv2Array[t-i-1] = cv2.get(i);
-        }
-        PolynomialFunction Cv2 = new PolynomialFunction(Cv2Array);
-
-
-         */
 
 
         //do this again for w
@@ -260,35 +251,6 @@ public class CountingTestCoordinator {
         Polynomial polynomialCw2 = new Polynomial();
         polynomialCw2.init(cw2, modulus);
 
-
-
-
-        /*
-        //do this again for w
-        //from 0-t
-
-        double[] Cw1Array = new double[t+1];
-        for (int i = 0; i < t+1; i++) {
-            //do from the back, because first part of solution needs the highest exponent
-            Cw1Array[t-i] = cw1.get(i);
-        }
-        PolynomialFunction Cw1 = new PolynomialFunction(Cw1Array);
-
-        //from 1-t
-        double[] Cw2Array = new double[t+1];
-        Cw2Array[t] = 1;
-        for (int i = 0; i < t; i++) {
-            //do from the back, because first part of solution needs the highest exponent
-            Cw2Array[t-i-1] = cw2.get(i);
-        }
-        PolynomialFunction Cw2 = new PolynomialFunction(Cw2Array);
-
-         */
-
-        //System.out.println("Poly v1: " + Cv1);
-        //System.out.println("Poly v2: " + Cv2);
-        //System.out.println("Poly w1: " + Cw1);
-        //System.out.println("Poly w2: " + Cw2);
 
         System.out.println("coeffs of CV1: " + polynomialCv1.coeffs);
         System.out.println("coeffs of CV2: " + polynomialCv2.coeffs);
