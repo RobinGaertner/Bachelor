@@ -13,7 +13,7 @@ public class EncMatrix {
         return publicKey;
     }
 
-    private PublicKey publicKey;
+    private final PublicKey publicKey;
 
     public EncryptedNumber[][] getData() {
         return data;

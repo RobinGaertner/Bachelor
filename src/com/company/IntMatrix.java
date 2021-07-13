@@ -8,7 +8,7 @@ import java.util.Random;
 
 public class IntMatrix {
 
-    private static Utils utils = new Utils();
+    private static final Utils utils = new Utils();
     private final int M;             // number of rows
     private final int N;             // number of columns
     private final BigInteger[][] data;   // M-by-N array
@@ -74,7 +74,7 @@ public class IntMatrix {
         IntMatrix A = new IntMatrix(M, N);
         for (int i = 0; i < M; i++)
             for (int j = 0; j < N; j++)
-                A.data[i][j] = BigInteger.valueOf((long) rnd.nextInt());
+                A.data[i][j] = BigInteger.valueOf(rnd.nextInt());
         return A;
     }
 

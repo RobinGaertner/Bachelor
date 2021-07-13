@@ -13,24 +13,23 @@ public class CountingTest {
     //TODO: secure random?
     Random rnd = new Random();
     List<EncryptedNumber> cList = new LinkedList<>();
-    PrivateKeyShare pks;
     PublicKey publicKey;
     List<BigInteger> inputSet;
     CountingTestCoordinator coordinator;
 
 
-    public CountingTest(int t, PublicKey pk, CountingTestCoordinator coord){
+    public CountingTest(int t, PublicKey pk, CountingTestCoordinator coord) {
         threshold = t;
         publicKey = pk;
         coordinator = coord;
     }
 
-    public void setInputSet(List<BigInteger> input){
-            inputSet = input;
+    public void setInputSet(List<BigInteger> input) {
+        inputSet = input;
     }
 
     //line 2
-    List<EncryptedNumber> MPCTpart1(List<BigInteger> sharedAlphas, BigInteger setMod){
+    List<EncryptedNumber> MPCTpart1(List<BigInteger> sharedAlphas, BigInteger setMod) {
 
         //here we need the input set
         List<BigInteger> negativeInputSet = new LinkedList<>(inputSet);
@@ -42,7 +41,7 @@ public class CountingTest {
 
 
         //call the polynomial at the values 1 to 4t+3
-        for (int i = 0; i < (4*threshold + 2); i++) {
+        for (int i = 0; i < (4 * threshold + 2); i++) {
             evalPoints.add(poly.call(sharedAlphas.get(i)));
         }
 
@@ -80,23 +79,16 @@ public class CountingTest {
             dList.add(part1.mul(part2.invert().value));
         }
 
-        List<EncryptedNumber> resList = new LinkedList<>();
-        for (int i = 0; i < dList.size(); i++) {
-            //resList.add(publicKey.encrypt(dList.get(i).getValue()));
-        }
-
-
         //line 4
-        return coordinator.SDT(dList, inputAlphas, threshold , modulo);
+        return coordinator.SDT(dList, inputAlphas, threshold, modulo);
     }
 
 
-
-    public List<BigInteger> multiplyOut (List<BigInteger> inputList){
+    public List<BigInteger> multiplyOut(List<BigInteger> inputList) {
 
         //erst spalte, dann zeile
 
-        BigInteger[][] bigArray = new BigInteger[inputList.size()+1][inputList.size()+1];
+        BigInteger[][] bigArray = new BigInteger[inputList.size() + 1][inputList.size() + 1];
         for (int i = 0; i < inputList.size(); i++) {
             bigArray[i][0] = BigInteger.ZERO;
         }
@@ -105,24 +97,23 @@ public class CountingTest {
         for (int i = 0; i < inputList.size(); i++) {
 
             //j is spalte
-            for (int j = 0; j < inputList.size()+1; j++) {
+            for (int j = 0; j < inputList.size() + 1; j++) {
 
                 //every field is field above * input + field abote-right
-                if(j==inputList.size()){
-                    bigArray[j][i+1] = bigArray[j][i].multiply(inputList.get(i));
-                }else {
+                if (j == inputList.size()) {
+                    bigArray[j][i + 1] = bigArray[j][i].multiply(inputList.get(i));
+                } else {
                     //now we are not in the rightest line
-                    bigArray[j][i+1] = bigArray[j][i].multiply(inputList.get(i)).add(bigArray[j+1][i]);
+                    bigArray[j][i + 1] = bigArray[j][i].multiply(inputList.get(i)).add(bigArray[j + 1][i]);
 
                 }
             }
         }
 
 
-
         List<BigInteger> resList = new LinkedList<>();
         for (int i = 0; i < inputList.size() + 1; i++) {
-            resList.add(bigArray[inputList.size()-i][(inputList.size())]);
+            resList.add(bigArray[inputList.size() - i][(inputList.size())]);
         }
         return resList;
     }

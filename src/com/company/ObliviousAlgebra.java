@@ -89,11 +89,10 @@ public class ObliviousAlgebra {
                 cTildeParts.add(Rl.timesEnc(crList.get(i)));
             }
         }
-        EncMatrix cTilde = utils.addEncMatrices(cTildeParts);
 
         //broadcast
         //broadcast cTilde
-        return cTilde;
+        return utils.addEncMatrices(cTildeParts);
     }
 
 
@@ -136,8 +135,7 @@ public class ObliviousAlgebra {
             }
         }
         //System.out.println(data);
-        IntMatrix ret = new IntMatrix(data);
-        return ret;
+        return new IntMatrix(data);
 
     }
 
@@ -161,8 +159,7 @@ public class ObliviousAlgebra {
             }
         }
         //System.out.println(data);
-        IntMatrix ret = new IntMatrix(data);
-        return ret;
+        return new IntMatrix(data);
 
     }
 
@@ -299,10 +296,9 @@ public class ObliviousAlgebra {
     EncMatrix secInvPart2(EncMatrix MPrime) throws Exception {
 
         //line 4
-        EncMatrix newMPrime = R.timesEnc(MPrime);
 
         //line 5
-        return newMPrime;
+        return R.timesEnc(MPrime);
     }
 
 
@@ -310,10 +306,9 @@ public class ObliviousAlgebra {
 
         //line 9
         //IntMatrix RInv = R.inverse();
-        EncMatrix newNPrime = NPrime.times(R.inverse());
 
         //line 10
-        return  newNPrime;
+        return NPrime.times(R.inverse());
     }
 
 
@@ -327,8 +322,7 @@ public class ObliviousAlgebra {
             data[i][i] = BigInteger.valueOf(rnd.nextInt());
         }
         //System.out.println(data);
-        IntMatrix ret = new IntMatrix(data);
-        return ret;
+        return new IntMatrix(data);
 
     }
 

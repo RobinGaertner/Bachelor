@@ -3,19 +3,15 @@ package com.company;
 import java.math.BigInteger;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Random;
 
 public class ObliviousAlgebraCoordinator {
 
-    //N = number of parties
-    int N;
     //t = matrixsize
     int t;
     List<ObliviousAlgebra> parties = new LinkedList<>();
     public PrivateKeyRing privateKeyRing;
     public PublicKey publicKey;
     Utils utils = new Utils();
-    Random rnd = new Random();
 
     public ObliviousAlgebraCoordinator(int numParties, int matrixSize) throws Exception {
         //setup

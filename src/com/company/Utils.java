@@ -18,7 +18,9 @@ public class Utils {
         //returns gcd(a,b), x, y
         //where ax + by = gcd(a,b)
         long[] retvals = {0, 0, 0};
-        long aa[] = {1, 0}, bb[] = {0, 1}, q = 0;
+        long[] aa = {1, 0};
+        long[] bb = {0, 1};
+        long q = 0;
         while (true) {
             q = a / b;
             a = a % b;
@@ -30,7 +32,6 @@ public class Utils {
                 retvals[2] = bb[1];
                 return retvals;
             }
-            ;
             q = b / a;
             b = b % a;
             aa[1] = aa[1] - q * aa[0];
@@ -169,7 +170,7 @@ public class Utils {
 
     //from https://www.geeksforgeeks.org/program-check-matrix-singular-not/
 
-    static void getCofactor(IntMatrix M, BigInteger temp[][], int p,
+    static void getCofactor(IntMatrix M, BigInteger[][] temp, int p,
                             int q, int n)
     {
         int i = 0, j = 0;
@@ -204,11 +205,7 @@ public class Utils {
 
 
     public Boolean isSingular(IntMatrix A){
-        if(isSingular(A, A.getM()).equals(BigInteger.ZERO)){
-            return true;
-        }else{
-            return false;
-        }
+        return isSingular(A, A.getM()).equals(BigInteger.ZERO);
 
     }
 
@@ -217,7 +214,7 @@ public class Utils {
 
         // function for exchanging two rows
         // of a matrix
-        static void swap(double mat[][],
+        static void swap(double[][] mat,
                          int row1, int row2, int col)
         {
             for (int i = 0; i < col; i++)
@@ -257,7 +254,7 @@ public class Utils {
                             // as 0 except entry
                             // 'mat[row][row]'
                             double mult =
-                                    (double)mat[col][row] /
+                                    mat[col][row] /
                                             mat[row][row];
 
                             for (int i = 0; i < rank; i++)
@@ -344,7 +341,7 @@ public class Utils {
             return M.getData()[0][0];
         }
 
-        BigInteger temp[][] = new BigInteger[n][n]; // To store cofactors
+        BigInteger[][] temp = new BigInteger[n][n]; // To store cofactors
 
         BigInteger sign = BigInteger.ONE; // To store sign multiplier
 

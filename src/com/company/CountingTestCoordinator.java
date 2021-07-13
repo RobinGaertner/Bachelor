@@ -17,7 +17,6 @@ public class CountingTestCoordinator {
     public PrivateKeyRing privateKeyRing;
     public PublicKey publicKey;
     ObliviousAlgebraCoordinator oCoordinator;
-    Utils utils = new Utils();
 
 
 
@@ -60,10 +59,6 @@ public class CountingTestCoordinator {
 
 
         FModular.FModularFactory factory = FModular.FACTORY;
-        List<FModular> fList = new LinkedList<>();
-        for (int i = 0; i < cList.size(); i++) {
-            fList.add(factory.get(privateKeyRing.decrypt(cList.get(i))));
-        }
 
 
 
@@ -248,12 +243,11 @@ public class CountingTestCoordinator {
         for (int i = 0; i < vector.M; i++) {
             fVectorData[i] = factory.get(vectorData[i][0]);
         }
-        Vector<FModular> fVector = new Vector<FModular>(fVectorData);
+        Vector<FModular> fVector = new Vector<>(fVectorData);
 
 
         // calculate the solution and print it
-        Vector<FModular> solution = LinSysSolver.solve(fMatrix, fVector);
-        return solution;
+        return LinSysSolver.solve(fMatrix, fVector);
     }
 
 
@@ -270,7 +264,7 @@ public class CountingTestCoordinator {
                 fData[i][j] = factory.get(Data[j][i]);
             }
         }
-        Matrix<FModular> fMatrix = new Matrix<FModular>(fData);
+        Matrix<FModular> fMatrix = new Matrix<>(fData);
 
         // create a vector
 
@@ -279,12 +273,11 @@ public class CountingTestCoordinator {
         for (int i = 0; i < vector.getM(); i++) {
                 fVectorData[i] = factory.get(vectorData[i][0]);
         }
-        Vector<FModular> fVector = new Vector<FModular>(fVectorData);
+        Vector<FModular> fVector = new Vector<>(fVectorData);
 
 
         // calculate the solution and print it
-        Vector<FModular> solution = LinSysSolver.solve(fMatrix, fVector);
-        return solution;
+        return LinSysSolver.solve(fMatrix, fVector);
     }
 
 
@@ -300,7 +293,7 @@ public class CountingTestCoordinator {
             }
         }
 
-        Matrix<FModular> matrix = new Matrix<FModular>(fData);
+        Matrix<FModular> matrix = new Matrix<>(fData);
         return matrix.rank();
     }
 
@@ -316,7 +309,7 @@ public class CountingTestCoordinator {
             }
         }
 
-        Matrix<FModular> matrix = new Matrix<FModular>(fData);
+        Matrix<FModular> matrix = new Matrix<>(fData);
         return matrix.rank();
     }
 
