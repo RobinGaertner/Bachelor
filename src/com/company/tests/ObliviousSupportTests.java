@@ -14,7 +14,8 @@ public class ObliviousSupportTests {
     //TODO: change seed
     Random rnd = new Random();
     KeyGen keyGen = new KeyGen();
-    ObliviousAlgebraCoordinator coordinator = new ObliviousAlgebraCoordinator(10, 5);
+    int x = 5;
+    ObliviousAlgebraCoordinator coordinator = new ObliviousAlgebraCoordinator(10, x);
     ObliviousAlgebra obliviousAlgebra = new ObliviousAlgebra(new PublicKey(), new PrivateKeyShare(),coordinator, 1);
     PublicKey pk = coordinator.publicKey;
     PrivateKeyRing keyRing = coordinator.privateKeyRing;
@@ -26,7 +27,6 @@ public class ObliviousSupportTests {
 
     @org.junit.jupiter.api.Test
     void secMultTest1() throws Exception {
-        int x = 5;
         for (int i = 0; i < 3; i++) {
 
 
@@ -56,6 +56,49 @@ public class ObliviousSupportTests {
 
         }
     }
+
+
+
+    @org.junit.jupiter.api.Test
+    void numMultiplicationTest() throws Exception {
+        for (int i = 0; i < 3; i++) {
+            ObliviousAlgebraCoordinator coordinator2 = new ObliviousAlgebraCoordinator(10, 1);
+
+
+            BigInteger[][] data1 = new BigInteger[1][1];
+            BigInteger[][] data2 = new BigInteger[1][1];
+
+            data1[0][0] = BigInteger.valueOf(i);
+            data2[0][0] = BigInteger.valueOf(i+3);
+
+
+            IntMatrix A = new IntMatrix(data1);
+
+            IntMatrix B = new IntMatrix(data2);
+
+            EncMatrix AEnc = new EncMatrix(A, coordinator2.publicKey);
+            EncMatrix BEnc = new EncMatrix(B, coordinator2.publicKey);
+
+            System.out.println("got to multiplication of normal matrices");
+
+            System.out.println(A.times(B));
+            System.out.println("finished normal multiplication");
+            EncMatrix multResult = coordinator2.secMult(AEnc, BEnc, coordinator2.publicKey);
+
+            System.out.println("Plain A.times B is  " + A.times(B));
+
+
+            IntMatrix intResult = coordinator2.privateKeyRing.decryptMatrix(multResult);
+
+            System.out.println("secMult result is:  " + intResult);
+
+            assertTrue(A.times(B).eq(intResult));
+
+
+
+        }
+    }
+
 
 
 
