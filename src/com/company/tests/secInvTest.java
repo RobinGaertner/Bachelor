@@ -13,10 +13,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class secInvTest {
 
     //TODO: change seed
-    Random rnd = new Random();
-    KeyGen keyGen = new KeyGen();
-    Containter con = KeyGen.keyGen(16, 3, 5, 5);
-    ObliviousAlgebraCoordinator coordinator = new ObliviousAlgebraCoordinator(10, con.getPublicKey(), con.getPrivateKeyRing());
+    int numParties = 5;
+    Containter con = KeyGen.keyGen(16, 3, numParties, numParties);
+    ObliviousAlgebraCoordinator coordinator = new ObliviousAlgebraCoordinator(numParties, con.getPublicKey(), con.getPrivateKeyRing());
     ObliviousAlgebra obliviousAlgebra = new ObliviousAlgebra(new PublicKey(), new PrivateKeyShare(),coordinator, 1);
     PublicKey pk = coordinator.publicKey;
     PrivateKeyRing keyRing = coordinator.privateKeyRing;
@@ -27,7 +26,7 @@ public class secInvTest {
 
 
     @org.junit.jupiter.api.Test
-    void singularTest() throws Exception {
+    void singularTest() {
         int x = 5;
         for (int i = 0; i < 1; i++) {
 

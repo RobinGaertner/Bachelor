@@ -6,14 +6,13 @@ import java.util.List;
 
 public class ObliviousAlgebraCoordinator {
 
-    //t = matrixsize
-    //int t;
+
     List<ObliviousAlgebra> parties = new LinkedList<>();
     public PrivateKeyRing privateKeyRing;
     public PublicKey publicKey;
     Utils utils = new Utils();
 
-    public ObliviousAlgebraCoordinator(int numParties, PublicKey pK, PrivateKeyRing pkR) throws Exception {
+    public ObliviousAlgebraCoordinator(int numParties, PublicKey pK, PrivateKeyRing pkR) {
         //setup
         publicKey = pK;
         //TODO: remove the privatekeyring

@@ -13,7 +13,6 @@ public class DamgardJurikTest {
 
     //TODO: change seed
     Random rnd = new Random();
-    KeyGen keyGen = new KeyGen();
     PrimeGen primeGen = new PrimeGen();
 
 
@@ -85,7 +84,7 @@ public class DamgardJurikTest {
     }
 
     @org.junit.jupiter.api.Test
-    void primeTest() throws Exception {
+    void primeTest() {
         for (int i = 0; i < 10; i++) {
             System.out.println("Test: " + i);
 
@@ -96,7 +95,7 @@ public class DamgardJurikTest {
     }
 
     @org.junit.jupiter.api.Test
-    void primeTest2() throws Exception {
+    void primeTest2() {
         for (int i = 0; i < 10; i++) {
             System.out.println("Test: " + i);
 
@@ -107,7 +106,7 @@ public class DamgardJurikTest {
     }
 
     @org.junit.jupiter.api.Test
-    void primeTest3() throws Exception {
+    void primeTest3() {
         for (int i = 0; i < 10; i++) {
             System.out.println("Test: " + i);
 

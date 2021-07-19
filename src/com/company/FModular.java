@@ -38,6 +38,10 @@ public class FModular extends FieldElement<FModular>
             value = val.mod(modulus);
         }
 
+        public BigInteger getModulus(){
+            return modulus;
+        }
+
         public BigInteger getValue(){
             return value;
         }

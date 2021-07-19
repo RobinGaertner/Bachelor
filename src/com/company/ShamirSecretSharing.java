@@ -7,8 +7,6 @@ import java.util.Random;
 
 public class ShamirSecretSharing {
 
-    Utils utils = new Utils();
-
     public List<Share> shareSecret(BigInteger secret, BigInteger modulus, int threshold, int nShares){
             /* :param secret: The secret to be shared.
     :param modulus: The modulus used when sharing the secret.
@@ -21,7 +19,6 @@ public class ShamirSecretSharing {
         Random rnd = new Random();
 
         //ensure valid parameters
-        //TODO: do this later
 
         if (secret.compareTo(BigInteger.ZERO)!=1){
             throw new Error("Secret must be >=0");
@@ -48,7 +45,6 @@ public class ShamirSecretSharing {
 
         Polynomial polynomial = new Polynomial();
         polynomial.init(coeffs, modulus);
-        //System.out.println("Coeffs of the polynomial" + coeffs);
 
 
         List<Integer> X = new LinkedList<>();
@@ -56,7 +52,7 @@ public class ShamirSecretSharing {
             X.add(i);
         }
 
-        List<Share> shares = new LinkedList<Share>();
+        List<Share> shares = new LinkedList<>();
         for (int i = 0; i < X.size(); i++) {
             shares.add(new Share(X.get(i), polynomial.call(X.get(i))));
         }
@@ -83,7 +79,6 @@ public class ShamirSecretSharing {
                 }
             }
 
-            //secret = Math.addExact(secret, Math.multiplyExact(shares.get(i).fX.longValue(), product2.longValue()) % modulus) % modulus;
             secret2 = (secret2.add((shares.get(i).fX.multiply(product2)).mod(mod)));
             secret2 = secret2.mod(mod);
 
@@ -92,10 +87,9 @@ public class ShamirSecretSharing {
         return secret2;
     }
 
-    //TODO: copied
     public BigInteger nextRandomBigInteger(BigInteger n) {
         //TODO: change seed
-        Random rand = new Random(1);
+        Random rand = new Random();
         BigInteger result = new BigInteger(n.bitLength(), rand);
         while( result.compareTo(n) >= 0 ) {
             result = new BigInteger(n.bitLength(), rand);

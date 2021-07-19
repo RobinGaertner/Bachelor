@@ -50,15 +50,11 @@ public class CountingTestCoordinator {
             encPointsList.add(parties.get(i).MPCTpart1(inputAlphas, setMod));
         }
         //line 3
-        return parties.get(0).MPCTpart2(encPointsList, inputAlphas, setMod, t);
+        return parties.get(0).MPCTpart2(encPointsList, inputAlphas, t);
     }
 
 
-    public boolean SDT(List<EncryptedNumber> cList, List<BigInteger> alphaList, int t, BigInteger modulus) throws Exception {
-
-
-        FModular.FModularFactory factory = FModular.FACTORY;
-
+    public boolean SDT(List<EncryptedNumber> cList, List<BigInteger> alphaList, int t) throws Exception {
         //line 1
         //generate the system
 
@@ -150,8 +146,8 @@ public class CountingTestCoordinator {
 
         //line 3
         //returning value is going to the right, so first coordinate is always 0
-        Vector<FModular> cv = OLS(MrPlain[0], y[0]);
-        Vector<FModular> cw = OLS(MrPlain[1], y[1]);
+        List<EncryptedNumber> cv = OLS(MrPlain[0], y[0]);
+        List<EncryptedNumber> cw = OLS(MrPlain[1], y[1]);
 
 
 
@@ -159,67 +155,79 @@ public class CountingTestCoordinator {
         //compute the polynomials
 
         //from 0-t
-        List<BigInteger> cv1 = new LinkedList<>();
+        List<EncryptedNumber> cv1 = new LinkedList<>();
         for (int i = 0; i < t+1; i++) {
-            cv1.add(cv.getEntry(t-i+1).value);
+            cv1.add(cv.get(t-i));
         }
-        Polynomial polynomialCv1 = new Polynomial();
-        polynomialCv1.init(cv1, modulus);
+        EncPolynomial polynomialCv1 = new EncPolynomial();
+        polynomialCv1.init(cv1);
 
         //from t+1 to 2t+1
-        List<BigInteger> cv2 = new LinkedList<>();
-        cv2.add(BigInteger.ONE);
+        List<EncryptedNumber> cv2 = new LinkedList<>();
+        cv2.add(publicKey.encrypt(BigInteger.ONE));
         for (int i = 0; i < t; i++) {
-            cv2.add(cv.getEntry(2*t-i+1).value);
+            cv2.add(cv.get(2*t-i));
         }
-        Polynomial polynomialCv2 = new Polynomial();
-        polynomialCv2.init(cv2, modulus);
+        EncPolynomial polynomialCv2 = new EncPolynomial();
+        polynomialCv2.init(cv2);
 
 
 
         //do this again for w
         //from 0-t
         //from 0-t
-        List<BigInteger> cw1 = new LinkedList<>();
+        List<EncryptedNumber> cw1 = new LinkedList<>();
         for (int i = 0; i < t+1; i++) {
-            cw1.add(cw.getEntry(t-i+1).value);
+            cw1.add(cw.get(t-i));
         }
-        Polynomial polynomialCw1 = new Polynomial();
-        polynomialCw1.init(cw1, modulus);
+        EncPolynomial polynomialCw1 = new EncPolynomial();
+        polynomialCw1.init(cw1);
 
         //from t+1 to 2t+1
-        List<BigInteger> cw2 = new LinkedList<>();
-        cw2.add(BigInteger.ONE);
+        List<EncryptedNumber> cw2 = new LinkedList<>();
+        cw2.add(publicKey.encrypt(BigInteger.ONE));
         for (int i = 0; i < t; i++) {
-            cw2.add(cw.getEntry(2*t-i+1).value);
+            cw2.add(cw.get(2*t-i));
         }
-        Polynomial polynomialCw2 = new Polynomial();
-        polynomialCw2.init(cw2, modulus);
+        EncPolynomial polynomialCw2 = new EncPolynomial();
+        polynomialCw2.init(cw2);
 
 
-        System.out.println("coeffs of CV1: " + polynomialCv1.coeffs);
-        System.out.println("coeffs of CV2: " + polynomialCv2.coeffs);
-        System.out.println("coeffs of CW1: " + polynomialCw1.coeffs);
-        System.out.println("coeffs of CW2: " + polynomialCw2.coeffs);
+        //System.out.println("coeffs of CV1: " + polynomialCv1.coeffs);
+        //System.out.println("coeffs of CV2: " + polynomialCv2.coeffs);
+        //System.out.println("coeffs of CW1: " + polynomialCw1.coeffs);
+        //System.out.println("coeffs of CW2: " + polynomialCw2.coeffs);
 
 
         //compute the endresult
         //get on point t?
-        FModular result1 = factory.get(polynomialCv1.call(alphaList.get(0))).multiply(factory.get(polynomialCw2.call(alphaList.get(0))));
-        FModular result2 = factory.get(polynomialCw1.call(alphaList.get(0))).multiply(factory.get(polynomialCv2.call(alphaList.get(0))));
+        EncryptedNumber result11 = polynomialCv1.call(alphaList.get(0));
+        EncryptedNumber result12 = polynomialCw2.call(alphaList.get(0));
+        EncryptedNumber result1 = multiplyEnc(result11, result12);
 
-        System.out.println("res1 is: " + result1);
-        System.out.println("res2 is: " + result2);
+        EncryptedNumber result21 = polynomialCw1.call(alphaList.get(0));
+        EncryptedNumber result22 = polynomialCv2.call(alphaList.get(0));
+        EncryptedNumber result2 = multiplyEnc(result21, result22);
 
-        FModular res = result1.subtract(result2);
-        System.out.println("res is: " + res);
-
-        return res.isZero();
+        return decZero(result1.sub(result2));
 
     }
 
 
-    private Vector<FModular> OLS (EncMatrix matrix, EncMatrix vector){
+    private Boolean decZero(EncryptedNumber input){
+
+        BigInteger plain = privateKeyRing.decrypt(input);
+
+        FModular.FModularFactory factory = FModular.FACTORY;
+        return plain.mod(factory.get(0).modulus).equals(BigInteger.ZERO);
+
+    }
+
+
+
+
+
+    private List<EncryptedNumber> OLS (EncMatrix matrix, EncMatrix vector){
 
         BigInteger[][] Data = privateKeyRing.decryptMatrix(matrix).getData();
         FModular [][] fData = new FModular[matrix.M][matrix.N];
@@ -243,7 +251,15 @@ public class CountingTestCoordinator {
 
 
         // calculate the solution and print it
-        return LinSysSolver.solve(fMatrix, fVector);
+        Vector<FModular> res = LinSysSolver.solve(fMatrix, fVector);
+
+        List<EncryptedNumber> resList = new LinkedList<>();
+
+        for (int i = 0; i < fVector.length(); i++) {
+            resList.add(publicKey.encrypt(res.getEntry(i+1).getValue()));
+        }
+
+        return resList;
     }
 
 

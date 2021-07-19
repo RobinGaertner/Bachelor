@@ -110,7 +110,7 @@ class SDTTests {
 
 
 
-        assertEquals(true, counting.SDT(encList, inputList, t, modulus));
+        assertEquals(true, counting.SDT(encList, inputList, t));
 
 
 

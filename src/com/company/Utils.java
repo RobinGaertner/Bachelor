@@ -128,15 +128,6 @@ public class Utils {
         return res;
     }
 
-    BigInteger prodBig(List<BigInteger> list){
-        //Returns the product of the numbers in the list.
-        BigInteger res =BigInteger.valueOf(1);
-        for (BigInteger i : list) {
-            res = res.multiply(i);
-        }
-        return res;
-    }
-
     //TODO: Make this nice
     public BigInteger floorDiv(final BigInteger x, final BigInteger y) {
         if (x.signum() * y.signum() >= 0) {

@@ -61,7 +61,7 @@ public class CountingTest {
     }
 
     //line 3-4
-    boolean MPCTpart2(List<List<EncryptedNumber>> cList, List<BigInteger> inputAlphas, BigInteger modulo, int threshold) throws Exception {
+    boolean MPCTpart2(List<List<EncryptedNumber>> cList, List<BigInteger> inputAlphas, int threshold) throws Exception {
 
         FModular.FModularFactory factory = FModular.FACTORY;
         //line 3
@@ -80,7 +80,7 @@ public class CountingTest {
         }
 
         //line 4
-        return coordinator.SDT(dList, inputAlphas, threshold, modulo);
+        return coordinator.SDT(dList, inputAlphas, threshold);
     }
 
 
