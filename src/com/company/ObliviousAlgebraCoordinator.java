@@ -7,35 +7,31 @@ import java.util.List;
 public class ObliviousAlgebraCoordinator {
 
     //t = matrixsize
-    int t;
+    //int t;
     List<ObliviousAlgebra> parties = new LinkedList<>();
     public PrivateKeyRing privateKeyRing;
     public PublicKey publicKey;
     Utils utils = new Utils();
 
-    public ObliviousAlgebraCoordinator(int numParties, int matrixSize) throws Exception {
+    public ObliviousAlgebraCoordinator(int numParties, PublicKey pK, PrivateKeyRing pkR) throws Exception {
         //setup
-        //TODO: change to the right needed numbers
-        Containter con = KeyGen.keyGen(16, 3, numParties, numParties);
-        publicKey = con.getPublicKey();
-        List<PrivateKeyShare> KeyShareList = con.getPrivateKeyRing().privateKeyShareList;
+        publicKey = pK;
         //TODO: remove the privatekeyring
-        privateKeyRing = con.getPrivateKeyRing();
+        privateKeyRing = pkR;
+        List<PrivateKeyShare> KeyShareList = pkR.privateKeyShareList;
 
         for (int i = 0; i < numParties; i++) {
             parties.add(new ObliviousAlgebra(publicKey, KeyShareList.get(i), this, i));
         }
-        t = matrixSize;
     }
 
 
 
     public EncMatrix secInv(EncMatrix M) throws Exception {
-        t = M.M;
 
         //line 1
         for (int i = 0; i < parties.size(); i++) {
-            parties.get(i).secInvPart1(t);
+            parties.get(i).secInvPart1(M.M);
         }
 
         //line 2
@@ -99,7 +95,7 @@ public class ObliviousAlgebraCoordinator {
 
         //lines 1-5
         for (ObliviousAlgebra party : parties) {
-            List<EncMatrix> result1 = party.secMultPart1(Ml, Mr, t, pK);
+            List<EncMatrix> result1 = party.secMultPart1(Ml, Mr, pK);
             clList.add(result1.get(0));
             crList.add(result1.get(1));
             dlList.add(result1.get(2));

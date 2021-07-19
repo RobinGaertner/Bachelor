@@ -39,8 +39,9 @@ public class ObliviousAlgebra {
 
 
 
-    List<EncMatrix> secMultPart1(EncMatrix Ml, EncMatrix Mr, int size, PublicKey pK) throws Exception {
+    List<EncMatrix> secMultPart1(EncMatrix Ml, EncMatrix Mr, PublicKey pK) throws Exception {
 
+        int size = Ml.M;
             //2.
             BigInteger[][] rndArray = new BigInteger[size][size];
             for (int x = 0; x < size; x++) {

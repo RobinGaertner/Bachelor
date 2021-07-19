@@ -11,7 +11,6 @@ import java.util.List;
 public class CountingTestCoordinator {
 
     //N = number of parties
-    //t = matrixsize
     int t;
     public List<CountingTest> parties = new LinkedList<>();
     public PrivateKeyRing privateKeyRing;
@@ -28,7 +27,7 @@ public class CountingTestCoordinator {
         //TODO: remove the privatekeyring
         privateKeyRing = con.getPrivateKeyRing();
 
-        oCoordinator = new ObliviousAlgebraCoordinator(numParties, t);
+        oCoordinator = new ObliviousAlgebraCoordinator(numParties, con.getPublicKey(), con.getPrivateKeyRing());
 
 
         //TODO: maybe add this again
@@ -59,9 +58,6 @@ public class CountingTestCoordinator {
 
 
         FModular.FModularFactory factory = FModular.FACTORY;
-
-
-
 
         //line 1
         //generate the system
@@ -248,6 +244,22 @@ public class CountingTestCoordinator {
 
         // calculate the solution and print it
         return LinSysSolver.solve(fMatrix, fVector);
+    }
+
+
+    public EncryptedNumber multiplyEnc(EncryptedNumber a, EncryptedNumber b) throws Exception {
+        EncryptedNumber[][] data1 = new EncryptedNumber[1][1];
+        EncryptedNumber[][] data2 = new EncryptedNumber[1][1];
+
+        data1[0][0] = a;
+        data2[0][0] = b;
+
+        EncMatrix AEnc = new EncMatrix(data1, publicKey);
+        EncMatrix BEnc = new EncMatrix(data2, publicKey);
+
+        EncMatrix resMatrix = oCoordinator.secMult(AEnc, BEnc, AEnc.getPublicKey());
+
+        return resMatrix.getData()[0][0];
     }
 
 

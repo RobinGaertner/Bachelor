@@ -1,27 +1,16 @@
 package com.company.tests;
 
 import com.company.*;
-import io.netty.channel.nio.NioEventLoopGroup;
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.RealMatrix;
 import org.jlinalg.Matrix;
 import org.jlinalg.Vector;
-import org.jlinalg.f2.F2;
-import org.jlinalg.field_p.FieldP;
-import org.jlinalg.field_p.FieldPAbstractFactory;
-import org.jlinalg.field_p.FieldPBigFactory;
-import org.jlinalg.field_p.FieldPFactoryMap;
-import org.jlinalg.polynomial.PolynomialFactory;
 import org.jlinalg.rational.Rational;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import javax.naming.OperationNotSupportedException;
 import java.math.BigInteger;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import org.jlinalg.*;
 
@@ -68,32 +57,6 @@ class SDTTests {
         for (int i = 0; i < 4*t+2; i++) {
             inputList.add(BigInteger.valueOf(7*i+17));
         }
-
-        /*
-        Map<Integer, FModular> coefficients1 = new HashMap<Integer, FModular>();
-        for (int i = 0; i < t-1; i++) {
-            coefficients1.put(i, factory.get(i+1));
-        }
-
-        Map<Integer, FModular> coefficients2 = new HashMap<Integer, FModular>();
-        for (int i = 0; i < t-1; i++) {
-            coefficients2.put(i, factory.get(i+5));
-        }
-
-        PolynomialFactory<FModular> pfactory = PolynomialFactory.getFactory(factory);
-
-
-        org.jlinalg.polynomial.Polynomial<?> polynomial1 = pfactory.get(coefficients1);
-        org.jlinalg.polynomial.Polynomial<?> polynomial2 = pfactory.get(coefficients2);
-
-        polynomial1.apply(factory.get(inputList));
-
-        List<FModular> fList = new LinkedList<>();
-        for (int i = 0; i < inputList.size(); i++) {
-            fList.add(polynomial1.apply(inputList.get(i)));
-        }
-
-         */
 
         //make the polynomials
         List<BigInteger> poly1List = new LinkedList<>();

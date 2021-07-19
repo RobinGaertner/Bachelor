@@ -14,8 +14,10 @@ public class ObliviousSupportTests {
     //TODO: change seed
     Random rnd = new Random();
     KeyGen keyGen = new KeyGen();
+    int numParties = 5;
+    Containter con = KeyGen.keyGen(16, 3, numParties,numParties);
     int x = 5;
-    ObliviousAlgebraCoordinator coordinator = new ObliviousAlgebraCoordinator(10, x);
+    ObliviousAlgebraCoordinator coordinator = new ObliviousAlgebraCoordinator(5, con.getPublicKey(), con.getPrivateKeyRing());
     ObliviousAlgebra obliviousAlgebra = new ObliviousAlgebra(new PublicKey(), new PrivateKeyShare(),coordinator, 1);
     PublicKey pk = coordinator.publicKey;
     PrivateKeyRing keyRing = coordinator.privateKeyRing;
@@ -62,7 +64,7 @@ public class ObliviousSupportTests {
     @org.junit.jupiter.api.Test
     void numMultiplicationTest() throws Exception {
         for (int i = 0; i < 3; i++) {
-            ObliviousAlgebraCoordinator coordinator2 = new ObliviousAlgebraCoordinator(10, 1);
+            ObliviousAlgebraCoordinator coordinator2 = new ObliviousAlgebraCoordinator(numParties, con.getPublicKey(), con.getPrivateKeyRing());
 
 
             BigInteger[][] data1 = new BigInteger[1][1];
@@ -93,6 +95,25 @@ public class ObliviousSupportTests {
             System.out.println("secMult result is:  " + intResult);
 
             assertTrue(A.times(B).eq(intResult));
+
+
+
+        }
+    }
+
+
+    @org.junit.jupiter.api.Test
+    void encMultiplyTest() throws Exception {
+
+        CountingTestCoordinator cc = new CountingTestCoordinator(10, 10);
+        for (int i = 0; i < 10; i++) {
+
+            EncryptedNumber a = cc.publicKey.encrypt(BigInteger.valueOf(i));
+            EncryptedNumber b = cc.publicKey.encrypt(BigInteger.valueOf(i+2));
+
+            EncryptedNumber res = cc.multiplyEnc(a,b);
+
+            assertEquals(cc.privateKeyRing.decrypt(res), BigInteger.valueOf(i*(i+2)));
 
 
 

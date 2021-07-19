@@ -15,7 +15,8 @@ public class secInvTest {
     //TODO: change seed
     Random rnd = new Random();
     KeyGen keyGen = new KeyGen();
-    ObliviousAlgebraCoordinator coordinator = new ObliviousAlgebraCoordinator(10, 5);
+    Containter con = KeyGen.keyGen(16, 3, 5, 5);
+    ObliviousAlgebraCoordinator coordinator = new ObliviousAlgebraCoordinator(10, con.getPublicKey(), con.getPrivateKeyRing());
     ObliviousAlgebra obliviousAlgebra = new ObliviousAlgebra(new PublicKey(), new PrivateKeyShare(),coordinator, 1);
     PublicKey pk = coordinator.publicKey;
     PrivateKeyRing keyRing = coordinator.privateKeyRing;
