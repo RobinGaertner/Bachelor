@@ -7,6 +7,7 @@ I securely implemented the protocols secMult, SDT and MPCT and I made dummy func
 
 To test the Protocols yourself, call:
 
+
 for SDT:
 choose a prime modulus
 choose a treshold t
@@ -22,6 +23,8 @@ call SDT(list2, list1, treshold) to see, if the degree of the polynomials is <t
 
 Example in SDTTests
 
+                                                                                
+                                                                                
 for MPCT:
 choose a number n
 choose a treshold t
@@ -33,4 +36,13 @@ give every party a list,
 create a newList with any values except 0,
 call MPCT(newList, modulus) to see, if the setIntersection is >n-t
 
+Example in MPCTTests
+  
+  
+for secMult:
+  
+create 2 matrizes,
+encrypt the matrizes
 
+call secMult(MatrixA, MatrixB)
+decrypt the result to get the multiplication
