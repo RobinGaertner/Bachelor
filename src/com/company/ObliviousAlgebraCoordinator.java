@@ -11,6 +11,7 @@ public class ObliviousAlgebraCoordinator {
     public PrivateKeyRing privateKeyRing;
     public PublicKey publicKey;
     Utils utils = new Utils();
+    int secMultCounter = 0;
 
     public ObliviousAlgebraCoordinator(int numParties, PublicKey pK, PrivateKeyRing pkR) {
         //setup
@@ -85,7 +86,11 @@ public class ObliviousAlgebraCoordinator {
 
 
 
+
+
     public EncMatrix secMult(EncMatrix Ml, EncMatrix Mr, PublicKey pK) throws Exception {
+
+        secMultCounter++;
 
         List<EncMatrix> clList = new LinkedList<>();
         List<EncMatrix> crList = new LinkedList<>();
@@ -138,6 +143,9 @@ public class ObliviousAlgebraCoordinator {
         return retVal.get(0);
 
     }
+
+
+
 
 
 

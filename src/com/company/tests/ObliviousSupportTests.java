@@ -21,6 +21,7 @@ public class ObliviousSupportTests {
     ObliviousAlgebra obliviousAlgebra = new ObliviousAlgebra(new PublicKey(), new PrivateKeyShare(),coordinator, 1);
     PublicKey pk = coordinator.publicKey;
     PrivateKeyRing keyRing = coordinator.privateKeyRing;
+    BigInteger FMod = BigInteger.valueOf(1097);
 
 
     public ObliviousSupportTests() throws Exception {
@@ -105,7 +106,7 @@ public class ObliviousSupportTests {
     @org.junit.jupiter.api.Test
     void encMultiplyTest() throws Exception {
 
-        CountingTestCoordinator cc = new CountingTestCoordinator(10, 10);
+        CountingTestCoordinator cc = new CountingTestCoordinator(10, 10, FMod);
         for (int i = 0; i < 10; i++) {
 
             EncryptedNumber a = cc.publicKey.encrypt(BigInteger.valueOf(i));

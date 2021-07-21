@@ -19,6 +19,7 @@ public class PublicKey {
     public BigInteger ns1;
     BigInteger nsm;
     public BigInteger invFourDeltaSquared;
+    int encryptionCounter = 0;
 
     void init(BigInteger n, int  s, BigInteger  m, int  t, BigInteger d) {
 
@@ -48,6 +49,7 @@ public class PublicKey {
     }
 
     public EncryptedNumber encrypt (BigInteger plain){
+        encryptionCounter++;
 
         BigInteger r = nextRandomBigInteger(n.subtract(BigInteger.ONE)).add(BigInteger.ONE);
 

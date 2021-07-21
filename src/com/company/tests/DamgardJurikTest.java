@@ -1,10 +1,8 @@
 package com.company.tests;
 
 import com.company.*;
-import org.w3c.dom.ranges.Range;
 
 import java.math.BigInteger;
-import java.util.HashSet;
 import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

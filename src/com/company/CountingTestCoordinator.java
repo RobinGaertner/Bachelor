@@ -16,10 +16,14 @@ public class CountingTestCoordinator {
     public PrivateKeyRing privateKeyRing;
     public PublicKey publicKey;
     ObliviousAlgebraCoordinator oCoordinator;
+    public int SDTCounter = 0;
+    public int MPCTCounter = 0;
+    public int OLSCounter =0;
+    public BigInteger FModularModulo;
 
 
 
-    public CountingTestCoordinator(int numParties, int treshold) throws Exception {
+    public CountingTestCoordinator(int numParties, int treshold, BigInteger FModularMod) throws Exception {
         //setup
         //TODO: change to the right needed numbers
         Containter con = KeyGen.keyGen(16, 3, numParties, numParties);
@@ -29,18 +33,34 @@ public class CountingTestCoordinator {
 
         oCoordinator = new ObliviousAlgebraCoordinator(numParties, con.getPublicKey(), con.getPrivateKeyRing());
 
-
-        //TODO: maybe add this again
-
         for (int i = 0; i < numParties; i++) {
             parties.add(new CountingTest(treshold, publicKey, this));
         }
         t = treshold;
+        FModularModulo = FModularMod;
 
 
     }
 
+    public void printStats(){
+        System.out.println("Number that MPCT has been called: " + MPCTCounter);
+        System.out.println("Number that SDT has been called: " + SDTCounter);
+        System.out.println("Number that OLS has been called: " + OLSCounter);
+        System.out.println("Decryptions in the relevant protocols: " + privateKeyRing.decryptCounter);
+        System.out.println("Encryptions in the relevant protocols: " + publicKey.encryptionCounter);
+    }
+
+    public void resetStats(){
+        MPCTCounter =0;
+        SDTCounter =0;
+        OLSCounter=0;
+        privateKeyRing.decryptCounter=0;
+        publicKey.encryptionCounter =0;
+    }
+
+
     public boolean MPCT(List<BigInteger> inputAlphas, BigInteger setMod) throws Exception {
+        MPCTCounter++;
 
         List<List<EncryptedNumber>> encPointsList = new LinkedList<>();
         //line 1 already done in setup
@@ -55,6 +75,8 @@ public class CountingTestCoordinator {
 
 
     public boolean SDT(List<EncryptedNumber> cList, List<BigInteger> alphaList, int t) throws Exception {
+
+        SDTCounter++;
         //line 1
         //generate the system
 
@@ -134,11 +156,11 @@ public class CountingTestCoordinator {
         //line 2
         //fine now
         for (int i = 0; i < 2; i++) {
-            int part1 = rankOfMatrix(MrPlain[i]);
-            int part2 = rankOfMatrix(Mry[i]);
+            EncryptedNumber part1 = rankOfMatrix(MrPlain[i]);
+            EncryptedNumber part2 = rankOfMatrix(Mry[i]);
 
             //if not zero, abort
-            if(part1 - part2 != 0){
+            if(!decZero(part1.sub(part2))){
                 return false;
             }
         }
@@ -218,7 +240,7 @@ public class CountingTestCoordinator {
 
         BigInteger plain = privateKeyRing.decrypt(input);
 
-        FModular.FModularFactory factory = FModular.FACTORY;
+        FModular.FModularFactory factory = FModular.FACTORY(FModularModulo);
         return plain.mod(factory.get(0).modulus).equals(BigInteger.ZERO);
 
     }
@@ -228,10 +250,11 @@ public class CountingTestCoordinator {
 
 
     private List<EncryptedNumber> OLS (EncMatrix matrix, EncMatrix vector){
+        OLSCounter++;
 
         BigInteger[][] Data = privateKeyRing.decryptMatrix(matrix).getData();
         FModular [][] fData = new FModular[matrix.M][matrix.N];
-        FModular.FModularFactory factory = FModular.FACTORY;
+        FModular.FModularFactory factory = FModular.FACTORY(FModularModulo);
 
         for (int i = 0; i < matrix.M; i++) {
             for (int j = 0; j < matrix.N; j++) {
@@ -257,6 +280,8 @@ public class CountingTestCoordinator {
 
         for (int i = 0; i < fVector.length(); i++) {
             resList.add(publicKey.encrypt(res.getEntry(i+1).getValue()));
+            //this will not be in the final product, so the encryption does not count for the analysis
+            publicKey.encryptionCounter--;
         }
 
         return resList;
@@ -285,7 +310,7 @@ public class CountingTestCoordinator {
 
         BigInteger[][] Data = matrix.getData();
         FModular [][] fData = new FModular[matrix.getM()][matrix.getN()];
-        FModular.FModularFactory factory = FModular.FACTORY;
+        FModular.FModularFactory factory = FModular.FACTORY(FModularModulo);
 
         for (int i = 0; i < matrix.getM(); i++) {
             for (int j = 0; j < matrix.getN(); j++) {
@@ -313,7 +338,7 @@ public class CountingTestCoordinator {
 
         BigInteger[][] Data = intMatrix.getData();
         FModular [][] fData = new FModular[intMatrix.getM()][intMatrix.getN()];
-        FModular.FModularFactory factory = FModular.FACTORY;
+        FModular.FModularFactory factory = FModular.FACTORY(FModularModulo);
 
         for (int i = 0; i < intMatrix.getM(); i++) {
             for (int j = 0; j < intMatrix.getN(); j++) {
@@ -325,11 +350,11 @@ public class CountingTestCoordinator {
         return matrix.rank();
     }
 
-    private int rankOfMatrix(EncMatrix encMatrix){
+    private EncryptedNumber rankOfMatrix(EncMatrix encMatrix){
 
         EncryptedNumber[][] Data = encMatrix.getData();
         FModular [][] fData = new FModular[encMatrix.M][encMatrix.N];
-        FModular.FModularFactory factory = FModular.FACTORY;
+        FModular.FModularFactory factory = FModular.FACTORY(FModularModulo);
 
         for (int i = 0; i < encMatrix.M; i++) {
             for (int j = 0; j < encMatrix.N; j++) {
@@ -338,7 +363,9 @@ public class CountingTestCoordinator {
         }
 
         Matrix<FModular> matrix = new Matrix<>(fData);
-        return matrix.rank();
+        //this does not count towards the encryption analysis, because it is in a dummy protocol
+        publicKey.encryptionCounter--;
+        return publicKey.encrypt(BigInteger.valueOf(matrix.rank()));
     }
 
 

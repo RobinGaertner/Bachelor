@@ -15,6 +15,7 @@ public class PrivateKeyRing {
     List<Integer> iList = new LinkedList<>();
     public Set<Integer> S;
     BigInteger invFourDeltaSquared;
+    public int decryptCounter = 0;
 
     void init(List<PrivateKeyShare> keyShareList) throws Exception {
         //Initializes the PrivateKeyRing,
@@ -129,6 +130,8 @@ public class PrivateKeyRing {
      """
        # Use PrivateKeyShares to decrypt
          */
+        //This is only used in the insecure testing and not in the relevant function, so it does not increase the counter
+
         List<BigInteger> cList = new LinkedList();
         for (int i = 0; i < privateKeyShareList.size(); i++) {
             cList.add(privateKeyShareList.get(i).decrypt(c));
@@ -151,15 +154,11 @@ public class PrivateKeyRing {
 
         BigInteger m = cPrime.multiply(publicKey.invFourDeltaSquared).mod(publicKey.ns);
 
-        //TODO: THIS IS TESTING FOR NEGATIVE NUMBERS:
+        //THIS IS TESTING FOR NEGATIVE NUMBERS:
 
         if (m.compareTo(publicKey.ns.divide(BigInteger.valueOf(2)))==1){
             m = m.subtract(publicKey.ns);
-            //System.out.println("special minus case triggered");
-            //System.out.println("ns is: " + publicKey.ns);
         }
-
-        //TODO: TEST END
 
         return m;
     }
@@ -171,6 +170,10 @@ public class PrivateKeyRing {
      """
        # Use PrivateKeyShares to decrypt
          */
+        //This is used by the secure test programms, so it increases the decrypt counter
+        decryptCounter++;
+
+
 
         //System.out.println("cList: " +cList);
         //decrypt the whole thing
@@ -232,8 +235,6 @@ public class PrivateKeyRing {
 
     public IntMatrix decryptMatrix(EncMatrix inputMatrix) {
 
-
-        List<IntMatrix> parts = new LinkedList<>();
         //TODO: check if x and y are swapped
         BigInteger[][] data = new BigInteger[inputMatrix.M][inputMatrix.N];
         for (int i = 0; i < inputMatrix.M; i++) {

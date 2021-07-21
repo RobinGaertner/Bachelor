@@ -11,19 +11,16 @@ import org.jlinalg.IRingElementFactory;
 import org.jlinalg.InvalidOperationException;
 import org.jlinalg.JLinAlgTypeProperties;
 import org.jlinalg.RingElementFactory;
-import org.jlinalg.f2.F2;
 
 public class FModular extends FieldElement<FModular>
     {
-        Utils utils = new Utils();
 
         /**
          *
          */
         @Serial
         private static final long serialVersionUID = 1L;
-        //TODO: change the modulus
-        BigInteger modulus = BigInteger.valueOf(1097);
+        public static BigInteger modulus = BigInteger.valueOf(2791);
         BigInteger value;
 
         /**
@@ -36,6 +33,11 @@ public class FModular extends FieldElement<FModular>
         private FModular(BigInteger val)
         {
             value = val.mod(modulus);
+        }
+
+        public static FModularFactory FACTORY(BigInteger i) {
+            modulus = i;
+            return FACTORY;
         }
 
         public BigInteger getModulus(){

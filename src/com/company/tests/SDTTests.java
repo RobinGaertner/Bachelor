@@ -26,13 +26,14 @@ class SDTTests {
 
 
     int numparties = 10;
-    int treshold = 3;
+    int treshold = 4;
+    BigInteger FModulus = BigInteger.valueOf(2791);
     Utils utils = new Utils();
 
 
     SDTTests() throws Exception {
 
-        counting = new CountingTestCoordinator(numparties, treshold);
+        counting = new CountingTestCoordinator(numparties, treshold, FModulus);
     }
 
 
@@ -41,14 +42,7 @@ class SDTTests {
 
         //t is important
         int t = treshold;
-        //TODO: change to p
-        BigInteger modulus = BigInteger.valueOf(1097);
-
-        //degree of the Polynomials
-        int d = 5;
-
-
-        FModular.FModularFactory factory = FModular.FACTORY;
+        FModular.FModularFactory factory = FModular.FACTORY(BigInteger.valueOf(2791));
 
 
 
@@ -66,10 +60,10 @@ class SDTTests {
         poly1List.add(BigInteger.valueOf(18));
         poly1List.add(BigInteger.valueOf(27));
         poly1List.add(BigInteger.valueOf(10));
-        poly1List.add(BigInteger.valueOf(1));
+        poly1List.add(BigInteger.valueOf(5));
 
         Polynomial polynomial1 = new Polynomial();
-        polynomial1.init(poly1List, modulus);
+        polynomial1.init(poly1List, FModulus);
 
         //make second polynomial
         List<BigInteger> poly2List = new LinkedList<>();
@@ -86,7 +80,7 @@ class SDTTests {
 
 
         Polynomial polynomial2 = new Polynomial();
-        polynomial2.init(poly2List, modulus);
+        polynomial2.init(poly2List, FModulus);
 
 
         //divide them
@@ -95,10 +89,6 @@ class SDTTests {
             FModular tmp1 = factory.get(polynomial1.call(inputList.get(i)));
             FModular tmp2 = factory.get(polynomial2.call(inputList.get(i)));
 
-            System.out.println("input list: " + inputList.get(i));
-            System.out.println("tmp1: " + tmp1);
-            System.out.println("tmp1 should be: " + polynomial2.call(inputList.get(i)));
-            System.out.println("tmp2: " + tmp2);
             fList.add(tmp1.divide(tmp2));
         }
 
@@ -110,7 +100,9 @@ class SDTTests {
 
 
 
+        counting.resetStats();
         assertEquals(true, counting.SDT(encList, inputList, t));
+        counting.printStats();
 
 
 
@@ -149,7 +141,7 @@ class SDTTests {
         r6 = Rational.FACTORY.get(6);
 
 
-        FModular.FModularFactory factory = FModular.FACTORY;
+        FModular.FModularFactory factory = FModular.FACTORY(FModulus);
 
         // create a matrix
         Matrix<FModular> a = new Matrix<FModular>(new FModular[][]
@@ -180,7 +172,7 @@ class SDTTests {
     @Test
     void TestFModular(){
 
-        FModular.FModularFactory factory = FModular.FACTORY;
+        FModular.FModularFactory factory = FModular.FACTORY(FModulus);
 
         FModular ten = factory.get(10);
         FModular twenty = factory.get(20);
@@ -195,7 +187,7 @@ class SDTTests {
     @Test
     void TestFModular2(){
 
-        FModular.FModularFactory factory = FModular.FACTORY;
+        FModular.FModularFactory factory = FModular.FACTORY(FModulus);
 
         FModular ten = factory.get(10);
         FModular twenty = factory.get(20);

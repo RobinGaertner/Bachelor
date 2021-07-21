@@ -30,11 +30,12 @@ class MPCTTest {
     int numparties = 2;
     int treshold = 2;
     Utils utils = new Utils();
+    BigInteger FMod = BigInteger.valueOf(1097);
 
 
     MPCTTest() throws Exception {
 
-        counting = new CountingTestCoordinator(numparties, treshold);
+        counting = new CountingTestCoordinator(numparties, treshold, FMod );
     }
 
 
@@ -48,10 +49,6 @@ class MPCTTest {
 
         //n is the number of inputs in a set
         int n = 5;
-
-
-
-        FModular.FModularFactory factory = FModular.FACTORY;
 
         List<BigInteger> inputList1 = new LinkedList<>();
         inputList1.add(BigInteger.valueOf(17));
@@ -79,7 +76,10 @@ class MPCTTest {
         }
 
 
+
+        counting.resetStats();
         assertEquals( true,counting.MPCT( alphaList ,modulus));
+        counting.printStats();
 
 
     }
