@@ -161,7 +161,9 @@ public class CountingTestCoordinator {
 
             //if not zero, abort
             if(!decZero(part1.sub(part2))){
+                System.out.println("rank of matrices different");
                 return false;
+
             }
         }
 
@@ -239,9 +241,7 @@ public class CountingTestCoordinator {
     private Boolean decZero(EncryptedNumber input){
 
         BigInteger plain = privateKeyRing.decrypt(input);
-
-        FModular.FModularFactory factory = FModular.FACTORY(FModularModulo);
-        return plain.mod(factory.get(0).modulus).equals(BigInteger.ZERO);
+        return plain.mod(FModularModulo).equals(BigInteger.ZERO);
 
     }
 

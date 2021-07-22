@@ -63,7 +63,7 @@ public class CountingTest {
     //line 3-4
     boolean MPCTpart2(List<List<EncryptedNumber>> cList, List<BigInteger> inputAlphas, int threshold) throws Exception {
 
-        FModular.FModularFactory factory = FModular.FACTORY;
+        FModular.FModularFactory factory = FModular.FACTORY(coordinator.FModularModulo);
         //line 3
         List<EncryptedNumber> dList = new LinkedList<>();
         //System.out.println("cList: " + cList);

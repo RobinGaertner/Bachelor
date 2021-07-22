@@ -29,7 +29,6 @@ class MPCTTest {
 
     int numparties = 2;
     int treshold = 2;
-    Utils utils = new Utils();
     BigInteger FMod = BigInteger.valueOf(1097);
 
 
@@ -45,10 +44,6 @@ class MPCTTest {
         //t is important
         int t = treshold;
         //TODO: change to p
-        BigInteger modulus = BigInteger.valueOf(1097);
-
-        //n is the number of inputs in a set
-        int n = 5;
 
         List<BigInteger> inputList1 = new LinkedList<>();
         inputList1.add(BigInteger.valueOf(17));
@@ -78,7 +73,7 @@ class MPCTTest {
 
 
         counting.resetStats();
-        assertEquals( true,counting.MPCT( alphaList ,modulus));
+        assertEquals( true,counting.MPCT( alphaList , FMod));
         counting.printStats();
 
 

@@ -6,7 +6,6 @@ import java.util.Random;
 
 import org.jlinalg.DivisionByZeroException;
 import org.jlinalg.FieldElement;
-import org.jlinalg.IRingElement;
 import org.jlinalg.IRingElementFactory;
 import org.jlinalg.InvalidOperationException;
 import org.jlinalg.JLinAlgTypeProperties;
@@ -20,7 +19,7 @@ public class FModular extends FieldElement<FModular>
          */
         @Serial
         private static final long serialVersionUID = 1L;
-        public static BigInteger modulus = BigInteger.valueOf(2791);
+        private static BigInteger modulus = BigInteger.valueOf(2791);
         BigInteger value;
 
         /**
@@ -38,10 +37,6 @@ public class FModular extends FieldElement<FModular>
         public static FModularFactory FACTORY(BigInteger i) {
             modulus = i;
             return FACTORY;
-        }
-
-        public BigInteger getModulus(){
-            return modulus;
         }
 
         public BigInteger getValue(){
