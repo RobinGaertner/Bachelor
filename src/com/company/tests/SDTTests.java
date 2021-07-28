@@ -40,7 +40,6 @@ class SDTTests {
     @Test
     void SDT() throws Exception {
 
-        //t is important
         int t = treshold;
         FModular.FModularFactory factory = FModular.FACTORY(BigInteger.valueOf(2791));
 
@@ -54,9 +53,6 @@ class SDTTests {
 
         //make the polynomials
         List<BigInteger> poly1List = new LinkedList<>();
-        //for (int i = 0; i < t - 1; i++) {
-        //    poly1List.add(BigInteger.valueOf(i+1));
-        //}
         poly1List.add(BigInteger.valueOf(18));
         poly1List.add(BigInteger.valueOf(27));
         poly1List.add(BigInteger.valueOf(10));
@@ -67,10 +63,6 @@ class SDTTests {
 
         //make second polynomial
         List<BigInteger> poly2List = new LinkedList<>();
-        //poly2List.add(BigInteger.ONE);
-        //for (int i = 0; i < t - 2; i++) {
-        //    poly2List.add(BigInteger.valueOf(3*i+37));
-        //}
 
         poly2List.add(BigInteger.valueOf(70));
         poly2List.add(BigInteger.valueOf(59));
@@ -130,16 +122,6 @@ class SDTTests {
 
     @Test
     void otherTest(){
-
-        // Create some rational numbers from the default (singelton) factory.
-        Rational r1, r2, r3, r4, r5, r6;
-        r1 = Rational.FACTORY.get(1);
-        r2 = Rational.FACTORY.get(2);
-        r3 = Rational.FACTORY.get(3);
-        r4 = Rational.FACTORY.get(4);
-        r5 = Rational.FACTORY.get(5);
-        r6 = Rational.FACTORY.get(6);
-
 
         FModular.FModularFactory factory = FModular.FACTORY(FModulus);
 

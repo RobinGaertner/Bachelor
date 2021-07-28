@@ -5,6 +5,8 @@ import org.jlinalg.Matrix;
 import org.jlinalg.Vector;
 
 import java.math.BigInteger;
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -19,7 +21,9 @@ public class CountingTestCoordinator {
     public int SDTCounter = 0;
     public int MPCTCounter = 0;
     public int OLSCounter =0;
+    public int secRankCounter =0;
     public BigInteger FModularModulo;
+
 
 
 
@@ -46,6 +50,7 @@ public class CountingTestCoordinator {
         System.out.println("Number that MPCT has been called: " + MPCTCounter);
         System.out.println("Number that SDT has been called: " + SDTCounter);
         System.out.println("Number that OLS has been called: " + OLSCounter);
+        System.out.println("Number that secRank has been called: " + secRankCounter);
         System.out.println("Decryptions in the relevant protocols: " + privateKeyRing.decryptCounter);
         System.out.println("Encryptions in the relevant protocols: " + publicKey.encryptionCounter);
     }
@@ -56,10 +61,14 @@ public class CountingTestCoordinator {
         OLSCounter=0;
         privateKeyRing.decryptCounter=0;
         publicKey.encryptionCounter =0;
+        secRankCounter =0;
     }
 
 
     public boolean MPCT(List<BigInteger> inputAlphas, BigInteger setMod) throws Exception {
+        Date date = new Date();
+        Timestamp ts = new Timestamp(date.getTime());
+        System.out.println("MPCT start: " + ts);
         MPCTCounter++;
 
         List<List<EncryptedNumber>> encPointsList = new LinkedList<>();
@@ -70,12 +79,19 @@ public class CountingTestCoordinator {
             encPointsList.add(parties.get(i).MPCTpart1(inputAlphas, setMod));
         }
         //line 3
+        date = new Date();
+        ts = new Timestamp(date.getTime());
+        System.out.println("MPCT end: " + ts);
         return parties.get(0).MPCTpart2(encPointsList, inputAlphas, t);
     }
 
 
     public boolean SDT(List<EncryptedNumber> cList, List<BigInteger> alphaList, int t) throws Exception {
 
+        System.out.println("SDT inputs: " + cList.size() + " " + t);
+        Date date = new Date();
+        Timestamp ts = new Timestamp(date.getTime());
+        System.out.println("SDT start: " + ts);
         SDTCounter++;
         //line 1
         //generate the system
@@ -233,6 +249,10 @@ public class CountingTestCoordinator {
         EncryptedNumber result22 = polynomialCv2.call(alphaList.get(0));
         EncryptedNumber result2 = multiplyEnc(result21, result22);
 
+
+        date = new Date();
+        ts = new Timestamp(date.getTime());
+        System.out.println("SDT end: " + ts);
         return decZero(result1.sub(result2));
 
     }
@@ -250,6 +270,10 @@ public class CountingTestCoordinator {
 
 
     private List<EncryptedNumber> OLS (EncMatrix matrix, EncMatrix vector){
+
+        Date date = new Date();
+        Timestamp ts = new Timestamp(date.getTime());
+        System.out.println("OLS start: " + ts);
         OLSCounter++;
 
         BigInteger[][] Data = privateKeyRing.decryptMatrix(matrix).getData();
@@ -284,6 +308,10 @@ public class CountingTestCoordinator {
             publicKey.encryptionCounter--;
         }
 
+
+        date = new Date();
+        ts = new Timestamp(date.getTime());
+        System.out.println("OLS end: " + ts);
         return resList;
     }
 
@@ -352,6 +380,12 @@ public class CountingTestCoordinator {
 
     private EncryptedNumber rankOfMatrix(EncMatrix encMatrix){
 
+
+        Date date = new Date();
+        Timestamp ts = new Timestamp(date.getTime());
+        System.out.println("getRank start: " + ts);
+        secRankCounter++;
+
         EncryptedNumber[][] Data = encMatrix.getData();
         FModular [][] fData = new FModular[encMatrix.M][encMatrix.N];
         FModular.FModularFactory factory = FModular.FACTORY(FModularModulo);
@@ -365,6 +399,9 @@ public class CountingTestCoordinator {
         Matrix<FModular> matrix = new Matrix<>(fData);
         //this does not count towards the encryption analysis, because it is in a dummy protocol
         publicKey.encryptionCounter--;
+        date = new Date();
+        ts = new Timestamp(date.getTime());
+        System.out.println("getRank end: " + ts);
         return publicKey.encrypt(BigInteger.valueOf(matrix.rank()));
     }
 

@@ -80,6 +80,8 @@ public class CountingTest {
         }
 
         //line 4
+
+        System.out.println("got to SDT");
         return coordinator.SDT(dList, inputAlphas, threshold);
     }
 
@@ -99,7 +101,7 @@ public class CountingTest {
             //j is spalte
             for (int j = 0; j < inputList.size() + 1; j++) {
 
-                //every field is field above * input + field abote-right
+                //every field is field above * input + field above-right
                 if (j == inputList.size()) {
                     bigArray[j][i + 1] = bigArray[j][i].multiply(inputList.get(i));
                 } else {

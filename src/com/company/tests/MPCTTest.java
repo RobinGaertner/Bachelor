@@ -1,65 +1,54 @@
 package com.company.tests;
 
 import com.company.CountingTestCoordinator;
-import com.company.FModular;
-import com.company.Polynomial;
-import com.company.Utils;
-import org.apache.commons.math3.linear.Array2DRowRealMatrix;
-import org.apache.commons.math3.linear.RealMatrix;
-import org.jlinalg.LinSysSolver;
-import org.jlinalg.Matrix;
-import org.jlinalg.Vector;
-import org.jlinalg.rational.Rational;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 class MPCTTest {
-
-    //TODO: change seed
     CountingTestCoordinator counting;
 
 
 
-
-    int numparties = 2;
-    int treshold = 2;
-    BigInteger FMod = BigInteger.valueOf(1097);
-
-
     MPCTTest() throws Exception {
 
-        counting = new CountingTestCoordinator(numparties, treshold, FMod );
     }
 
 
     @Test
     void MPCTTest() throws Exception {
 
+        int numparties = 2;
+        int treshold = 3;
+        BigInteger FMod = BigInteger.valueOf(19937);
+
+
+        counting = new CountingTestCoordinator(numparties, treshold, FMod );
+
         //t is important
         int t = treshold;
-        //TODO: change to p
 
         List<BigInteger> inputList1 = new LinkedList<>();
-        inputList1.add(BigInteger.valueOf(17));
-        inputList1.add(BigInteger.valueOf(13));
-        inputList1.add(BigInteger.valueOf(12));
-        inputList1.add(BigInteger.valueOf(11));
-        inputList1.add(BigInteger.valueOf(19));
+        inputList1.add(BigInteger.valueOf(137));
+        inputList1.add(BigInteger.valueOf(276));
+        inputList1.add(BigInteger.valueOf(317));
+        inputList1.add(BigInteger.valueOf(912));
+        inputList1.add(BigInteger.valueOf(713));
 
         counting.parties.get(0).setInputSet(inputList1);
 
         List<BigInteger> inputList2 = new LinkedList<>();
-        inputList2.add(BigInteger.valueOf(29));
-        inputList2.add(BigInteger.valueOf(13));
-        inputList2.add(BigInteger.valueOf(12));
-        inputList2.add(BigInteger.valueOf(14));
-        inputList2.add(BigInteger.valueOf(19));
+        inputList2.add(BigInteger.valueOf(137));
+        inputList2.add(BigInteger.valueOf(276));
+        inputList2.add(BigInteger.valueOf(317));
+        inputList2.add(BigInteger.valueOf(219));
+        inputList2.add(BigInteger.valueOf(358));
 
         counting.parties.get(1).setInputSet(inputList2);
 
@@ -70,17 +59,277 @@ class MPCTTest {
             alphaList.add(BigInteger.valueOf(i));
         }
 
+        counting.resetStats();
+        assertTrue(counting.MPCT(alphaList, FMod));
+        counting.printStats();
+    }
+
+
+    @Test
+    void MPCTTest5Parties() throws Exception {
+
+
+        int numparties = 5;
+        int treshold = 2;
+        BigInteger FMod = BigInteger.valueOf(1097);
+
+
+        counting = new CountingTestCoordinator(numparties, treshold, FMod );
+
+        //t is important
+
+        List<BigInteger> inputList1 = new LinkedList<>();
+        inputList1.add(BigInteger.valueOf(17));
+        inputList1.add(BigInteger.valueOf(13));
+        inputList1.add(BigInteger.valueOf(12));
+        inputList1.add(BigInteger.valueOf(33));
+        inputList1.add(BigInteger.valueOf(22));
+
+        counting.parties.get(0).setInputSet(inputList1);
+
+        List<BigInteger> inputList2 = new LinkedList<>();
+        inputList2.add(BigInteger.valueOf(17));
+        inputList2.add(BigInteger.valueOf(13));
+        inputList2.add(BigInteger.valueOf(12));
+        inputList2.add(BigInteger.valueOf(67));
+        inputList2.add(BigInteger.valueOf(89));
+
+        counting.parties.get(1).setInputSet(inputList2);
+
+
+        List<BigInteger> inputList3 = new LinkedList<>();
+        inputList3.add(BigInteger.valueOf(17));
+        inputList3.add(BigInteger.valueOf(13));
+        inputList3.add(BigInteger.valueOf(12));
+        inputList3.add(BigInteger.valueOf(45));
+        inputList3.add(BigInteger.valueOf(34));
+
+        counting.parties.get(2).setInputSet(inputList3);
+
+        List<BigInteger> inputList4 = new LinkedList<>();
+        inputList4.add(BigInteger.valueOf(17));
+        inputList4.add(BigInteger.valueOf(13));
+        inputList4.add(BigInteger.valueOf(12));
+        inputList4.add(BigInteger.valueOf(98));
+        inputList4.add(BigInteger.valueOf(53));
+
+        counting.parties.get(3).setInputSet(inputList4);
+
+        List<BigInteger> inputList5 = new LinkedList<>();
+        inputList5.add(BigInteger.valueOf(17));
+        inputList5.add(BigInteger.valueOf(13));
+        inputList5.add(BigInteger.valueOf(12));
+        inputList5.add(BigInteger.valueOf(97));
+        inputList5.add(BigInteger.valueOf(63));
+
+        counting.parties.get(4).setInputSet(inputList5);
+
+
+        List<BigInteger> alphaList = new LinkedList<>();
+
+        for (int i = 1; i < 4* treshold +3; i++) {
+            alphaList.add(BigInteger.valueOf(i));
+        }
+
 
 
         counting.resetStats();
-        assertEquals( true,counting.MPCT( alphaList , FMod));
+        assertTrue(counting.MPCT(alphaList, FMod));
+        counting.printStats();
+
+
+    }
+
+    @Test
+    void MPCTTest10Numbers() throws Exception {
+
+        int numparties = 2;
+        int treshold = 2;
+        BigInteger FMod = BigInteger.valueOf(1097);
+
+
+        counting = new CountingTestCoordinator(numparties, treshold, FMod );
+
+        //t is important
+
+        List<BigInteger> inputList1 = new LinkedList<>();
+        inputList1.add(BigInteger.valueOf(47));
+        inputList1.add(BigInteger.valueOf(59));
+        inputList1.add(BigInteger.valueOf(12));
+        inputList1.add(BigInteger.valueOf(11));
+        inputList1.add(BigInteger.valueOf(19));
+        inputList1.add(BigInteger.valueOf(22));
+        inputList1.add(BigInteger.valueOf(45));
+        inputList1.add(BigInteger.valueOf(56));
+        inputList1.add(BigInteger.valueOf(73));
+        inputList1.add(BigInteger.valueOf(90));
+
+        counting.parties.get(0).setInputSet(inputList1);
+
+        List<BigInteger> inputList2 = new LinkedList<>();
+        inputList2.add(BigInteger.valueOf(47));
+        inputList2.add(BigInteger.valueOf(59));
+        inputList2.add(BigInteger.valueOf(12));
+        inputList2.add(BigInteger.valueOf(11));
+        inputList2.add(BigInteger.valueOf(19));
+        inputList2.add(BigInteger.valueOf(22));
+        inputList2.add(BigInteger.valueOf(45));
+        inputList2.add(BigInteger.valueOf(56));
+        inputList2.add(BigInteger.valueOf(67));
+        inputList2.add(BigInteger.valueOf(78));
+
+        counting.parties.get(1).setInputSet(inputList2);
+
+
+        List<BigInteger> alphaList = new LinkedList<>();
+
+        for (int i = 1; i < 4* treshold +3; i++) {
+            alphaList.add(BigInteger.valueOf(i));
+        }
+
+
+
+        counting.resetStats();
+        assertTrue(counting.MPCT(alphaList, FMod));
         counting.printStats();
 
 
     }
 
 
+    @Test
+    void MPCTTestDifferentInputLength() throws Exception {
 
+        int numparties = 2;
+        int treshold = 3;
+        BigInteger FMod = BigInteger.valueOf(1097);
+
+
+        counting = new CountingTestCoordinator(numparties, treshold, FMod );
+
+
+        List<BigInteger> inputList1 = new LinkedList<>();
+        inputList1.add(BigInteger.valueOf(137));
+        inputList1.add(BigInteger.valueOf(276));
+        inputList1.add(BigInteger.valueOf(317));
+        inputList1.add(BigInteger.valueOf(912));
+        inputList1.add(BigInteger.valueOf(942));
+        inputList1.add(BigInteger.valueOf(634));
+        inputList1.add(BigInteger.valueOf(831));
+
+        counting.parties.get(0).setInputSet(inputList1);
+
+        List<BigInteger> inputList2 = new LinkedList<>();
+        inputList2.add(BigInteger.valueOf(137));
+        inputList2.add(BigInteger.valueOf(276));
+        inputList2.add(BigInteger.valueOf(317));
+        inputList2.add(BigInteger.valueOf(912));
+        inputList2.add(BigInteger.valueOf(713));
+
+        counting.parties.get(1).setInputSet(inputList2);
+
+
+        List<BigInteger> alphaList = new LinkedList<>();
+
+        for (int i = 1; i < 4* treshold +3; i++) {
+            alphaList.add(BigInteger.valueOf(i));
+        }
+
+        counting.resetStats();
+        assertTrue(counting.MPCT(alphaList, FMod));
+        counting.printStats();
+
+
+    }
+
+
+    @Test
+    void MPCTTestBigTreshold() throws Exception {
+
+        int numparties = 2;
+        int treshold = 9;
+        BigInteger FMod = BigInteger.valueOf(19937);
+
+
+        counting = new CountingTestCoordinator(numparties, treshold, FMod );
+
+        //t is important
+
+        List<BigInteger> inputList1 = new LinkedList<>();
+        inputList1.add(BigInteger.valueOf(47));
+        inputList1.add(BigInteger.valueOf(631));
+        inputList1.add(BigInteger.valueOf(734));
+        inputList1.add(BigInteger.valueOf(97));
+        inputList1.add(BigInteger.valueOf(63));
+        inputList1.add(BigInteger.valueOf(472));
+        inputList1.add(BigInteger.valueOf(852));
+        inputList1.add(BigInteger.valueOf(952));
+        inputList1.add(BigInteger.valueOf(653));
+        inputList1.add(BigInteger.valueOf(942));
+
+        counting.parties.get(0).setInputSet(inputList1);
+
+        List<BigInteger> inputList2 = new LinkedList<>();
+        inputList2.add(BigInteger.valueOf(47));
+        inputList2.add(BigInteger.valueOf(392));
+        inputList2.add(BigInteger.valueOf(740));
+        inputList2.add(BigInteger.valueOf(302));
+        inputList2.add(BigInteger.valueOf(596));
+        inputList2.add(BigInteger.valueOf(128));
+        inputList2.add(BigInteger.valueOf(843));
+        inputList2.add(BigInteger.valueOf(760));
+        inputList2.add(BigInteger.valueOf(288));
+        inputList2.add(BigInteger.valueOf(773));
+
+        counting.parties.get(1).setInputSet(inputList2);
+
+
+        List<BigInteger> alphaList = new LinkedList<>();
+
+        for (int i = 1; i < 4* treshold +3; i++) {
+            alphaList.add(BigInteger.valueOf(i));
+        }
+
+        counting.resetStats();
+        assertTrue(counting.MPCT(alphaList, FMod));
+        counting.printStats();
+    }
+
+    @Test
+    void MPCTTestBig() throws Exception {
+
+        int numparties = 40;
+        int treshold = 10;
+        BigInteger FMod = BigInteger.valueOf(19937);
+
+
+        counting = new CountingTestCoordinator(numparties, treshold, FMod );
+
+        //generate numbers under 19937
+        List<BigInteger> bigInputs = new LinkedList<>();
+        for (int i = 0; i < 90; i++) {
+            bigInputs.add(BigInteger.valueOf((78*(i+13) + (29*i+3))%19937));
+        }
+
+        for (int i = 0; i < numparties; i++) {
+            List<BigInteger> finishedInputs = new LinkedList<>(bigInputs);
+            //9 differences are allowed
+            for (int j = 0; j < 9; j++) {
+                finishedInputs.add(BigInteger.valueOf(i*(i+2)*j*j%19937));
+            }
+            counting.parties.get(i).setInputSet(finishedInputs);
+        }
+
+        List<BigInteger> alphaList = new LinkedList<>();
+
+        for (int i = 1; i < 4* treshold +3; i++) {
+            alphaList.add(BigInteger.valueOf(i));
+        }
+
+        counting.resetStats();
+        assertTrue(counting.MPCT(alphaList, FMod));
+        counting.printStats();
+    }
 
 
 
