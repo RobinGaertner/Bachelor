@@ -53,8 +53,8 @@ public class CountingTest {
         BigInteger r = BigInteger.valueOf(rnd.nextInt()).mod(setMod);
 
         //encrypt the points
-        for (int i = 0; i < evalPoints.size(); i++) {
-            cList.add(publicKey.encrypt(r.multiply(evalPoints.get(i))));
+        for (BigInteger evalPoint : evalPoints) {
+            cList.add(publicKey.encrypt(r.multiply(evalPoint)));
         }
 
         return cList;
@@ -71,8 +71,8 @@ public class CountingTest {
         for (int j = 0; j < cList.get(0).size(); j++) {
 
             EncryptedNumber part1 = publicKey.encrypt(BigInteger.ZERO);
-            for (int i = 0; i < cList.size(); i++) {
-                part1 = part1.add(cList.get(i).get(j));
+            for (List<EncryptedNumber> encryptedNumbers : cList) {
+                part1 = part1.add(encryptedNumbers.get(j));
             }
             FModular part2 = factory.get(poly.call(inputAlphas.get(j)));
 

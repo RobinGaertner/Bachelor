@@ -66,7 +66,6 @@ public class ObliviousAlgebra {
             EncMatrix cl = new EncMatrix(Rl, pK);
             EncMatrix cr = new EncMatrix(Rr, pK);
 
-            //TODO: do this right
             EncMatrix dr = Ml.times(Rr);
             EncMatrix dl = Rl.timesEnc(Mr);
 
@@ -85,7 +84,6 @@ public class ObliviousAlgebra {
         //make list with right matrices
         List<EncMatrix> cTildeParts = new LinkedList<>();
         for (int i = 0; i < crList.size(); i++) {
-            //TODO: remove the matrix, where i=j
             if( i != a ){
                 cTildeParts.add(Rl.timesEnc(crList.get(i)));
             }
@@ -155,7 +153,7 @@ public class ObliviousAlgebra {
                 //check if inbound
                 if(1+j+i<t) {
                     //insert at the whole diagonal
-                    data[0+j][1+j+i] = BigInteger.valueOf(tmp);
+                    data[j][1+j+i] = BigInteger.valueOf(tmp);
                 }
             }
         }
@@ -319,7 +317,6 @@ public class ObliviousAlgebra {
 
         for (int i = 0; i < t; i++) {
             //every place on the diagonal gets a random number
-            //TODO: check for boundary
             data[i][i] = BigInteger.valueOf(rnd.nextInt());
         }
         //System.out.println(data);

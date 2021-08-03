@@ -1,8 +1,5 @@
 package com.company;
 
-import org.apache.commons.math3.linear.MatrixUtils;
-import org.apache.commons.math3.linear.RealMatrix;
-
 import java.math.BigInteger;
 import java.util.Random;
 
@@ -218,7 +215,7 @@ public class IntMatrix {
         if (n == 1)
             return A.data[0][0];
 
-        BigInteger [][]temp = new BigInteger[A.M][A.N]; // To store cofactors
+        BigInteger [][]temp; // To store cofactors
 
         int sign = 1; // To store sign multiplier
 
@@ -248,8 +245,8 @@ public class IntMatrix {
         }
 
         // temp is used to store cofactors of A[][]
-        int sign = 1;
-        BigInteger [][]temp = new BigInteger[t][t];
+        int sign;
+        BigInteger [][]temp;
 
         for (int i = 0; i < N; i++)
         {
@@ -275,7 +272,6 @@ public class IntMatrix {
     public IntMatrix inverse() throws Exception {
         IntMatrix A = this;
         // Find determinant of A[][]
-        int t = A.M;
 
         BigInteger det = determinant(A, A.getN());
         if(det.equals(BigInteger.ZERO)){

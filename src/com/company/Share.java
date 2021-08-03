@@ -4,7 +4,7 @@ import java.math.BigInteger;
 
 public class Share {
 
-    int X = 0;
+    int X;
     BigInteger fX;
 
 

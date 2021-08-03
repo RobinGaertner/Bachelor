@@ -2,12 +2,8 @@ package com.company;
 
 import org.apache.commons.math3.linear.RealMatrix;
 
-import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.math.RoundingMode;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Utils {
@@ -70,17 +66,6 @@ public class Utils {
         }
     }
 
-    public static Triple apply(final BigInteger a, final BigInteger b) {
-        if (b.equals(BigInteger.ZERO)) {
-            return new Triple(a, BigInteger.ONE, BigInteger.ZERO);
-        } else {
-            final Triple extension = apply(b, a.mod(b));
-            return new Triple(extension.d, extension.t, extension.s.subtract(a.divide(b).multiply(extension.t)));
-        }
-    }
-
-
-
     public int invMod(int a, int mod) {
         //Finds the inverse of a modulo m ( b s.t. a*b = 1 (mod m))
 
@@ -98,35 +83,6 @@ public class Utils {
         return (int) (inverse % mod);
     }
 
-    public BigInteger invModBig(BigInteger a, BigInteger mod){
-
-        if(a.compareTo(BigInteger.ZERO) < 0){
-            //if  a<0
-            a = a.add(mod);
-        }
-        // a and m must be coprime to find an inverse
-        if (!a.gcd(mod).equals(BigInteger.ONE)) {
-            //should hopefully not happen
-            logger.warning("inv mod got bad numbers");
-            logger.warning("gcd is " + a.gcd(mod));
-            logger.warning("numbers are: " + a + " "+ mod);
-        }
-        System.out.println("invMod got numbers: " + a + " " + mod);
-        BigInteger inverse = apply(a, mod).t;
-
-        System.out.println("returns: " + inverse.mod(mod));
-        return inverse.mod(mod);
-
-    }
-
-    int prod(List<Integer> list){
-        //Returns the product of the numbers in the list.
-        int res =1;
-        for (Integer i : list) {
-            res *= i;
-        }
-        return res;
-    }
 
     //TODO: Make this nice
     public BigInteger floorDiv(final BigInteger x, final BigInteger y) {
@@ -360,37 +316,4 @@ public class Utils {
         }
         return new IntMatrix(data);
     }
-
-
-
-
-
-
-/*
-    int crm (List<Integer> aList, List<Integer> nList){
-        //Applies the Chinese Remainder Theorem to find the unique x
-        // such that x = a_i (mod n_i) for all i.
-
-        int N = prod(nList);
-
-        List<Integer> yList = new LinkedList<>();
-        for (int i = 0; i < nList.size(); i++) {
-            yList.add(Math.floorDiv(N, nList.get(i)));
-        }
-
-        List<Integer> zList = new LinkedList<>();
-        for (int i = 0; i < nList.size(); i++) {
-            zList.add(invMod(yList.get(i),nList.get(i) ));
-        }
-
-        int x = 0;
-
-        for (int i = 0; i < aList.size(); i++) {
-            x += aList.get(i) * yList.get(i) * zList.get(i);
-        }
-        return x;
-    }
-
-
- */
 }

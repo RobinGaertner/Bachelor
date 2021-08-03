@@ -68,7 +68,6 @@ public class EncryptedNumber {
         */
 
         EncryptedNumber res = new EncryptedNumber();
-        BigInteger newVal = value.modPow(a, publicKey.ns1);
         res.init(value.modPow(a, publicKey.ns1), publicKey);
 
         return res;
@@ -93,7 +92,7 @@ public class EncryptedNumber {
         were encrypted using the same PublicKey can still be not equal due to
         randomness in the encryption process.
      */
-        return ((this.value.equals(value)) & (this.publicKey.equals(other.publicKey)));
+        return ((this.value.equals(other.value)) & (this.publicKey.equals(other.publicKey)));
     }
 
     @Override

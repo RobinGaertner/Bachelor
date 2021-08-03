@@ -59,11 +59,11 @@ public class KeyGen {
 
         BigInteger ns = n.pow(s);
         BigInteger nsm = ns.multiply(m);
-        ArrayList<BigInteger> list1 = new ArrayList<BigInteger>();
+        ArrayList<BigInteger> list1 = new ArrayList<>();
         list1.add(BigInteger.valueOf(0));
         list1.add(BigInteger.valueOf(1));
 
-        ArrayList<BigInteger> list2 = new ArrayList<BigInteger>();
+        ArrayList<BigInteger> list2 = new ArrayList<>();
         list2.add(m);
         list2.add(ns);
 
@@ -79,7 +79,7 @@ public class KeyGen {
         PublicKey publicKey = new PublicKey();
         publicKey.init(n, s, m, threshold, delta);
 
-        List<PrivateKeyShare> privateKeyShares = new LinkedList<PrivateKeyShare>();
+        List<PrivateKeyShare> privateKeyShares = new LinkedList<>();
 
         for (int i = 0; i < shares.size(); i++) {
             PrivateKeyShare tmp = new PrivateKeyShare();

@@ -16,7 +16,6 @@ public class ShamirSecretSharing {
     """
              */
 
-        Random rnd = new Random();
 
         //ensure valid parameters
 

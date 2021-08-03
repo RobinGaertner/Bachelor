@@ -51,13 +51,7 @@ public class PrivateKeyRing {
 
         S = new HashSet<>(iList);
         BigInteger tmp = (publicKey.delta.pow(2)).multiply(BigInteger.valueOf(4));
-        //System.out.println("delta is " + publicKey.delta);
-        //System.out.println("tmp is: " + tmp);
-        //invFourDeltaSquared = utils.invModBig(tmp, publicKey.ns);
         invFourDeltaSquared = tmp.modInverse(publicKey.ns);
-        //System.out.println("directly after invmod ");
-
-        //System.out.println("iList: " + iList);
     }
 
     //TODO: here is so much casted stuff
@@ -156,7 +150,7 @@ public class PrivateKeyRing {
 
         //THIS IS TESTING FOR NEGATIVE NUMBERS:
 
-        if (m.compareTo(publicKey.ns.divide(BigInteger.valueOf(2)))==1){
+        if (m.compareTo(publicKey.ns.divide(BigInteger.valueOf(2))) > 0){
             m = m.subtract(publicKey.ns);
         }
 
@@ -192,15 +186,12 @@ public class PrivateKeyRing {
 
         BigInteger m = cPrime.multiply(publicKey.invFourDeltaSquared).mod(publicKey.ns);
 
-        //TODO: THIS IS TESTING FOR NEGATIVE NUMBERS:
-
-        if (m.compareTo(publicKey.ns.divide(BigInteger.valueOf(2)))==1){
+        //THIS IS TESTING FOR NEGATIVE NUMBERS:
+        if (m.compareTo(publicKey.ns.divide(BigInteger.valueOf(2))) > 0){
             m = m.subtract(publicKey.ns);
             //System.out.println("special minus case triggered");
-            //System.out.println("ns is: " + publicKey.ns);
         }
 
-        //TODO: TEST END
 
         return m;
     }

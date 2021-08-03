@@ -25,7 +25,7 @@ class MPCTTest {
     void MPCTTest() throws Exception {
 
         int numparties = 2;
-        int treshold = 3;
+        int treshold = 2;
         BigInteger FMod = BigInteger.valueOf(19937);
 
 
@@ -66,10 +66,53 @@ class MPCTTest {
 
 
     @Test
-    void MPCTTest5Parties() throws Exception {
+    void MPCTTest4() throws Exception {
+
+        int numparties = 2;
+        int treshold = 4;
+        BigInteger FMod = BigInteger.valueOf(19937);
 
 
-        int numparties = 5;
+        counting = new CountingTestCoordinator(numparties, treshold, FMod );
+
+        //t is important
+        int t = treshold;
+
+        List<BigInteger> inputList1 = new LinkedList<>();
+        inputList1.add(BigInteger.valueOf(137));
+        inputList1.add(BigInteger.valueOf(276));
+        inputList1.add(BigInteger.valueOf(717));
+        inputList1.add(BigInteger.valueOf(912));
+        inputList1.add(BigInteger.valueOf(713));
+
+        counting.parties.get(0).setInputSet(inputList1);
+
+        List<BigInteger> inputList2 = new LinkedList<>();
+        inputList2.add(BigInteger.valueOf(137));
+        inputList2.add(BigInteger.valueOf(276));
+        inputList2.add(BigInteger.valueOf(317));
+        inputList2.add(BigInteger.valueOf(219));
+        inputList2.add(BigInteger.valueOf(358));
+
+        counting.parties.get(1).setInputSet(inputList2);
+
+
+        List<BigInteger> alphaList = new LinkedList<>();
+
+        for (int i = 1; i < 4*t+3; i++) {
+            alphaList.add(BigInteger.valueOf(i));
+        }
+
+        counting.resetStats();
+        assertTrue(counting.MPCT(alphaList, FMod));
+        counting.printStats();
+    }
+
+    @Test
+    void MPCTTest10Parties() throws Exception {
+
+
+        int numparties = 10;
         int treshold = 2;
         BigInteger FMod = BigInteger.valueOf(1097);
 
@@ -124,6 +167,52 @@ class MPCTTest {
 
         counting.parties.get(4).setInputSet(inputList5);
 
+        List<BigInteger> inputList6 = new LinkedList<>();
+        inputList6.add(BigInteger.valueOf(17));
+        inputList6.add(BigInteger.valueOf(13));
+        inputList6.add(BigInteger.valueOf(12));
+        inputList6.add(BigInteger.valueOf(33));
+        inputList6.add(BigInteger.valueOf(22));
+
+        counting.parties.get(5).setInputSet(inputList6);
+
+        List<BigInteger> inputList7 = new LinkedList<>();
+        inputList7.add(BigInteger.valueOf(17));
+        inputList7.add(BigInteger.valueOf(13));
+        inputList7.add(BigInteger.valueOf(12));
+        inputList7.add(BigInteger.valueOf(33));
+        inputList7.add(BigInteger.valueOf(22));
+
+        counting.parties.get(6).setInputSet(inputList7);
+
+        List<BigInteger> inputList8 = new LinkedList<>();
+        inputList8.add(BigInteger.valueOf(17));
+        inputList8.add(BigInteger.valueOf(13));
+        inputList8.add(BigInteger.valueOf(12));
+        inputList8.add(BigInteger.valueOf(33));
+        inputList8.add(BigInteger.valueOf(22));
+
+
+        counting.parties.get(7).setInputSet(inputList8);
+
+        List<BigInteger> inputList9 = new LinkedList<>();
+        inputList9.add(BigInteger.valueOf(17));
+        inputList9.add(BigInteger.valueOf(13));
+        inputList9.add(BigInteger.valueOf(12));
+        inputList9.add(BigInteger.valueOf(33));
+        inputList9.add(BigInteger.valueOf(22));
+
+        counting.parties.get(8).setInputSet(inputList9);
+
+        List<BigInteger> inputList10 = new LinkedList<>();
+        inputList10.add(BigInteger.valueOf(17));
+        inputList10.add(BigInteger.valueOf(13));
+        inputList10.add(BigInteger.valueOf(12));
+        inputList10.add(BigInteger.valueOf(33));
+        inputList10.add(BigInteger.valueOf(22));
+
+
+        counting.parties.get(9).setInputSet(inputList10);
 
         List<BigInteger> alphaList = new LinkedList<>();
 
