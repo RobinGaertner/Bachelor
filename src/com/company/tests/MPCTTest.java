@@ -6,8 +6,8 @@ import org.junit.jupiter.api.Test;
 import java.math.BigInteger;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Random;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
@@ -16,9 +16,6 @@ class MPCTTest {
 
 
 
-    MPCTTest() throws Exception {
-
-    }
 
 
     @Test
@@ -61,6 +58,53 @@ class MPCTTest {
 
         counting.resetStats();
         assertTrue(counting.MPCT(alphaList, FMod));
+        counting.printStats();
+    }
+
+
+
+    @Test
+    void MPCTFalseTest() throws Exception {
+
+        //here there are 3 inputs different
+        //but the threshold is only 2
+        int numparties = 2;
+        int threshold = 2;
+        BigInteger FMod = BigInteger.valueOf(19937);
+
+
+        counting = new CountingTestCoordinator(numparties, threshold, FMod );
+
+        //t is important
+        int t = threshold;
+
+        List<BigInteger> inputList1 = new LinkedList<>();
+        inputList1.add(BigInteger.valueOf(137));
+        inputList1.add(BigInteger.valueOf(276));
+        inputList1.add(BigInteger.valueOf(316));
+        inputList1.add(BigInteger.valueOf(912));
+        inputList1.add(BigInteger.valueOf(713));
+
+        counting.parties.get(0).setInputSet(inputList1);
+
+        List<BigInteger> inputList2 = new LinkedList<>();
+        inputList2.add(BigInteger.valueOf(137));
+        inputList2.add(BigInteger.valueOf(276));
+        inputList2.add(BigInteger.valueOf(317));
+        inputList2.add(BigInteger.valueOf(219));
+        inputList2.add(BigInteger.valueOf(358));
+
+        counting.parties.get(1).setInputSet(inputList2);
+
+
+        List<BigInteger> alphaList = new LinkedList<>();
+
+        for (int i = 1; i < 4*t+3; i++) {
+            alphaList.add(BigInteger.valueOf(i));
+        }
+
+        counting.resetStats();
+        assertFalse(counting.MPCT(alphaList, FMod));
         counting.printStats();
     }
 
@@ -397,16 +441,20 @@ class MPCTTest {
         //generate numbers under 19937
         List<BigInteger> bigInputs = new LinkedList<>();
         for (int i = 0; i < 90; i++) {
-            bigInputs.add(BigInteger.valueOf((78*(i+13) + (29*i+3))%19937));
+            bigInputs.add(BigInteger.valueOf((78*(i+38) + (29*i+3))%19937));
         }
 
         for (int i = 0; i < numparties; i++) {
             List<BigInteger> finishedInputs = new LinkedList<>(bigInputs);
             //9 differences are allowed
             for (int j = 0; j < 9; j++) {
-                finishedInputs.add(BigInteger.valueOf(i*(i+2)*j*j%19937));
+                finishedInputs.add(BigInteger.valueOf((738*9572 + i*i*697*285 + j*234)% 19937));
             }
             counting.parties.get(i).setInputSet(finishedInputs);
+        }
+
+        for (int i = 0; i < numparties; i++) {
+            System.out.println(counting.parties.get(i).inputSet);
         }
 
         List<BigInteger> alphaList = new LinkedList<>();

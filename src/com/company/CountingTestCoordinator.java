@@ -25,12 +25,10 @@ public class CountingTestCoordinator {
     public BigInteger FModularModulo;
 
 
-
-
     public CountingTestCoordinator(int numParties, int treshold, BigInteger FModularMod) throws Exception {
         //setup
         //TODO: change to the right needed numbers
-        Containter con = KeyGen.keyGen(16, 3, numParties, numParties);
+        Containter con = KeyGen.keyGen(32, 3, numParties, numParties);
         publicKey = con.getPublicKey();
         //TODO: remove the privatekeyring
         privateKeyRing = con.getPrivateKeyRing();
@@ -93,84 +91,21 @@ public class CountingTestCoordinator {
         Timestamp ts = new Timestamp(date.getTime());
         System.out.println("SDT start: " + ts);
         SDTCounter++;
+
         //line 1
-        //generate the system
+        EncMatrix[] MrPlain;
+        EncMatrix[] y;
+        EncMatrix[] Mry;
 
-        //do first half
-        //TODO: init right
-        EncMatrix[] MrPlain = new EncMatrix[2];
-        EncMatrix[] y = new EncMatrix[2];
-
-
-        for (int k = 0; k < 2; k++) {
-
-            EncryptedNumber[][] data = new EncryptedNumber[2*t+1][2*t+1];
-
-            //dimensions: 2t+1 to right, 2t+1 down
-            //y coordinate
-            for (int j = 0; j < 2*t+1; j++) {
-                EncryptedNumber tmp = publicKey.encrypt(BigInteger.ONE);
-                //x coordinate
-                for (int i = 0; i < t+1; i++) {
-
-                    data[(t)-i][j] = tmp;
-                    tmp = tmp.mul(alphaList.get(j+((2*t+1)*k)));
-
-                }
-            }
-            //left half should be filled now
-
-
-            //now to t+1 to 2t+1
-            //y coordinate
-            for (int j = 0; j < 2*t+1; j++) {
-
-                EncryptedNumber tmp = publicKey.encrypt(BigInteger.ZERO).sub(cList.get(j+((2*t+1)*k)));
-                //x coordinate
-                for (int i = 0; i < t; i++) {
-
-                    data[2*t-i][j] = tmp;
-                    tmp = tmp.mul(alphaList.get(j+((2*t+1)*k)));
-                }
-
-            }
-
-            //second half filled as well
-
-            //going for y now
-            MrPlain[k] = new EncMatrix(data, publicKey);
-
-
-            EncryptedNumber[][] data2 = new EncryptedNumber[2*t+1][1];
-            for (int i = 0; i < 2 * t + 1; i++) {
-                data2[i][0] = cList.get(i+((2*t+1)*k)).mul(((alphaList.get(i+((2*t+1)*k))).pow(t)));
-            }
-
-            y[k] = new EncMatrix(data2, publicKey);
-
-            //one half of r done
-            //second coordinate of y is always 0
-        }
-
-
-        EncMatrix[] Mry = new EncMatrix[2];
-        //combine them for Mr||y
-        for (int k = 0; k < 2; k++) {
-            EncryptedNumber[][] newData = new EncryptedNumber[2*t+2][2*t+1];
-
-            for (int i = 0; i < 2 * t + 1; i++) {
-                for (int j = 0; j < 2 * t + 1; j++) {
-                    newData[j][i] = MrPlain[k].getData()[j][i];
-                }
-                newData[2*t+1][i] = y[k].getData()[i][0];
-            }
-            Mry[k] = new EncMatrix(newData, publicKey);
-        }
-
-        //combination done
+        //do computations in party1
+        parties.get(0).SDTPart1(t, alphaList, cList);
+        //get the results from party1
+        MrPlain = parties.get(0).MrPlain;
+        y = parties.get(0).y;
+        Mry = parties.get(0).Mry;
 
         //line 2
-        //fine now
+        //check for the rank of the matrices
         for (int i = 0; i < 2; i++) {
             EncryptedNumber part1 = rankOfMatrix(MrPlain[i]);
             EncryptedNumber part2 = rankOfMatrix(Mry[i]);
@@ -183,82 +118,30 @@ public class CountingTestCoordinator {
             }
         }
 
-
         //line 3
         //returning value is going to the right, so first coordinate is always 0
         List<EncryptedNumber> cv = OLS(MrPlain[0], y[0]);
         List<EncryptedNumber> cw = OLS(MrPlain[1], y[1]);
 
 
-
          //line 4
         //compute the polynomials
-
-        //from 0-t
-        List<EncryptedNumber> cv1 = new LinkedList<>();
-        for (int i = 0; i < t+1; i++) {
-            cv1.add(cv.get(t-i));
+        //in the parties
+        EncryptedNumber partiesResult = null;
+        for (int i = 0; i < parties.size(); i++) {
+             partiesResult = parties.get(i).SDTPart2(t, alphaList, cv, cw);
         }
-        EncPolynomial polynomialCv1 = new EncPolynomial();
-        polynomialCv1.init(cv1);
 
-        //from t+1 to 2t+1
-        List<EncryptedNumber> cv2 = new LinkedList<>();
-        cv2.add(publicKey.encrypt(BigInteger.ONE));
-        for (int i = 0; i < t; i++) {
-            cv2.add(cv.get(2*t-i));
-        }
-        EncPolynomial polynomialCv2 = new EncPolynomial();
-        polynomialCv2.init(cv2);
-
-
-
-        //do this again for w
-        //from 0-t
-        //from 0-t
-        List<EncryptedNumber> cw1 = new LinkedList<>();
-        for (int i = 0; i < t+1; i++) {
-            cw1.add(cw.get(t-i));
-        }
-        EncPolynomial polynomialCw1 = new EncPolynomial();
-        polynomialCw1.init(cw1);
-
-        //from t+1 to 2t+1
-        List<EncryptedNumber> cw2 = new LinkedList<>();
-        cw2.add(publicKey.encrypt(BigInteger.ONE));
-        for (int i = 0; i < t; i++) {
-            cw2.add(cw.get(2*t-i));
-        }
-        EncPolynomial polynomialCw2 = new EncPolynomial();
-        polynomialCw2.init(cw2);
-
-
-        //System.out.println("coeffs of CV1: " + polynomialCv1.coeffs);
-        //System.out.println("coeffs of CV2: " + polynomialCv2.coeffs);
-        //System.out.println("coeffs of CW1: " + polynomialCw1.coeffs);
-        //System.out.println("coeffs of CW2: " + polynomialCw2.coeffs);
-
-
-        //compute the endresult
-        //get on point t?
-        EncryptedNumber result11 = polynomialCv1.call(alphaList.get(0));
-        EncryptedNumber result12 = polynomialCw2.call(alphaList.get(0));
-        EncryptedNumber result1 = multiplyEnc(result11, result12);
-
-        EncryptedNumber result21 = polynomialCw1.call(alphaList.get(0));
-        EncryptedNumber result22 = polynomialCv2.call(alphaList.get(0));
-        EncryptedNumber result2 = multiplyEnc(result21, result22);
-
-
+        //line 5
         date = new Date();
         ts = new Timestamp(date.getTime());
         System.out.println("SDT end: " + ts);
-        return decZero(result1.sub(result2));
+        return decZero(partiesResult);
 
     }
 
 
-    private Boolean decZero(EncryptedNumber input){
+    public Boolean decZero(EncryptedNumber input){
 
         BigInteger plain = privateKeyRing.decrypt(input);
         return plain.mod(FModularModulo).equals(BigInteger.ZERO);
@@ -401,6 +284,7 @@ public class CountingTestCoordinator {
         publicKey.encryptionCounter--;
         date = new Date();
         ts = new Timestamp(date.getTime());
+        //System.out.println("Rank is: " + matrix.rank());
         System.out.println("getRank end: " + ts);
         return publicKey.encrypt(BigInteger.valueOf(matrix.rank()));
     }

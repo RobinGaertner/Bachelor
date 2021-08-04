@@ -14,8 +14,12 @@ public class CountingTest {
     Random rnd = new Random();
     List<EncryptedNumber> cList = new LinkedList<>();
     PublicKey publicKey;
-    List<BigInteger> inputSet;
+    public List<BigInteger> inputSet;
     CountingTestCoordinator coordinator;
+    //this is for SDT
+    EncMatrix[] MrPlain = new EncMatrix[2];
+    EncMatrix[] y = new EncMatrix[2];
+    EncMatrix[] Mry = new EncMatrix[2];
 
 
     public CountingTest(int t, PublicKey pk, CountingTestCoordinator coord) {
@@ -84,6 +88,135 @@ public class CountingTest {
         System.out.println("got to SDT");
         return coordinator.SDT(dList, inputAlphas, threshold);
     }
+
+
+    public void SDTPart1(int t, List<BigInteger> alphaList, List<EncryptedNumber> cList) throws Exception {
+
+        //generate the system
+
+        //do first half
+
+        for (int k = 0; k < 2; k++) {
+
+            EncryptedNumber[][] data = new EncryptedNumber[2*t+1][2*t+1];
+
+            //dimensions: 2t+1 to right, 2t+1 down
+            //y coordinate
+            for (int j = 0; j < 2*t+1; j++) {
+                EncryptedNumber tmp = publicKey.encrypt(BigInteger.ONE);
+                //x coordinate
+                for (int i = 0; i < t+1; i++) {
+
+                    data[(t)-i][j] = tmp;
+                    tmp = tmp.mul(alphaList.get(j+((2*t+1)*k)));
+
+                }
+            }
+            //left half should be filled now
+
+
+            //now to t+1 to 2t+1
+            //y coordinate
+            for (int j = 0; j < 2*t+1; j++) {
+
+                EncryptedNumber tmp = publicKey.encrypt(BigInteger.ZERO).sub(cList.get(j+((2*t+1)*k)));
+                //x coordinate
+                for (int i = 0; i < t; i++) {
+
+                    data[2*t-i][j] = tmp;
+                    tmp = tmp.mul(alphaList.get(j+((2*t+1)*k)));
+                }
+
+            }
+
+            //second half filled as well
+
+            //going for y now
+            MrPlain[k] = new EncMatrix(data, publicKey);
+
+
+            EncryptedNumber[][] data2 = new EncryptedNumber[2*t+1][1];
+            for (int i = 0; i < 2 * t + 1; i++) {
+                data2[i][0] = cList.get(i+((2*t+1)*k)).mul(((alphaList.get(i+((2*t+1)*k))).pow(t)));
+            }
+
+            y[k] = new EncMatrix(data2, publicKey);
+
+            //one half of r done
+            //second coordinate of y is always 0
+        }
+
+
+        //combine them for Mr||y
+        for (int k = 0; k < 2; k++) {
+            EncryptedNumber[][] newData = new EncryptedNumber[2*t+2][2*t+1];
+
+            for (int i = 0; i < 2 * t + 1; i++) {
+                for (int j = 0; j < 2 * t + 1; j++) {
+                    newData[j][i] = MrPlain[k].getData()[j][i];
+                }
+                newData[2*t+1][i] = y[k].getData()[i][0];
+            }
+            Mry[k] = new EncMatrix(newData, publicKey);
+        }
+
+        //combination done
+    }
+
+    public EncryptedNumber SDTPart2(int t, List<BigInteger> alphaList, List<EncryptedNumber> cv, List<EncryptedNumber> cw) throws Exception {
+
+        //from 0-t
+        List<EncryptedNumber> cv1 = new LinkedList<>();
+        for (int i = 0; i < t+1; i++) {
+            cv1.add(cv.get(t-i));
+        }
+        EncPolynomial polynomialCv1 = new EncPolynomial();
+        polynomialCv1.init(cv1);
+
+        //from t+1 to 2t+1
+        List<EncryptedNumber> cv2 = new LinkedList<>();
+        cv2.add(publicKey.encrypt(BigInteger.ONE));
+        for (int i = 0; i < t; i++) {
+            cv2.add(cv.get(2*t-i));
+        }
+        EncPolynomial polynomialCv2 = new EncPolynomial();
+        polynomialCv2.init(cv2);
+
+
+
+        //do this again for w
+        //from 0-t
+        //from 0-t
+        List<EncryptedNumber> cw1 = new LinkedList<>();
+        for (int i = 0; i < t+1; i++) {
+            cw1.add(cw.get(t-i));
+        }
+        EncPolynomial polynomialCw1 = new EncPolynomial();
+        polynomialCw1.init(cw1);
+
+        //from t+1 to 2t+1
+        List<EncryptedNumber> cw2 = new LinkedList<>();
+        cw2.add(publicKey.encrypt(BigInteger.ONE));
+        for (int i = 0; i < t; i++) {
+            cw2.add(cw.get(2*t-i));
+        }
+        EncPolynomial polynomialCw2 = new EncPolynomial();
+        polynomialCw2.init(cw2);
+
+
+
+        //compute the endresult
+        EncryptedNumber result11 = polynomialCv1.call(alphaList.get(0));
+        EncryptedNumber result12 = polynomialCw2.call(alphaList.get(0));
+        EncryptedNumber result1 = coordinator.multiplyEnc(result11, result12);
+
+        EncryptedNumber result21 = polynomialCw1.call(alphaList.get(0));
+        EncryptedNumber result22 = polynomialCv2.call(alphaList.get(0));
+        EncryptedNumber result2 = coordinator.multiplyEnc(result21, result22);
+
+        return result1.sub(result2);
+    }
+
 
 
     public List<BigInteger> multiplyOut(List<BigInteger> inputList) {
