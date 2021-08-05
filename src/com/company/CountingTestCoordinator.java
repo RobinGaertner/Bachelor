@@ -28,7 +28,7 @@ public class CountingTestCoordinator {
     public CountingTestCoordinator(int numParties, int treshold, BigInteger FModularMod) throws Exception {
         //setup
         //TODO: change to the right needed numbers
-        Containter con = KeyGen.keyGen(32, 3, numParties, numParties);
+        Containter con = KeyGen.keyGen(64 , 3, numParties, numParties);
         publicKey = con.getPublicKey();
         //TODO: remove the privatekeyring
         privateKeyRing = con.getPrivateKeyRing();
@@ -51,6 +51,7 @@ public class CountingTestCoordinator {
         System.out.println("Number that secRank has been called: " + secRankCounter);
         System.out.println("Decryptions in the relevant protocols: " + privateKeyRing.decryptCounter);
         System.out.println("Encryptions in the relevant protocols: " + publicKey.encryptionCounter);
+        System.out.println("calculation counter: " + publicKey.calculationCounter);
     }
 
     public void resetStats(){

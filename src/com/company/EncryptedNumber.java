@@ -10,6 +10,7 @@ public class EncryptedNumber {
     void init(BigInteger val, PublicKey pk){
         value = val;
         publicKey = pk;
+        pk.calculationCounter++;
     }
 
     public EncryptedNumber add(EncryptedNumber other) throws Exception {

@@ -377,14 +377,14 @@ class MPCTTest {
 
 
     @Test
-    void MPCTTestBigTreshold() throws Exception {
+    void MPCTTestBigThreshold() throws Exception {
 
         int numparties = 2;
-        int treshold = 9;
+        int threshold = 10;
         BigInteger FMod = BigInteger.valueOf(19937);
 
 
-        counting = new CountingTestCoordinator(numparties, treshold, FMod );
+        counting = new CountingTestCoordinator(numparties, threshold, FMod );
 
         //t is important
 
@@ -398,6 +398,7 @@ class MPCTTest {
         inputList1.add(BigInteger.valueOf(852));
         inputList1.add(BigInteger.valueOf(952));
         inputList1.add(BigInteger.valueOf(653));
+        inputList1.add(BigInteger.valueOf(942));
         inputList1.add(BigInteger.valueOf(942));
 
         counting.parties.get(0).setInputSet(inputList1);
@@ -413,13 +414,14 @@ class MPCTTest {
         inputList2.add(BigInteger.valueOf(760));
         inputList2.add(BigInteger.valueOf(288));
         inputList2.add(BigInteger.valueOf(773));
+        inputList2.add(BigInteger.valueOf(386));
 
         counting.parties.get(1).setInputSet(inputList2);
 
 
         List<BigInteger> alphaList = new LinkedList<>();
 
-        for (int i = 1; i < 4* treshold +3; i++) {
+        for (int i = 1; i < 4* threshold +3; i++) {
             alphaList.add(BigInteger.valueOf(i));
         }
 
@@ -468,6 +470,46 @@ class MPCTTest {
         counting.printStats();
     }
 
+
+    @Test
+    void MPCTTestBigReversed() throws Exception {
+
+        int numparties = 10;
+        int treshold = 40;
+        BigInteger FMod = BigInteger.valueOf(19937);
+
+
+        counting = new CountingTestCoordinator(numparties, treshold, FMod );
+
+        //generate numbers under 19937
+        List<BigInteger> bigInputs = new LinkedList<>();
+        for (int i = 0; i < 100-treshold; i++) {
+            bigInputs.add(BigInteger.valueOf((78*(i+38) + (29*i+3))%19937));
+        }
+
+        for (int i = 0; i < numparties; i++) {
+            List<BigInteger> finishedInputs = new LinkedList<>(bigInputs);
+            //39 differences are allowed
+            for (int j = 0; j < treshold-1; j++) {
+                finishedInputs.add(BigInteger.valueOf((738*9572 + i*i*697*285 + j*234)% 19937));
+            }
+            counting.parties.get(i).setInputSet(finishedInputs);
+        }
+
+        for (int i = 0; i < numparties; i++) {
+            System.out.println(counting.parties.get(i).inputSet);
+        }
+
+        List<BigInteger> alphaList = new LinkedList<>();
+
+        for (int i = 1; i < 4* treshold +3; i++) {
+            alphaList.add(BigInteger.valueOf(i));
+        }
+
+        counting.resetStats();
+        assertTrue(counting.MPCT(alphaList, FMod));
+        counting.printStats();
+    }
 
 
 }

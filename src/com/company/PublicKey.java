@@ -20,6 +20,7 @@ public class PublicKey {
     BigInteger nsm;
     public BigInteger invFourDeltaSquared;
     int encryptionCounter = 0;
+    int calculationCounter =0;
 
     void init(BigInteger n, int  s, BigInteger  m, int  t, BigInteger d) {
 
