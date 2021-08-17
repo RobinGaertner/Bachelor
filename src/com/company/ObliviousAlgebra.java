@@ -123,7 +123,7 @@ public class ObliviousAlgebra {
 
         for (int i = 0; i < t; i++) {
             //after every diagonal get a new number
-            //TODO: check for boundary
+
             int tmp = rnd.nextInt();
             for (int j = 0; j < t; j++) {
                 //check if inbound
@@ -147,7 +147,7 @@ public class ObliviousAlgebra {
 
         for (int i = 0; i < t; i++) {
             //after every diagonal get a new number
-            //TODO: check for boundary
+
             int tmp = rnd.nextInt();
             for (int j = 0; j < t; j++) {
                 //check if inbound
@@ -206,13 +206,11 @@ public class ObliviousAlgebra {
 
         BigInteger [][] data = new BigInteger[t][1];
         for (int i = 0; i < t; i++) {
-            //TODO: check for boundary
             data[i][1] = BigInteger.valueOf(rnd.nextInt());
         }
         EncMatrix u = new EncMatrix(new IntMatrix(data), publicKey);
 
         for (int i = 0; i < t; i++) {
-            //TODO: check for boundary
             data[i][1] = BigInteger.valueOf(rnd.nextInt());
         }
         EncMatrix v = new EncMatrix(new IntMatrix(data), publicKey);
@@ -242,7 +240,6 @@ public class ObliviousAlgebra {
         EncMatrix Npow = new EncMatrix(utils.identityMatrixTimes(t,1), publicKey);
 
         for (int i = 0; i < limit; i++) {
-            //TODO: ask for this part
 
             EncMatrix tmp = coordinator.secMult(Encu, Npow, publicKey);
             tmp = coordinator.secMult(tmp, Encv, publicKey);
@@ -272,7 +269,7 @@ public class ObliviousAlgebra {
         }
 
         IntMatrix res = new IntMatrix(rndArray);
-        //TODO: check if Matrix is non-singular
+
         while(utils.isSingular(res)){
             //as long as the matrix is not singular
             //make a new random matrix

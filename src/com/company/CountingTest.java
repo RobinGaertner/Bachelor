@@ -205,7 +205,7 @@ public class CountingTest {
 
 
 
-        //compute the endresult
+        //compute the endResult
         EncryptedNumber result11 = polynomialCv1.call(alphaList.get(0));
         EncryptedNumber result12 = polynomialCw2.call(alphaList.get(0));
         EncryptedNumber result1 = coordinator.multiplyEnc(result11, result12);
@@ -221,17 +221,17 @@ public class CountingTest {
 
     public List<BigInteger> multiplyOut(List<BigInteger> inputList) {
 
-        //erst spalte, dann zeile
+        //erst column, then row
 
         BigInteger[][] bigArray = new BigInteger[inputList.size() + 1][inputList.size() + 1];
         for (int i = 0; i < inputList.size(); i++) {
             bigArray[i][0] = BigInteger.ZERO;
         }
         bigArray[inputList.size()][0] = BigInteger.ONE;
-        //i is Zeile
+        //i is row
         for (int i = 0; i < inputList.size(); i++) {
 
-            //j is spalte
+            //j is column
             for (int j = 0; j < inputList.size() + 1; j++) {
 
                 //every field is field above * input + field above-right

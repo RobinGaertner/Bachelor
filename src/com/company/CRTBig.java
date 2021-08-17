@@ -10,7 +10,7 @@ public class CRTBig {
 
         // iterative implementation of Extended Euclidean Algorithm
         // calculate b_i such that b_i*p + q*c = gcd(r, q) <=> p*b_i == 1%q
-        public static BigInteger extended_euclidean_algortihm(BigInteger p, BigInteger q){
+        public static BigInteger extended_euclidean_algorithm(BigInteger p, BigInteger q){
             BigInteger s = new BigInteger("0"); // quotient during algorithm
             BigInteger s_old = new BigInteger("1"); // Bézout coefficient
             BigInteger t = new BigInteger("1"); // quotient during algorithm
@@ -52,7 +52,7 @@ public class CRTBig {
 
             for (int i = 0; i < k; i++) {
                 p = prod.divide(Q.get(i));	// divide by current modulus to get product excluding said modulus
-                tmp = extended_euclidean_algortihm(p, Q.get(i)); // calculate mod_inv b_i such that b_i*p == 1 % Q.get(i)
+                tmp = extended_euclidean_algorithm(p, Q.get(i)); // calculate mod_inv b_i such that b_i*p == 1 % Q.get(i)
                 sum = sum.add(A.get(i).multiply(tmp).multiply(p)); // sum up all products of integer a, product p, modulo inverse of p and Q.get(i)
             }
 

@@ -22,14 +22,14 @@ class MPCTTest {
     void MPCTTest() throws Exception {
 
         int numparties = 2;
-        int treshold = 2;
+        int threshold = 2;
         BigInteger FMod = BigInteger.valueOf(19937);
 
 
-        counting = new CountingTestCoordinator(numparties, treshold, FMod );
+        counting = new CountingTestCoordinator(numparties, threshold, FMod );
 
         //t is important
-        int t = treshold;
+        int t = threshold;
 
         List<BigInteger> inputList1 = new LinkedList<>();
         inputList1.add(BigInteger.valueOf(137));
@@ -113,14 +113,14 @@ class MPCTTest {
     void MPCTTest4() throws Exception {
 
         int numparties = 2;
-        int treshold = 4;
+        int threshold = 4;
         BigInteger FMod = BigInteger.valueOf(19937);
 
 
-        counting = new CountingTestCoordinator(numparties, treshold, FMod );
+        counting = new CountingTestCoordinator(numparties, threshold, FMod );
 
         //t is important
-        int t = treshold;
+        int t = threshold;
 
         List<BigInteger> inputList1 = new LinkedList<>();
         inputList1.add(BigInteger.valueOf(137));
@@ -157,11 +157,11 @@ class MPCTTest {
 
 
         int numparties = 10;
-        int treshold = 2;
+        int threshold = 2;
         BigInteger FMod = BigInteger.valueOf(1097);
 
 
-        counting = new CountingTestCoordinator(numparties, treshold, FMod );
+        counting = new CountingTestCoordinator(numparties, threshold, FMod );
 
         //t is important
 
@@ -260,7 +260,7 @@ class MPCTTest {
 
         List<BigInteger> alphaList = new LinkedList<>();
 
-        for (int i = 1; i < 4* treshold +3; i++) {
+        for (int i = 1; i < 4* threshold +3; i++) {
             alphaList.add(BigInteger.valueOf(i));
         }
 
@@ -277,11 +277,11 @@ class MPCTTest {
     void MPCTTest10Numbers() throws Exception {
 
         int numparties = 2;
-        int treshold = 2;
+        int threshold = 2;
         BigInteger FMod = BigInteger.valueOf(1097);
 
 
-        counting = new CountingTestCoordinator(numparties, treshold, FMod );
+        counting = new CountingTestCoordinator(numparties, threshold, FMod );
 
         //t is important
 
@@ -316,7 +316,7 @@ class MPCTTest {
 
         List<BigInteger> alphaList = new LinkedList<>();
 
-        for (int i = 1; i < 4* treshold +3; i++) {
+        for (int i = 1; i < 4* threshold +3; i++) {
             alphaList.add(BigInteger.valueOf(i));
         }
 
@@ -334,11 +334,11 @@ class MPCTTest {
     void MPCTTestDifferentInputLength() throws Exception {
 
         int numparties = 2;
-        int treshold = 3;
+        int threshold = 3;
         BigInteger FMod = BigInteger.valueOf(1097);
 
 
-        counting = new CountingTestCoordinator(numparties, treshold, FMod );
+        counting = new CountingTestCoordinator(numparties, threshold, FMod );
 
 
         List<BigInteger> inputList1 = new LinkedList<>();
@@ -357,14 +357,13 @@ class MPCTTest {
         inputList2.add(BigInteger.valueOf(276));
         inputList2.add(BigInteger.valueOf(317));
         inputList2.add(BigInteger.valueOf(912));
-        inputList2.add(BigInteger.valueOf(713));
 
         counting.parties.get(1).setInputSet(inputList2);
 
 
         List<BigInteger> alphaList = new LinkedList<>();
 
-        for (int i = 1; i < 4* treshold +3; i++) {
+        for (int i = 1; i < 4* threshold +3; i++) {
             alphaList.add(BigInteger.valueOf(i));
         }
 
@@ -434,11 +433,11 @@ class MPCTTest {
     void MPCTTestBig() throws Exception {
 
         int numparties = 40;
-        int treshold = 10;
+        int threshold = 10;
         BigInteger FMod = BigInteger.valueOf(19937);
 
 
-        counting = new CountingTestCoordinator(numparties, treshold, FMod );
+        counting = new CountingTestCoordinator(numparties, threshold, FMod );
 
         //generate numbers under 19937
         List<BigInteger> bigInputs = new LinkedList<>();
@@ -461,7 +460,7 @@ class MPCTTest {
 
         List<BigInteger> alphaList = new LinkedList<>();
 
-        for (int i = 1; i < 4* treshold +3; i++) {
+        for (int i = 1; i < 4* threshold +3; i++) {
             alphaList.add(BigInteger.valueOf(i));
         }
 
@@ -470,46 +469,6 @@ class MPCTTest {
         counting.printStats();
     }
 
-
-    @Test
-    void MPCTTestBigReversed() throws Exception {
-
-        int numparties = 10;
-        int treshold = 40;
-        BigInteger FMod = BigInteger.valueOf(19937);
-
-
-        counting = new CountingTestCoordinator(numparties, treshold, FMod );
-
-        //generate numbers under 19937
-        List<BigInteger> bigInputs = new LinkedList<>();
-        for (int i = 0; i < 100-treshold; i++) {
-            bigInputs.add(BigInteger.valueOf((78*(i+38) + (29*i+3))%19937));
-        }
-
-        for (int i = 0; i < numparties; i++) {
-            List<BigInteger> finishedInputs = new LinkedList<>(bigInputs);
-            //39 differences are allowed
-            for (int j = 0; j < treshold-1; j++) {
-                finishedInputs.add(BigInteger.valueOf((738*9572 + i*i*697*285 + j*234)% 19937));
-            }
-            counting.parties.get(i).setInputSet(finishedInputs);
-        }
-
-        for (int i = 0; i < numparties; i++) {
-            System.out.println(counting.parties.get(i).inputSet);
-        }
-
-        List<BigInteger> alphaList = new LinkedList<>();
-
-        for (int i = 1; i < 4* treshold +3; i++) {
-            alphaList.add(BigInteger.valueOf(i));
-        }
-
-        counting.resetStats();
-        assertTrue(counting.MPCT(alphaList, FMod));
-        counting.printStats();
-    }
 
 
 }

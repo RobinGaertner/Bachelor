@@ -54,7 +54,7 @@ public class PrivateKeyRing {
         invFourDeltaSquared = tmp.modInverse(publicKey.ns);
     }
 
-    //TODO: here is so much casted stuff
+
 
     public BigInteger lambda(int i) {
 
@@ -200,7 +200,7 @@ public class PrivateKeyRing {
     public IntMatrix decryptMatrix(List<IntMatrix> inputMatrices) {
 
 
-        //TODO: check if x and y are swapped
+
         BigInteger[][] data = new BigInteger[inputMatrices.get(0).getM()][inputMatrices.get(0).getN()];
         for (int i = 0; i < inputMatrices.get(0).getM(); i++) {
             for (int j = 0; j < inputMatrices.get(0).getN(); j++) {
@@ -226,7 +226,7 @@ public class PrivateKeyRing {
 
     public IntMatrix decryptMatrix(EncMatrix inputMatrix) {
 
-        //TODO: check if x and y are swapped
+
         BigInteger[][] data = new BigInteger[inputMatrix.M][inputMatrix.N];
         for (int i = 0; i < inputMatrix.M; i++) {
             for (int j = 0; j < inputMatrix.N; j++) {

@@ -16,7 +16,6 @@ public class ObliviousAlgebraCoordinator {
     public ObliviousAlgebraCoordinator(int numParties, PublicKey pK, PrivateKeyRing pkR) {
         //setup
         publicKey = pK;
-        //TODO: remove the privatekeyring
         privateKeyRing = pkR;
         List<PrivateKeyShare> KeyShareList = pkR.privateKeyShareList;
 

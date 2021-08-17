@@ -15,7 +15,7 @@ public class ObliviousSupportTests {
     Random rnd = new Random();
     KeyGen keyGen = new KeyGen();
     int numParties = 5;
-    Containter con = KeyGen.keyGen(16, 3, numParties,numParties);
+    Container con = KeyGen.keyGen(16, 3, numParties,numParties);
     int x = 5;
     ObliviousAlgebraCoordinator coordinator = new ObliviousAlgebraCoordinator(5, con.getPublicKey(), con.getPrivateKeyRing());
     ObliviousAlgebra obliviousAlgebra = new ObliviousAlgebra(new PublicKey(), new PrivateKeyShare(),coordinator, 1);

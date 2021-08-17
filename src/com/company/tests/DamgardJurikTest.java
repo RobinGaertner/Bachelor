@@ -29,55 +29,22 @@ public class DamgardJurikTest {
             System.out.println("nShares: " + nShares);
             System.out.println("Threshold: " + threshold);
 
-            Containter containter = KeyGen.keyGen(nBits, s, threshold, nShares);
+            Container container = KeyGen.keyGen(nBits, s, threshold, nShares);
 
-            System.out.println("Container finished " + containter);
+            System.out.println("Container finished " + container);
 
 
             BigInteger m = BigInteger.valueOf(rnd.nextInt(100000));
-            EncryptedNumber c = containter.getPublicKey().encrypt(m);
+            EncryptedNumber c = container.getPublicKey().encrypt(m);
 
             System.out.println("Encrpt finished " + c);
 
-            BigInteger mPrime = containter.getPrivateKeyRing().decrypt(c);
+            BigInteger mPrime = container.getPrivateKeyRing().decrypt(c);
 
             System.out.println("decrypt finished");
 
             assertEquals(m, mPrime);
 
-        }
-    }
-
-    @org.junit.jupiter.api.Test
-    void call2() throws Exception {
-        for (int i = 0; i < 5; i++) {
-            System.out.println("Test: " + i);
-
-            int nBits = 4;
-            int s = 1;
-            int threshold = 1;
-            int nShares = 4;
-
-            System.out.println("nBits " + nBits);
-            System.out.println("s: " + s);
-            System.out.println("nShares: " + nShares);
-            System.out.println("Threshold: " + threshold);
-
-            Containter containter = KeyGen.keyGen(nBits, s, threshold, nShares);
-
-            System.out.println("Container finished " + containter);
-
-
-            BigInteger m = BigInteger.valueOf(47);
-            EncryptedNumber c = containter.getPublicKey().encrypt(m);
-
-            System.out.println("Encrpt finished " + c);
-
-            BigInteger mPrime = containter.getPrivateKeyRing().decrypt(c);
-
-            System.out.println("decrypt finished");
-
-            assertEquals(m, mPrime);
         }
     }
 

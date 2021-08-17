@@ -1,6 +1,6 @@
 package com.company;
 
-public class Containter {
+public class Container {
 
 
     private PublicKey publicKey;
@@ -10,7 +10,7 @@ public class Containter {
         this.privateKeyRing = privateKeyRing;
     }
 
-    public Containter(PublicKey key, PrivateKeyRing ring) {
+    public Container(PublicKey key, PrivateKeyRing ring) {
         this.publicKey = key;
         this.privateKeyRing = ring;
     }

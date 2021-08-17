@@ -72,7 +72,7 @@ public class EncMatrix {
     //made by me
     public EncMatrix minus(EncMatrix B) throws Exception {
         if (B.M != M || B.N != N) throw new RuntimeException("Illegal matrix dimensions.");
-        //TODO: add this check back
+
         if(!B.publicKey.equals(publicKey)) throw new RuntimeException("Different publickeys");
         EncMatrix C = new EncMatrix(M, N, publicKey);
         for (int i = 0; i < M; i++)
@@ -96,8 +96,7 @@ public class EncMatrix {
                         data[i][j] = data[i][j].add(A.data[i][k].mul(B.getData()[k][j]));
                     }
                 }
-        EncMatrix C = new EncMatrix(data, publicKey);
-        return C;
+        return new EncMatrix(data, publicKey);
     }
 
     // copy constructor

@@ -12,7 +12,7 @@ public class KeyGen {
     static ShamirSecretSharing shamirSecretSharing = new ShamirSecretSharing();
     static CRTBig crt = new CRTBig();
 
-    public static Containter keyGen(int nBits, int s, int threshold, int nShares) throws Exception {
+    public static Container keyGen(int nBits, int s, int threshold, int nShares) throws Exception {
         /*Generates a PublicKey and a PrivateKeyRing using the threshold variant of Damgard-Jurik.
     The PublicKey is a single key which can be used to encrypt numbers
     while the PrivateKeyRing contains a number of PrivateKeyShares which
@@ -90,7 +90,7 @@ public class KeyGen {
         PrivateKeyRing privateKeyRing = new PrivateKeyRing();
         privateKeyRing.init(privateKeyShares);
 
-        return new Containter(publicKey, privateKeyRing);
+        return new Container(publicKey, privateKeyRing);
     }
 
 

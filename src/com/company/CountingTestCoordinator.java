@@ -27,10 +27,10 @@ public class CountingTestCoordinator {
 
     public CountingTestCoordinator(int numParties, int treshold, BigInteger FModularMod) throws Exception {
         //setup
-        //TODO: change to the right needed numbers
-        Containter con = KeyGen.keyGen(64 , 3, numParties, numParties);
+
+        Container con = KeyGen.keyGen(64 , 3, numParties, numParties);
         publicKey = con.getPublicKey();
-        //TODO: remove the privatekeyring
+
         privateKeyRing = con.getPrivateKeyRing();
 
         oCoordinator = new ObliviousAlgebraCoordinator(numParties, con.getPublicKey(), con.getPrivateKeyRing());
